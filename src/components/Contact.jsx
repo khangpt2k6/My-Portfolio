@@ -1,164 +1,179 @@
-"use client"
+"use client";
 
-import { useState, useRef, useEffect } from "react"
-import { motion, useAnimation, AnimatePresence } from "framer-motion"
-import { FaEnvelope, FaPhone, FaGithub, FaLinkedin, FaPaperPlane } from "react-icons/fa"
-import emailjs from '@emailjs/browser'
+import { useState, useRef, useEffect } from "react";
+import { motion, useAnimation, AnimatePresence } from "framer-motion";
+import {
+  FaEnvelope,
+  FaPhone,
+  FaGithub,
+  FaLinkedin,
+  FaPaperPlane,
+} from "react-icons/fa";
+import emailjs from "@emailjs/browser";
 
 const Contact = () => {
   // References and state
-  const formRef = useRef()
+  const formRef = useRef();
   const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    subject: "",
-    message: "",
-  })
+    from_name: "", // Changed from "name" to match EmailJS template
+    user_email: "", // Changed from "email" to match EmailJS template
+    subject: "", // Keep this if your template uses it
+    user_feedback: "", // Changed from "message" to match EmailJS template
+  });
 
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [submitSuccess, setSubmitSuccess] = useState(false)
-  const [submitError, setSubmitError] = useState(null)
-  const [activeField, setActiveField] = useState(null)
-  
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitSuccess, setSubmitSuccess] = useState(false);
+  const [submitError, setSubmitError] = useState(null);
+  const [activeField, setActiveField] = useState(null);
+
   // Animation controls
-  const controls = useAnimation()
-  const titleControls = useAnimation()
-  
+  const controls = useAnimation();
+  const titleControls = useAnimation();
+
   // Animation variants
   const titleVariants = {
     hidden: { opacity: 0, y: -50 },
-    visible: { 
-      opacity: 1, 
+    visible: {
+      opacity: 1,
       y: 0,
-      transition: { 
-        duration: 0.8, 
+      transition: {
+        duration: 0.8,
         ease: [0.6, -0.05, 0.01, 0.99],
-      } 
-    }
-  }
-  
+      },
+    },
+  };
+
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
       transition: {
         staggerChildren: 0.1,
-        delayChildren: 0.3
-      }
-    }
-  }
-  
+        delayChildren: 0.3,
+      },
+    },
+  };
+
   const itemVariants = {
     hidden: { opacity: 0, y: 20 },
     visible: {
       opacity: 1,
       y: 0,
-      transition: { duration: 0.5, ease: "easeOut" }
-    }
-  }
-  
+      transition: { duration: 0.5, ease: "easeOut" },
+    },
+  };
+
   const buttonVariants = {
     initial: { scale: 1 },
-    hover: { 
+    hover: {
       scale: 1.05,
-      boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
-      transition: { 
-        type: "spring", 
-        stiffness: 400, 
-        damping: 10 
-      }
+      boxShadow:
+        "0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
+      transition: {
+        type: "spring",
+        stiffness: 400,
+        damping: 10,
+      },
     },
-    tap: { scale: 0.95 }
-  }
+    tap: { scale: 0.95 },
+  };
 
   const formFieldVariants = {
     idle: { scale: 1 },
-    active: { 
+    active: {
       scale: 1.02,
       boxShadow: "0 0 0 3px rgba(5, 150, 105, 0.2)",
-      transition: { type: "spring", stiffness: 300, damping: 10 }
-    }
-  }
-  
+      transition: { type: "spring", stiffness: 300, damping: 10 },
+    },
+  };
+
   const successVariants = {
     hidden: { opacity: 0, height: 0, y: -20 },
-    visible: { 
-      opacity: 1, 
-      height: "auto", 
+    visible: {
+      opacity: 1,
+      height: "auto",
       y: 0,
-      transition: { 
-        type: "spring", 
-        stiffness: 500, 
-        damping: 25 
-      }
+      transition: {
+        type: "spring",
+        stiffness: 500,
+        damping: 25,
+      },
     },
-    exit: { 
-      opacity: 0, 
+    exit: {
+      opacity: 0,
       height: 0,
-      transition: { 
+      transition: {
         duration: 0.3,
-        ease: "easeInOut" 
-      }
-    }
-  }
+        ease: "easeInOut",
+      },
+    },
+  };
 
   // Start title animation when component mounts
   useEffect(() => {
     const sequence = async () => {
-      await titleControls.start("visible")
-      await controls.start("visible")
-    }
-    sequence()
-  }, [controls, titleControls])
+      await titleControls.start("visible");
+      await controls.start("visible");
+    };
+    sequence();
+  }, [controls, titleControls]);
 
   const handleChange = (e) => {
-    const { name, value } = e.target
-    setFormData((prev) => ({ ...prev, [name]: value }))
-  }
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
 
   const handleFocus = (field) => {
-    setActiveField(field)
-  }
+    setActiveField(field);
+  };
 
   const handleBlur = () => {
-    setActiveField(null)
-  }
+    setActiveField(null);
+  };
 
   const handleSubmit = (e) => {
-    e.preventDefault()
-    setIsSubmitting(true)
-    setSubmitError(null)
+    e.preventDefault();
+    setIsSubmitting(true);
+    setSubmitError(null);
+
+    // Add recipient info (to_name) to the form data
+    // This aligns with your {{to_name}} template variable
+    formRef.current.to_name = "Khang Phan"; // You can change this to your name
 
     // Replace these with your actual EmailJS service ID, template ID, and public key
-    const serviceId = 'YOUR_EMAILJS_SERVICE_ID'
-    const templateId = 'YOUR_EMAILJS_TEMPLATE_ID'
-    const publicKey = 'YOUR_EMAILJS_PUBLIC_KEY'
+    const serviceId = "service_a5rttmj";
+    const templateId = "template_xxvslct";
+    const publicKey = "UHaRQ92hG5FMULzb5";
 
-    emailjs.sendForm(serviceId, templateId, formRef.current, publicKey)
+    emailjs
+      .sendForm(serviceId, templateId, formRef.current, publicKey)
       .then((result) => {
-        setIsSubmitting(false)
-        setSubmitSuccess(true)
+        setIsSubmitting(false);
+        setSubmitSuccess(true);
         setFormData({
-          name: "",
-          email: "",
+          from_name: "",
+          user_email: "",
           subject: "",
-          message: "",
-        })
+          user_feedback: "",
+        });
 
         // Reset success message after 5 seconds
         setTimeout(() => {
-          setSubmitSuccess(false)
-        }, 5000)
+          setSubmitSuccess(false);
+        }, 5000);
       })
       .catch((error) => {
-        setIsSubmitting(false)
-        setSubmitError("Failed to send message. Please try again later.")
-        console.error("EmailJS Error:", error)
-      })
-  }
+        setIsSubmitting(false);
+        setSubmitError("Failed to send message. Please try again later.");
+        console.error("EmailJS Error:", error);
+      });
+  };
 
   return (
-    <section id="contact" className="py-20 bg-gradient-to-b from-emerald-50 to-cyan-50 relative overflow-hidden">
+    <section
+      id="contact"
+      className="py-20 bg-gradient-to-b from-emerald-50 to-cyan-50 relative overflow-hidden"
+    >
       {/* Background decorative elements */}
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden z-0">
         <div className="absolute top-20 left-10 w-64 h-64 rounded-full bg-emerald-200 opacity-20 blur-3xl"></div>
@@ -178,12 +193,13 @@ const Contact = () => {
             </h2>
             <div className="w-20 h-1 bg-gradient-to-r from-emerald-500 to-cyan-500 mx-auto"></div>
             <p className="mt-4 text-gray-600 max-w-2xl mx-auto">
-              Feel free to reach out with any questions or opportunities. I'd love to hear from you!
+              Feel free to reach out with any questions or opportunities. I'd
+              love to hear from you!
             </p>
           </motion.div>
         </div>
 
-        <motion.div 
+        <motion.div
           className="grid grid-cols-1 lg:grid-cols-2 gap-12 max-w-6xl mx-auto"
           initial="hidden"
           animate={controls}
@@ -199,7 +215,7 @@ const Contact = () => {
             </h3>
 
             <div className="space-y-8">
-              <motion.div 
+              <motion.div
                 className="flex items-start group"
                 whileHover={{ x: 5 }}
                 transition={{ type: "spring", stiffness: 400, damping: 10 }}
@@ -209,8 +225,8 @@ const Contact = () => {
                 </div>
                 <div>
                   <h4 className="text-lg font-semibold text-gray-800">Email</h4>
-                  <a 
-                    href="mailto:2006tuankhang@gmail.com" 
+                  <a
+                    href="mailto:2006tuankhang@gmail.com"
                     className="text-emerald-600 hover:text-emerald-700 transition-colors duration-300 relative inline-block group-hover:underline"
                   >
                     2006tuankhang@gmail.com
@@ -218,7 +234,7 @@ const Contact = () => {
                 </div>
               </motion.div>
 
-              <motion.div 
+              <motion.div
                 className="flex items-start group"
                 whileHover={{ x: 5 }}
                 transition={{ type: "spring", stiffness: 400, damping: 10 }}
@@ -228,8 +244,8 @@ const Contact = () => {
                 </div>
                 <div>
                   <h4 className="text-lg font-semibold text-gray-800">Phone</h4>
-                  <a 
-                    href="tel:8135704370" 
+                  <a
+                    href="tel:8135704370"
                     className="text-emerald-600 hover:text-emerald-700 transition-colors duration-300 group-hover:underline"
                   >
                     813-570-4370
@@ -237,7 +253,7 @@ const Contact = () => {
                 </div>
               </motion.div>
 
-              <motion.div 
+              <motion.div
                 className="flex items-start group"
                 whileHover={{ x: 5 }}
                 transition={{ type: "spring", stiffness: 400, damping: 10 }}
@@ -246,7 +262,9 @@ const Contact = () => {
                   <FaGithub className="text-white text-xl" />
                 </div>
                 <div>
-                  <h4 className="text-lg font-semibold text-gray-800">GitHub</h4>
+                  <h4 className="text-lg font-semibold text-gray-800">
+                    GitHub
+                  </h4>
                   <a
                     href="https://github.com/khangpt2k6"
                     target="_blank"
@@ -258,7 +276,7 @@ const Contact = () => {
                 </div>
               </motion.div>
 
-              <motion.div 
+              <motion.div
                 className="flex items-start group"
                 whileHover={{ x: 5 }}
                 transition={{ type: "spring", stiffness: 400, damping: 10 }}
@@ -267,7 +285,9 @@ const Contact = () => {
                   <FaLinkedin className="text-white text-xl" />
                 </div>
                 <div>
-                  <h4 className="text-lg font-semibold text-gray-800">LinkedIn</h4>
+                  <h4 className="text-lg font-semibold text-gray-800">
+                    LinkedIn
+                  </h4>
                   <a
                     href="https://linkedin.com/in/tuankhangphan"
                     target="_blank"
@@ -293,18 +313,21 @@ const Contact = () => {
             <form ref={formRef} onSubmit={handleSubmit} className="space-y-6">
               <motion.div
                 variants={formFieldVariants}
-                animate={activeField === "name" ? "active" : "idle"}
+                animate={activeField === "from_name" ? "active" : "idle"}
               >
-                <label htmlFor="name" className="block text-gray-700 font-medium mb-2">
+                <label
+                  htmlFor="from_name"
+                  className="block text-gray-700 font-medium mb-2"
+                >
                   Name
                 </label>
                 <input
                   type="text"
-                  id="name"
-                  name="name"
-                  value={formData.name}
+                  id="from_name"
+                  name="from_name"
+                  value={formData.from_name}
                   onChange={handleChange}
-                  onFocus={() => handleFocus("name")}
+                  onFocus={() => handleFocus("from_name")}
                   onBlur={handleBlur}
                   required
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-300"
@@ -314,18 +337,21 @@ const Contact = () => {
 
               <motion.div
                 variants={formFieldVariants}
-                animate={activeField === "email" ? "active" : "idle"}
+                animate={activeField === "user_email" ? "active" : "idle"}
               >
-                <label htmlFor="email" className="block text-gray-700 font-medium mb-2">
+                <label
+                  htmlFor="user_email"
+                  className="block text-gray-700 font-medium mb-2"
+                >
                   Email
                 </label>
                 <input
                   type="email"
-                  id="email"
-                  name="email"
-                  value={formData.email}
+                  id="user_email"
+                  name="user_email"
+                  value={formData.user_email}
                   onChange={handleChange}
-                  onFocus={() => handleFocus("email")}
+                  onFocus={() => handleFocus("user_email")}
                   onBlur={handleBlur}
                   required
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-300"
@@ -337,7 +363,10 @@ const Contact = () => {
                 variants={formFieldVariants}
                 animate={activeField === "subject" ? "active" : "idle"}
               >
-                <label htmlFor="subject" className="block text-gray-700 font-medium mb-2">
+                <label
+                  htmlFor="subject"
+                  className="block text-gray-700 font-medium mb-2"
+                >
                   Subject
                 </label>
                 <input
@@ -356,17 +385,20 @@ const Contact = () => {
 
               <motion.div
                 variants={formFieldVariants}
-                animate={activeField === "message" ? "active" : "idle"}
+                animate={activeField === "user_feedback" ? "active" : "idle"}
               >
-                <label htmlFor="message" className="block text-gray-700 font-medium mb-2">
+                <label
+                  htmlFor="user_feedback"
+                  className="block text-gray-700 font-medium mb-2"
+                >
                   Message
                 </label>
                 <textarea
-                  id="message"
-                  name="message"
-                  value={formData.message}
+                  id="user_feedback"
+                  name="user_feedback"
+                  value={formData.user_feedback}
                   onChange={handleChange}
-                  onFocus={() => handleFocus("message")}
+                  onFocus={() => handleFocus("user_feedback")}
                   onBlur={handleBlur}
                   required
                   rows="5"
@@ -374,6 +406,9 @@ const Contact = () => {
                   placeholder="Your Message"
                 ></textarea>
               </motion.div>
+
+              {/* Add hidden input for to_name */}
+              <input type="hidden" name="to_name" value="Khang Phan" />
 
               <motion.button
                 type="submit"
@@ -418,7 +453,7 @@ const Contact = () => {
 
               <AnimatePresence>
                 {submitSuccess && (
-                  <motion.div 
+                  <motion.div
                     className="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 text-green-800 px-4 py-3 rounded-lg flex items-center"
                     initial="hidden"
                     animate="visible"
@@ -426,18 +461,29 @@ const Contact = () => {
                     variants={successVariants}
                   >
                     <div className="flex-shrink-0 mr-3">
-                      <svg className="h-5 w-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                      <svg
+                        className="h-5 w-5 text-green-500"
+                        fill="currentColor"
+                        viewBox="0 0 20 20"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                          clipRule="evenodd"
+                        />
                       </svg>
                     </div>
-                    <span>Your message has been sent successfully! I'll get back to you soon.</span>
+                    <span>
+                      Your message has been sent successfully! I'll get back to
+                      you soon.
+                    </span>
                   </motion.div>
                 )}
               </AnimatePresence>
-              
+
               <AnimatePresence>
                 {submitError && (
-                  <motion.div 
+                  <motion.div
                     className="bg-gradient-to-r from-red-50 to-red-100 border border-red-200 text-red-800 px-4 py-3 rounded-lg flex items-center"
                     initial="hidden"
                     animate="visible"
@@ -445,8 +491,16 @@ const Contact = () => {
                     variants={successVariants}
                   >
                     <div className="flex-shrink-0 mr-3">
-                      <svg className="h-5 w-5 text-red-500" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                      <svg
+                        className="h-5 w-5 text-red-500"
+                        fill="currentColor"
+                        viewBox="0 0 20 20"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                          clipRule="evenodd"
+                        />
                       </svg>
                     </div>
                     <span>{submitError}</span>
@@ -458,7 +512,7 @@ const Contact = () => {
         </motion.div>
       </div>
     </section>
-  )
-}
+  );
+};
 
-export default Contact
+export default Contact;
