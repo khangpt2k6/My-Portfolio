@@ -62,7 +62,6 @@ function App() {
             </>
           }
         />
-        <Route path="/chatbot" element={<Education />} />
       </Routes>
       <Chatbot />
     </div>

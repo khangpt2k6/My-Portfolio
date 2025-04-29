@@ -1,53 +1,78 @@
-"use client"
+"use client";
 
-import { useState, useEffect, useRef } from "react"
-import { motion, AnimatePresence } from "framer-motion"
-import { FaGithub, FaExternalLinkAlt, FaCode, FaTools } from "react-icons/fa"
-import Tilt from "react-parallax-tilt"
-import { HiX } from "react-icons/hi"
-import { IoRocketSharp } from "react-icons/io5"
-import { RiAiGenerate } from "react-icons/ri"
-import { BsCodeSlash } from "react-icons/bs"
+import { useState, useEffect, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { FaGithub, FaExternalLinkAlt, FaCode, FaTools } from "react-icons/fa";
+import Tilt from "react-parallax-tilt";
+import { HiX } from "react-icons/hi";
+import { IoRocketSharp } from "react-icons/io5";
+import { RiAiGenerate } from "react-icons/ri";
+import { BsCodeSlash } from "react-icons/bs";
 
 const Projects = () => {
   // State to track which project is currently selected for modal view
-  const [activeProject, setActiveProject] = useState(null)
-  const modalRef = useRef(null)
-  
+  const [activeProject, setActiveProject] = useState(null);
+  const modalRef = useRef(null);
+
   // Disable scrolling when modal is open
   useEffect(() => {
     if (activeProject) {
-      document.body.style.overflow = "hidden"
+      document.body.style.overflow = "hidden";
     } else {
-      document.body.style.overflow = "auto"
+      document.body.style.overflow = "auto";
     }
 
     return () => {
-      document.body.style.overflow = "auto"
-    }
-  }, [activeProject])
+      document.body.style.overflow = "auto";
+    };
+  }, [activeProject]);
 
   // Handle clicking outside the modal to close it
   const handleClickOutside = (e) => {
     if (modalRef.current && !modalRef.current.contains(e.target)) {
-      setActiveProject(null)
+      setActiveProject(null);
     }
-  }
+  };
 
   // Animation variants for the title animations
   const titleAnimation = {
     hidden: { opacity: 0, y: -20 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.6 } }
-  }
+    visible: { opacity: 1, y: 0, transition: { duration: 0.6 } },
+  };
 
   // Project data array
   const projects = [
     {
       id: 1,
+      title: "Hospify",
+      role: "Hospital Services Website",
+      technologies:
+        "MongoDB, Material UI, React.js, Node.js, Express.js, Cloudinary, Gemini API, Google Maps API, GPT 3.5 Turbo API, Stripe, RazorPay",
+      description: [
+        "Built a full-stack hospital services platform using the MERN stack, streamlining appointment booking, diagnosis assistance, and facility navigation.",
+        "Developed a responsive admin dashboard to manage appointments, doctors, patient records, and service schedules efficiently.",
+        "Integrated GPT-3.5 Turbo and Gemini API (Model 2-0 Flash) to power AI-driven symptom checking and personalized health recommendations, enhancing user self-assessment experiences.",
+        "Created a real-time medical facility locator using the Google Maps API, allowing patients to quickly find nearby hospitals and clinics with live availability updates.",
+        "Integrated secure payment gateways with Stripe and RazorPay, ensuring smooth transactions and transparent billing processes.",
+        "Implemented Cloudinary for optimized storage and management of medical reports, prescriptions, and facility images.",
+        "Developed a web scraping system to collect and update medical facility data and pharmacy product listings automatically.",
+        "Built a fully functional e-commerce platform for the pharmacy section, enabling users to order medicines and health products online with doorstep delivery options.",
+        "Ensured HIPAA compliance and implemented strong encryption protocols to protect patient data and payment information.",
+        "Designed a mobile-responsive UI/UX for seamless usage across devices, focusing on accessibility and intuitive navigation.",
+      ],
+      image: "/HOSPIFY.jpg",
+      github: "https://github.com/khangpt2k6/Deploy_Hospify",
+      demo: "https://github.com/khangpt2k6/Deploy_Hospify",
+      color: "#4ade80",
+      icon: <RiAiGenerate size={24} />,
+    },
+    {
+      id: 2,
       title: "SkinIntel — AI-powered Healthcare Platform",
       role: "Hackathon",
       period: "April 2025 – Present",
-      technologies: "React, Tailwind CSS, FastAPI, PyTorch, TensorFlow, OpenCV, Google Maps API",
+      technologies:
+        "React, Tailwind CSS, FastAPI, PyTorch, TensorFlow, OpenCV, Google Maps API",
       description: [
         "Architected and developed a comprehensive healthcare platform that utilizes Convolutional Neural Networks (CNN) including ResNet-50 and Inception-v3 architectures for accurate skin lesion classification",
         "Implemented U-Net segmentation models for precise lesion boundary detection, trained on multiple medical imaging datasets including HAM10000, ISIC, and NIH collections",
@@ -57,57 +82,50 @@ const Projects = () => {
         "Established HIPAA-compliant data handling protocols to ensure patient information security and privacy throughout the application",
         "Implemented comprehensive testing procedures including unit tests and end-to-end testing to ensure platform reliability",
       ],
-      image: "/Skin.png?height=600&width=800",
+      image: "/Skin.png",
       github: "https://github.com/XuanGiaHanNguyen/HackUSF",
       demo: "https://github.com/XuanGiaHanNguyen/HackUSF",
       color: "#4ade80",
       icon: <RiAiGenerate size={24} />,
     },
     {
-      id: 2,
-      title: "Trackify – Intelligent Expense Management System",
-      role: "Full - Stack Developer",
-      period: "March 2025 – Present",
-      technologies: "Next.js, React.js, TypeScript, MongoDB",
+      id: 3,
+      title: "Finova - Bank Management System",
+      role: "Backend Developer",
+      technologies: "Java, MySQL, Spring Boot, Hibernate",
       description: [
-        "Designed and built an AI-powered expense tracking system serving 512 active users, reducing manual data entry time by 47.3% through OpenAI API integration",
-        "Created an intuitive receipt scanning feature that automatically extracts and categorizes expense information",
-        "Developed a responsive and engaging user interface using Tailwind CSS and Framer Motion animations, increasing average user session duration by 39.15%",
-        "Engineered a robust backend system utilizing MongoDB for efficient data storage and retrieval of 248+ expense records",
-        "Deployed the application on AWS infrastructure with comprehensive monitoring solutions, achieving 88.9% uptime performance",
-        "Implemented secure authentication mechanisms and data encryption protocols to protect sensitive financial information",
-        "Designed analytical dashboards that provide users with spending insights and budget recommendations",
+        "Developed a Java-based Bank Management System with full CRUD operations for customers and accounts, integrating MySQL for secure data storage and retrieval.",
+        "Implemented transaction management features including deposits, withdrawals, transfers, and account statements with date range filtering.",
+        "Designed and optimized relational database schemas to support multiple account types (Savings, Checking, Fixed Deposit) and transaction histories.",
       ],
-      image: "/Tracklify.png?height=600&width=800",
-      github: "https://github.com/khangpt2k6/Trackify",
-      demo: "https://github.com/khangpt2k6/Trackify",
+      image: "/Tracklify.png",
+      github: "https://github.com/khangpt2k6/BankManagementSystem",
+      demo: "https://github.com/khangpt2k6/BankManagementSystem",
       color: "#f97316",
       icon: <IoRocketSharp size={24} />,
     },
     {
-      id: 3,
-      title: "Toralk",
+      id: 4,
+      title: "GreenCart",
       role: "Full-Stack Developer",
-      period: "January 2025 - March 2025",
       technologies:
-        "AWS, MongoDB, Express.js, React.js, Node.js, Clerk, JavaScript, HTML, CSS, Vite, Google Gemini API",
+        "React.js, TailwindCSS, Next.js, MongoDB, Flask, Python, Google Gemini API, Chrome Extensions API",
       description: [
-        "Designed and developed an AI-powered assistant capable of real-time multilingual responses, text generation, and image creation, enhancing user engagement by 35%",
-        "Optimized system performance to achieve 99.98% uptime, efficiently handling 50,000+ concurrent requests, and implemented secure authentication using Clerk, reducing unauthorized access incidents by 70%",
-        "Successfully onboarded 100+ users within two weeks, improving workflow efficiency by 40%",
+        "Developed an AI-powered sustainability platform offering real-time product analysis, eco-friendly alternatives, and a dedicated marketplace to promote conscious consumerism.",
+        "Built a browser extension integrating with major e-commerce sites (Amazon, eBay) to display instant sustainability scores and recommend greener product choices.",
+        "Implemented a full-stack solution for intelligent product analysis and user-friendly UI/UX with 200+ active users.",
       ],
-      image: "/Bull.jpg?height=600&width=800",
-      github: "https://github.com/khangpt2k6/TORALK",
-      demo: "https://github.com/khangpt2k6/TORALK",
+      image: "/GREENCART.png",
+      github: "https://devpost.com/software/hackabullhkkt",
+      demo: "https://devpost.com/software/hackabullhkkt",
       color: "#06b6d4",
       icon: <RiAiGenerate size={24} />,
     },
     {
-      id: 4,
+      id: 5,
       title: "GeoVista — Interactive Geographic Information System",
       role: "Full-Stack Developer",
-      period: "November 2024 – December 2024",
-      technologies: "TypeScript, JavaScript, Next.js, React.js, Leaflet.js, Supabase, TailwindCSS, REST API",
+      technologies: "Python, Django, Supabase, Boostrap, RESTs API, TypeScript",
       description: [
         "Developed a sophisticated web-based interactive map application that integrates real-time location data to provide users with an efficient navigation tool",
         "Optimized map rendering and search functionality, reducing query response times by 0.482 seconds and creating a more responsive user experience",
@@ -116,18 +134,18 @@ const Projects = () => {
         "Implemented efficient data caching strategies to reduce server load and improve application performance",
         "Integrated third-party mapping services with custom overlay features to enhance user navigation experience",
       ],
-      image: "/Map.jpg?height=600&width=800",
+      image: "/Map.jpg",
       github: "https://github.com/khangpt2k6/GeoVista",
       demo: "https://github.com/khangpt2k6/GeoVista",
       color: "#3b82f6",
       icon: <BsCodeSlash size={24} />,
     },
     {
-      id: 5,
+      id: 6,
       title: "PathFinder X — Autonomous Navigation Robot",
       role: "Embedded Systems Engineer",
-      period: "September 2024 – December 2024",
-      technologies: "Arduino, C++, Ultrasonic Sensors, IR Sensors, L298N H-Bridge",
+      technologies:
+        "Arduino, C++, Ultrasonic Sensors, IR Sensors, L298N H-Bridge",
       description: [
         "Led a team of 5 engineers in the development of an Arduino-based autonomous robot designed for obstacle detection and avoidance in dynamic environments",
         "Programmed embedded C++ software for seamless sensor integration and precise motor control using L298N H-Bridge components",
@@ -136,13 +154,13 @@ const Projects = () => {
         "Created comprehensive documentation including circuit diagrams, code documentation, and operating procedures",
         "Conducted extensive testing in varied environments to validate the robot's performance and reliability",
       ],
-      image: "/Arduino.jpg?height=600&width=800",
+      image: "/Arduino.jpg",
       github: "https://github.com/khangpt2k6/Arduino-based-Robot",
       demo: "https://github.com/khangpt2k6/Arduino-based-Robot",
       color: "#d946ef",
       icon: <FaTools size={24} />,
     },
-  ]
+  ];
 
   // Tilt settings for card hover effects
   const tiltOptions = {
@@ -153,29 +171,32 @@ const Projects = () => {
     glareMaxOpacity: 0.1,
     glareColor: "#ffffff",
     glarePosition: "all",
-    glareBorderRadius: "12px"
-  }
+    glareBorderRadius: "12px",
+  };
 
   return (
-    <section id="projects" className="relative py-24 bg-emerald-100/70 backdrop-blur-sm rounded-full flex border border-emerald-200 shadow-lg">
+    <section
+      id="projects"
+      className="relative py-24 bg-emerald-100/70 backdrop-blur-sm rounded-full flex border border-emerald-200 shadow-lg"
+    >
       {/* Background patterns */}
       <div className="absolute inset-0 opacity-10">
         <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(#3cba92_1px,transparent_1px)] [background-size:40px_40px]"></div>
       </div>
-      
+
       {/* Background blobs */}
       <div className="absolute top-20 left-1/4 w-96 h-96 bg-emerald-500 rounded-full mix-blend-multiply filter blur-xl opacity-5 animate-blob"></div>
       <div className="absolute top-40 right-1/4 w-96 h-96 bg-teal-500 rounded-full mix-blend-multiply filter blur-xl opacity-5 animate-blob animation-delay-2000"></div>
 
       <div className="container relative mx-auto px-4 md:px-6 z-10">
         {/* Section title */}
-        <motion.div 
+        <motion.div
           className="text-center mb-16"
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
         >
-          <motion.h2 
+          <motion.h2
             className="text-3xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-emerald-600 to-cyan-600 bg-clip-text text-transparent"
             variants={titleAnimation}
           >
@@ -211,14 +232,16 @@ const Projects = () => {
                       className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-transparent to-transparent opacity-80"></div>
-                    
+
                     {/* Role badge */}
                     <div className="absolute top-4 left-4 bg-gray-900 bg-opacity-80 backdrop-blur-sm px-3 py-1 rounded-full border border-gray-700 flex items-center">
                       <div
                         className="w-2 h-2 rounded-full mr-2"
                         style={{ backgroundColor: project.color }}
                       ></div>
-                      <span className="text-xs font-medium text-white">{project.role}</span>
+                      <span className="text-xs font-medium text-white">
+                        {project.role}
+                      </span>
                     </div>
 
                     {/* Quick action buttons */}
@@ -246,19 +269,26 @@ const Projects = () => {
 
                   {/* Project content */}
                   <div className="p-6 relative z-10">
-                    <h3 className="text-xl font-bold text-white mb-2 line-clamp-2">{project.title}</h3>
-                    <p className="text-emerald-400 mb-3 text-sm font-medium">{project.period}</p>
+                    <h3 className="text-xl font-bold text-white mb-2 line-clamp-2">
+                      {project.title}
+                    </h3>
+                    <p className="text-emerald-400 mb-3 text-sm font-medium">
+                      {project.period}
+                    </p>
 
                     {/* Tech tags */}
                     <div className="mb-4 flex flex-wrap gap-2">
-                      {project.technologies.split(", ").slice(0, 3).map((tech, i) => (
-                        <span
-                          key={i}
-                          className="text-xs px-2 py-1 rounded-full bg-gray-700 bg-opacity-60 text-gray-300"
-                        >
-                          {tech}
-                        </span>
-                      ))}
+                      {project.technologies
+                        .split(", ")
+                        .slice(0, 3)
+                        .map((tech, i) => (
+                          <span
+                            key={i}
+                            className="text-xs px-2 py-1 rounded-full bg-gray-700 bg-opacity-60 text-gray-300"
+                          >
+                            {tech}
+                          </span>
+                        ))}
                       {project.technologies.split(", ").length > 3 && (
                         <span className="text-xs px-2 py-1 rounded-full bg-gray-700 bg-opacity-60 text-gray-300">
                           +{project.technologies.split(", ").length - 3}
@@ -267,14 +297,18 @@ const Projects = () => {
                     </div>
 
                     {/* Description preview */}
-                    <p className="text-gray-300 mb-4 line-clamp-3 text-sm">{project.description[0]}</p>
+                    <p className="text-gray-300 mb-4 line-clamp-3 text-sm">
+                      {project.description[0]}
+                    </p>
 
                     {/* Explore button */}
                     <button
                       onClick={() => setActiveProject(project)}
                       className="group flex items-center text-emerald-400 hover:text-emerald-300 transition-colors duration-300"
                     >
-                      <span className="font-medium text-sm">Explore Project</span>
+                      <span className="font-medium text-sm">
+                        Explore Project
+                      </span>
                       <svg
                         className="w-4 h-4 ml-1 transform transition-transform duration-300 group-hover:translate-x-1"
                         fill="none"
@@ -282,7 +316,12 @@ const Projects = () => {
                         viewBox="0 0 24 24"
                         xmlns="http://www.w3.org/2000/svg"
                       >
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7-7 7" />
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M14 5l7 7-7 7"
+                        />
                       </svg>
                     </button>
                   </div>
@@ -338,10 +377,10 @@ const Projects = () => {
                   <div className="absolute bottom-4 left-4">
                     <div
                       className="px-3 py-1 rounded-full text-sm font-medium inline-flex items-center gap-2"
-                      style={{ 
-                        backgroundColor: `${activeProject.color}20`, 
+                      style={{
+                        backgroundColor: `${activeProject.color}20`,
                         color: activeProject.color,
-                        borderLeft: `3px solid ${activeProject.color}`
+                        borderLeft: `3px solid ${activeProject.color}`,
                       }}
                     >
                       <span>{activeProject.role}</span>
@@ -351,8 +390,12 @@ const Projects = () => {
 
                 {/* Modal content */}
                 <div className="p-8 pt-4">
-                  <h3 className="text-3xl font-bold text-white mb-2">{activeProject.title}</h3>
-                  <p className="text-emerald-400 font-medium mb-6">{activeProject.period}</p>
+                  <h3 className="text-3xl font-bold text-white mb-2">
+                    {activeProject.title}
+                  </h3>
+                  <p className="text-emerald-400 font-medium mb-6">
+                    {activeProject.period}
+                  </p>
 
                   {/* Technologies section */}
                   <div className="mb-8">
@@ -374,7 +417,8 @@ const Projects = () => {
                   {/* Accomplishments section */}
                   <div className="mb-8">
                     <h4 className="text-lg font-semibold text-white mb-3 flex items-center">
-                      <FaCode className="text-emerald-500 mr-2" /> Key Accomplishments
+                      <FaCode className="text-emerald-500 mr-2" /> Key
+                      Accomplishments
                     </h4>
                     <div className="space-y-4">
                       {activeProject.description.map((item, i) => (
@@ -385,11 +429,16 @@ const Projects = () => {
                           transition={{ duration: 0.2, delay: i * 0.05 }}
                           className="flex items-start"
                         >
-                          <div 
-                            className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center mt-1 mr-3" 
-                            style={{ backgroundColor: `${activeProject.color}20` }}
+                          <div
+                            className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center mt-1 mr-3"
+                            style={{
+                              backgroundColor: `${activeProject.color}20`,
+                            }}
                           >
-                            <div className="w-2 h-2 rounded-full" style={{ backgroundColor: activeProject.color }}></div>
+                            <div
+                              className="w-2 h-2 rounded-full"
+                              style={{ backgroundColor: activeProject.color }}
+                            ></div>
                           </div>
                           <p className="text-gray-300">{item}</p>
                         </motion.div>
@@ -426,22 +475,30 @@ const Projects = () => {
       {/* Animation styles */}
       <style jsx global>{`
         @keyframes blob {
-          0% { transform: translate(0px, 0px) scale(1); }
-          33% { transform: translate(30px, -50px) scale(1.1); }
-          66% { transform: translate(-20px, 20px) scale(0.9); }
-          100% { transform: translate(0px, 0px) scale(1); }
+          0% {
+            transform: translate(0px, 0px) scale(1);
+          }
+          33% {
+            transform: translate(30px, -50px) scale(1.1);
+          }
+          66% {
+            transform: translate(-20px, 20px) scale(0.9);
+          }
+          100% {
+            transform: translate(0px, 0px) scale(1);
+          }
         }
-        
+
         .animate-blob {
           animation: blob 20s infinite alternate;
         }
-        
+
         .animation-delay-2000 {
           animation-delay: 2s;
         }
       `}</style>
     </section>
-  )
-}
+  );
+};
 
-export default Projects
+export default Projects;
