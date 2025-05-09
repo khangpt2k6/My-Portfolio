@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState, useRef } from "react";
-import { FaGithub, FaLinkedin, FaEnvelope, FaCode } from "react-icons/fa";
+import { FaGithub, FaLinkedin, FaEnvelope } from "react-icons/fa";
 import { HiOutlineArrowNarrowDown } from "react-icons/hi";
 import { SiLeetcode } from "react-icons/si";
 
@@ -8,7 +8,7 @@ const Hero = () => {
   const [mounted, setMounted] = useState(false);
   const [textIndex, setTextIndex] = useState(0);
   const titles = ["Full-Stack Developer", "UI/UX Designer", "Software Engineer", "AI Engineer"];
-  const particlesRef = useRef(null);
+  const backgroundCanvasRef = useRef(null);
   
   // For text typing effect
   const [displayText, setDisplayText] = useState("");
@@ -65,397 +65,449 @@ const Hero = () => {
     setMounted(true);
   }, []);
   
-  // Canvas galaxy-themed particle background
+  // Tech-themed background animation with circuits and particles
   useEffect(() => {
-    const canvas = particlesRef.current;
+    const canvas = backgroundCanvasRef.current;
     if (!canvas) return;
     
     const ctx = canvas.getContext('2d');
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
     
-    let particlesArray = [];
-    let hue = 140; // Start with emerald hue
-    let mouseX = null;
-    let mouseY = null;
-    let galaxyCenterX = canvas.width / 2;
-    let galaxyCenterY = canvas.height / 2;
-    let galaxyRotation = 0;
-    let rotationSpeed = 0.0005;
+    // Dark tech gradient background
+    const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+    gradient.addColorStop(0, 'rgba(6, 78, 59, 1)'); // Dark emerald
+    gradient.addColorStop(1, 'rgba(5, 46, 22, 1)'); // Dark green
     
-    // Create particle class with galaxy theme
-    class Particle {
-      constructor() {
-        // Polar coordinates for galaxy distribution
-        this.distance = Math.random() * canvas.width * 0.4;
-        this.angle = Math.random() * Math.PI * 2;
-        
-        // Convert to cartesian coordinates
-        this.x = galaxyCenterX + Math.cos(this.angle) * this.distance;
-        this.y = galaxyCenterY + Math.sin(this.angle) * this.distance;
-        
-        this.size = Math.random() * 3 + 0.5;
-        this.baseSize = this.size;
-        this.speedX = (Math.random() - 0.5) * 0.3;
-        this.speedY = (Math.random() - 0.5) * 0.3;
-        
-        // Add spiral arm effect
-        const spiralFactor = Math.random() * 0.5 + 0.5;
-        this.speedX += Math.cos(this.angle) * spiralFactor * 0.1;
-        this.speedY += Math.sin(this.angle) * spiralFactor * 0.1;
-        
-        // Emerald-themed colors with occasional stars
-        this.colorType = Math.random() > 0.8 ? 'star' : 'particle';
-        
-        if (this.colorType === 'star') {
-          // Brighter star particles
-          this.color = `rgb(255, 255, 255)`;
-          this.baseSize *= 1.5;
-          this.size = this.baseSize;
-          this.glow = 10 + Math.random() * 10;
-        } else {
-          // Galaxy particles with emerald theme
-          const greenHue = 140 + Math.random() * 30 - 15; // Emerald hue range
-          const saturation = 70 + Math.random() * 30;
-          const lightness = 40 + Math.random() * 30;
-          this.color = `hsl(${greenHue}, ${saturation}%, ${lightness}%)`;
-          this.glow = 5 + Math.random() * 5;
-        }
-        
-        this.density = Math.random() * 30 + 10;
-        this.originalDistance = this.distance;
-        this.originalAngle = this.angle;
-      }
-      
-      update() {
-        // Galaxy rotation
-        this.angle += rotationSpeed;
-        
-        // Mouse interaction
-        if (mouseX !== null && mouseY !== null) {
-          const dx = mouseX - this.x;
-          const dy = mouseY - this.y;
-          const distance = Math.sqrt(dx * dx + dy * dy);
-          const maxDistance = 150;
-          
-          if (distance < maxDistance) {
-            // Create gravitational pull towards mouse
-            const forceDirectionX = dx / distance;
-            const forceDirectionY = dy / distance;
-            const force = (maxDistance - distance) / maxDistance;
-            
-            this.speedX += forceDirectionX * force * 0.2;
-            this.speedY += forceDirectionY * force * 0.2;
-            
-            // Grow particles near mouse
-            this.size = this.baseSize + (force * 3);
-          } else {
-            // Return to original size
-            if (this.size > this.baseSize) {
-              this.size -= 0.1;
-            }
-          }
-        }
-        
-        // Update position with spiral galaxy motion
-        this.x += this.speedX;
-        this.y += this.speedY;
-        
-        // Add slight damping for smoother movement
-        this.speedX *= 0.99;
-        this.speedY *= 0.99;
-        
-        // Pull back to galaxy structure over time
-        const targetX = galaxyCenterX + Math.cos(this.angle) * this.originalDistance;
-        const targetY = galaxyCenterY + Math.sin(this.angle) * this.originalDistance;
-        
-        this.x += (targetX - this.x) * 0.005;
-        this.y += (targetY - this.y) * 0.005;
-        
-        // Wrap around edges with fading effect
-        if (this.x < -100 || this.x > canvas.width + 100 || 
-            this.y < -100 || this.y > canvas.height + 100) {
-          // Reset to a new position in the galaxy
-          this.distance = Math.random() * canvas.width * 0.4;
-          this.angle = Math.random() * Math.PI * 2;
-          this.x = galaxyCenterX + Math.cos(this.angle) * this.distance;
-          this.y = galaxyCenterY + Math.sin(this.angle) * this.distance;
-          this.originalDistance = this.distance;
-          this.originalAngle = this.angle;
-        }
-      }
-      
-      draw() {
-        // Add glow effect
-        if (this.colorType === 'star') {
-          ctx.shadowBlur = this.glow;
-          ctx.shadowColor = 'white';
-        } else {
-          ctx.shadowBlur = this.glow;
-          ctx.shadowColor = this.color;
-        }
-        
-        ctx.fillStyle = this.color;
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-        ctx.fill();
-        
-        // Reset shadow for performance
-        ctx.shadowBlur = 0;
-      }
+    // Circuit node points for tech patterns
+    const circuitPoints = [];
+    const nodeCount = Math.min(25, Math.floor(canvas.width / 80));
+    
+    // Create circuit nodes
+    for (let i = 0; i < nodeCount; i++) {
+      circuitPoints.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        size: Math.random() * 3 + 2,
+        connections: [],
+        pulseRadius: 0,
+        pulseOpacity: 0,
+        nextPulseTime: Math.random() * 5000 + 2000,
+        lastPulseTime: 0
+      });
     }
     
-    // Init particles
-    function init() {
-      particlesArray = [];
-      const particleCount = Math.min(window.innerWidth * 0.12, 250); // Responsive particle count
+    // Create connections between nodes
+    circuitPoints.forEach((point, i) => {
+      // Connect to 1-3 nearest points
+      const connectionsCount = Math.floor(Math.random() * 3) + 1;
       
-      for (let i = 0; i < particleCount; i++) {
-        particlesArray.push(new Particle());
+      // Find distances to all other points
+      const distances = circuitPoints.map((otherPoint, j) => {
+        if (i === j) return { index: j, distance: Infinity };
+        const dx = point.x - otherPoint.x;
+        const dy = point.y - otherPoint.y;
+        return {
+          index: j,
+          distance: Math.sqrt(dx * dx + dy * dy)
+        };
+      });
+      
+      // Sort by distance and take closest ones
+      const sortedDistances = distances.sort((a, b) => a.distance - b.distance);
+      
+      // Connect to closest points
+      for (let c = 0; c < connectionsCount && c < sortedDistances.length; c++) {
+        if (sortedDistances[c].distance < Math.min(canvas.width, canvas.height) * 0.25) {
+          point.connections.push(sortedDistances[c].index);
+        }
       }
+    });
+    
+    // Particles
+    const particles = [];
+    const particleCount = Math.min(40, Math.floor(canvas.width / 40));
+    
+    // Create tech-themed particles
+    for (let i = 0; i < particleCount; i++) {
+      particles.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        size: Math.random() * 2 + 1,
+        opacity: Math.random() * 0.5 + 0.2,
+        speed: Math.random() * 0.4 + 0.1,
+        direction: Math.random() * Math.PI * 2,
+        type: Math.random() > 0.7 ? 'circle' : 'square',
+        pulse: false,
+        glowing: Math.random() > 0.8
+      });
     }
     
-    // Animation loop
-    function animate() {
-      // Create semi-transparent fade effect for motion trails
-      ctx.fillStyle = 'rgba(0, 10, 2, 0.1)';
+    // Animation timing variables
+    let lastTime = 0;
+    
+    function draw(currentTime) {
+      const deltaTime = currentTime - lastTime;
+      lastTime = currentTime;
+      
+      // Fill background with gradient
+      ctx.fillStyle = gradient;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
       
-      // Slowly shift the galaxy center
-      galaxyCenterX = canvas.width/2 + Math.sin(Date.now() * 0.0002) * canvas.width * 0.1;
-      galaxyCenterY = canvas.height/2 + Math.cos(Date.now() * 0.0001) * canvas.height * 0.1;
+      // Draw subtle grid
+      ctx.strokeStyle = 'rgba(16, 185, 129, 0.07)';
+      ctx.lineWidth = 0.5;
+      const gridSize = 50;
       
-      // Draw connecting lines between close particles
-      ctx.lineWidth = 0.3;
-      for (let i = 0; i < particlesArray.length; i++) {
-        for (let j = i; j < particlesArray.length; j++) {
-          const dx = particlesArray[i].x - particlesArray[j].x;
-          const dy = particlesArray[i].y - particlesArray[j].y;
+      // Vertical grid lines
+      for (let x = 0; x <= canvas.width; x += gridSize) {
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, canvas.height);
+        ctx.stroke();
+      }
+      
+      // Horizontal grid lines
+      for (let y = 0; y <= canvas.height; y += gridSize) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(canvas.width, y);
+        ctx.stroke();
+      }
+      
+      // Draw circuit connections
+      ctx.lineWidth = 0.8;
+      circuitPoints.forEach((point, i) => {
+        point.connections.forEach(connectionIndex => {
+          const connectedPoint = circuitPoints[connectionIndex];
+          
+          // Draw connection line
+          ctx.beginPath();
+          ctx.moveTo(point.x, point.y);
+          ctx.lineTo(connectedPoint.x, connectedPoint.y);
+          
+          // Calculate if any pulse is traveling this connection
+          const pulsing = point.pulseOpacity > 0 || connectedPoint.pulseOpacity > 0;
+          
+          // Line gradient
+          const gradient = ctx.createLinearGradient(
+            point.x, point.y, connectedPoint.x, connectedPoint.y
+          );
+          
+          if (pulsing) {
+            gradient.addColorStop(0, `rgba(16, 185, 129, ${0.2 + point.pulseOpacity * 0.6})`);
+            gradient.addColorStop(1, `rgba(16, 185, 129, ${0.2 + connectedPoint.pulseOpacity * 0.6})`);
+          } else {
+            gradient.addColorStop(0, 'rgba(16, 185, 129, 0.2)');
+            gradient.addColorStop(1, 'rgba(16, 185, 129, 0.2)');
+          }
+          
+          ctx.strokeStyle = gradient;
+          ctx.stroke();
+          
+          // Add circuit "breaks" (small perpendicular line segments)
+          const dx = connectedPoint.x - point.x;
+          const dy = connectedPoint.y - point.y;
           const distance = Math.sqrt(dx * dx + dy * dy);
           
-          if (distance < 80) {
-            // Emerald-themed gradient connections
-            const opacity = 0.1 - (distance/80) * 0.1;
-            const gradient = ctx.createLinearGradient(
-              particlesArray[i].x, 
-              particlesArray[i].y, 
-              particlesArray[j].x, 
-              particlesArray[j].y
-            );
+          // Normalize direction vector
+          const nx = dx / distance;
+          const ny = dy / distance;
+          
+          // Perpendicular vector
+          const px = -ny;
+          const py = nx;
+          
+          // Draw circuit breaks (small perpendicular lines)
+          const breakCount = Math.floor(distance / 40);
+          
+          for (let b = 1; b < breakCount; b++) {
+            const breakPos = b / breakCount;
+            const breakX = point.x + dx * breakPos;
+            const breakY = point.y + dy * breakPos;
             
-            gradient.addColorStop(0, `rgba(30, 215, 96, ${opacity})`);
-            gradient.addColorStop(1, `rgba(0, 180, 100, ${opacity})`);
+            const breakLength = 4;
             
             ctx.beginPath();
-            ctx.strokeStyle = gradient;
-            ctx.moveTo(particlesArray[i].x, particlesArray[i].y);
-            ctx.lineTo(particlesArray[j].x, particlesArray[j].y);
+            ctx.moveTo(breakX - px * breakLength, breakY - py * breakLength);
+            ctx.lineTo(breakX + px * breakLength, breakY + py * breakLength);
+            ctx.strokeStyle = 'rgba(16, 185, 129, 0.3)';
+            ctx.lineWidth = 0.6;
             ctx.stroke();
           }
+        });
+      });
+      
+      // Update and draw circuit nodes
+      circuitPoints.forEach(point => {
+        // Occasionally start a new pulse
+        if (deltaTime && currentTime - point.lastPulseTime > point.nextPulseTime) {
+          point.pulseRadius = 0;
+          point.pulseOpacity = 0.8;
+          point.lastPulseTime = currentTime;
+          point.nextPulseTime = Math.random() * 5000 + 3000;
+        }
+        
+        // Update pulse
+        if (point.pulseOpacity > 0) {
+          point.pulseRadius += deltaTime * 0.05;
+          point.pulseOpacity -= deltaTime * 0.0005;
+          
+          if (point.pulseOpacity <= 0) {
+            point.pulseOpacity = 0;
+          }
+          
+          // Draw pulse
+          ctx.beginPath();
+          ctx.arc(point.x, point.y, point.pulseRadius, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(16, 185, 129, ${point.pulseOpacity * 0.2})`;
+          ctx.fill();
+        }
+        
+        // Draw node
+        ctx.beginPath();
+        ctx.arc(point.x, point.y, point.size, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(16, 185, 129, 0.5)';
+        ctx.fill();
+        
+        // Draw node glow
+        ctx.beginPath();
+        ctx.arc(point.x, point.y, point.size + 2, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(16, 185, 129, ${0.1 + point.pulseOpacity * 0.3})`;
+        ctx.fill();
+      });
+      
+      // Update and draw particles
+      particles.forEach(particle => {
+        // Update position with slight movement
+        particle.x += Math.cos(particle.direction) * particle.speed;
+        particle.y += Math.sin(particle.direction) * particle.speed;
+        
+        // Wrap around edges
+        if (particle.x < -20) particle.x = canvas.width + 20;
+        if (particle.x > canvas.width + 20) particle.x = -20;
+        if (particle.y < -20) particle.y = canvas.height + 20;
+        if (particle.y > canvas.height + 20) particle.y = -20;
+        
+        // Draw particle
+        ctx.fillStyle = particle.glowing 
+          ? `rgba(16, 185, 129, ${0.3 + Math.sin(currentTime * 0.001) * 0.2})`
+          : `rgba(16, 185, 129, ${particle.opacity})`;
+          
+        if (particle.type === 'circle') {
+          ctx.beginPath();
+          ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+          ctx.fill();
+        } else {
+          // Rotating square for more tech feel
+          ctx.save();
+          ctx.translate(particle.x, particle.y);
+          ctx.rotate(currentTime * 0.001);
+          ctx.fillRect(-particle.size / 2, -particle.size / 2, particle.size, particle.size);
+          ctx.restore();
+        }
+      });
+      
+      // Add a few random small tech symbols and dots
+      // (microchip patterns, etc.)
+      const techPatternCount = 12;
+      
+      for (let t = 0; t < techPatternCount; t++) {
+        const x = (t / techPatternCount) * canvas.width;
+        const y = (Math.sin(x * 0.01 + currentTime * 0.0005) * 0.3 + 0.5) * canvas.height;
+        
+        // Tech pattern type
+        const patternType = t % 3;
+        
+        if (patternType === 0) {
+          // Circuit corner pattern
+          ctx.beginPath();
+          ctx.moveTo(x, y);
+          ctx.lineTo(x + 15, y);
+          ctx.lineTo(x + 15, y + 15);
+          ctx.strokeStyle = 'rgba(16, 185, 129, 0.15)';
+          ctx.lineWidth = 0.7;
+          ctx.stroke();
+        } else if (patternType === 1) {
+          // Dot matrix pattern
+          for (let dx = 0; dx < 3; dx++) {
+            for (let dy = 0; dy < 3; dy++) {
+              if ((dx + dy) % 2 === 0) {
+                ctx.fillStyle = 'rgba(16, 185, 129, 0.12)';
+                ctx.fillRect(x + dx * 5, y + dy * 5, 1.5, 1.5);
+              }
+            }
+          }
+        } else {
+          // Microchip-like line
+          ctx.beginPath();
+          ctx.moveTo(x - 10, y);
+          ctx.lineTo(x + 10, y);
+          
+          // Add small perpendicular ticks
+          for (let tick = -8; tick <= 8; tick += 4) {
+            ctx.moveTo(x + tick, y);
+            ctx.lineTo(x + tick, y + (tick % 8 === 0 ? 6 : 3));
+          }
+          
+          ctx.strokeStyle = 'rgba(16, 185, 129, 0.15)';
+          ctx.lineWidth = 0.7;
+          ctx.stroke();
         }
       }
       
-      // Update and draw all particles
-      for (let i = 0; i < particlesArray.length; i++) {
-        particlesArray[i].update();
-        particlesArray[i].draw();
-      }
-      
-      // Cycle hue for color variation
-      hue += 0.2;
-      
-      requestAnimationFrame(animate);
+      requestAnimationFrame(draw);
     }
-    
-    // Track mouse position
-    const handleMouseMove = (event) => {
-      mouseX = event.x;
-      mouseY = event.y;
-      
-      // Slightly increase rotation speed on mouse movement
-      rotationSpeed = 0.001;
-      setTimeout(() => {
-        rotationSpeed = 0.0005;
-      }, 1000);
-    };
-    
-    const handleMouseLeave = () => {
-      mouseX = null;
-      mouseY = null;
-    };
     
     // Handle window resize
     const handleResize = () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
-      galaxyCenterX = canvas.width / 2;
-      galaxyCenterY = canvas.height / 2;
-      init();
     };
     
     window.addEventListener('resize', handleResize);
-    window.addEventListener('mousemove', handleMouseMove);
-    window.addEventListener('mouseleave', handleMouseLeave);
     
-    // Initialize and start animation
-    init();
-    animate();
+    // Start animation
+    requestAnimationFrame(draw);
     
     // Cleanup
     return () => {
       window.removeEventListener('resize', handleResize);
-      window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('mouseleave', handleMouseLeave);
     };
   }, []);
 
   // Calculate styles based on scroll
-  const bgOpacity = Math.max(0.2, 1 - (scrollY * 0.002));
   const contentScale = Math.max(0.95, 1 - (scrollY * 0.0005));
   const contentY = scrollY * -0.2;
-  const titleRotate = scrollY * -0.02;
   
   return (
     <section
       id="hero"
       className="h-screen flex items-center justify-center relative overflow-hidden"
     >
-      {/* Canvas particle background */}
+      {/* Tech-themed animated background */}
       <canvas 
-        ref={particlesRef} 
-        className="absolute inset-0 z-0 bg-slate-900"
+        ref={backgroundCanvasRef} 
+        className="absolute inset-0 z-0"
       />
 
-      {/* Gradient background - updated with emerald theme */}
-      <div 
-        style={{ opacity: bgOpacity }}
-        className="absolute inset-0 bg-gradient-to-br from-emerald-900/50 via-emerald-800/30 to-green-900/40 z-0"
-      />
+      {/* Subtle overlay gradient */}
+      <div className="absolute inset-0 bg-gradient-to-b from-emerald-900/10 to-emerald-950/30 z-0"></div>
       
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-transparent via-emerald-900/30 to-slate-900/80 z-1"></div>
-
-      {/* Circuit board pattern overlay with emerald theme */}
-      <div className="absolute inset-0 z-1 opacity-5 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgdmlld0JveD0iMCAwIDQwIDQwIj48ZyBmaWxsPSJub25lIiBzdHJva2U9IiMxMGI5ODEiIHN0cm9rZS13aWR0aD0iMC41Ij48cmVjdCB4PSIxIiB5PSIxIiB3aWR0aD0iMTAiIGhlaWdodD0iMTAiLz48cmVjdCB4PSIxMSIgeT0iMTEiIHdpZHRoPSIxMCIgaGVpZ2h0PSIxMCIvPjxyZWN0IHg9IjExIiB5PSIyMSIgd2lkdGg9IjEwIiBoZWlnaHQ9IjEwIi8+PHJlY3QgeD0iMjEiIHk9IjExIiB3aWR0aD0iMTAiIGhlaWdodD0iMTAiLz48bGluZSB4MT0iMTYiIHkxPSI2IiB4Mj0iMTYiIHkyPSIxMSIvPjxsaW5lIHgxPSIyNiIgeTE9IjE2IiB4Mj0iMzEiIHkyPSIxNiIvPjxsaW5lIHgxPSIxNiIgeTE9IjIxIiB4Mj0iMTYiIHkyPSIxNiIvPjxsaW5lIHgxPSI2IiB5MT0iMTYiIHgyPSIxMSIgeTI9IjE2Ii8+PGNpcmNsZSBjeD0iMTYiIGN5PSIxNiIgcj0iMiIvPjxjaXJjbGUgY3g9IjI2IiBjeT0iMTYiIHI9IjIiLz48Y2lyY2xlIGN4PSIxNiIgY3k9IjYiIHI9IjIiLz48Y2lyY2xlIGN4PSI2IiBjeT0iMTYiIHI9IjIiLz48Y2lyY2xlIGN4PSIxNiIgY3k9IjI2IiByPSIyIi8+PC9nPjwvc3ZnPg==')]"></div>
-
-      {/* Digital noise overlay - subtle emerald pattern */}
-      <div className="absolute inset-0 z-1 opacity-10 mix-blend-screen bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMDAiIGhlaWdodD0iMzAwIj48ZmlsdGVyIGlkPSJub2lzZSI+PGZlVHVyYnVsZW5jZSB0eXBlPSJmcmFjdGFsTm9pc2UiIGJhc2VGcmVxdWVuY3k9IjAuOCIgbnVtT2N0YXZlcz0iNCIgc3RpdGNoVGlsZXM9InN0aXRjaCIvPjxmZUNvbG9yTWF0cml4IHR5cGU9InNhdHVyYXRlIiB2YWx1ZXM9IjAiLz48L2ZpbHRlcj48cmVjdCB3aWR0aD0iMzAwIiBoZWlnaHQ9IjMwMCIgZmlsdGVyPSJ1cmwoI25vaXNlKSIgb3BhY2l0eT0iMC4wNSIvPjwvc3ZnPg==')]"></div>
-
       {/* Main content with parallax effect */}
       <div
         style={{ 
           transform: `scale(${contentScale}) translateY(${contentY}px)`,
           transition: 'transform 0.1s ease-out'
         }}
-        className="container relative z-20 max-w-5xl mx-auto px-4"
+        className="container relative z-20 max-w-4xl mx-auto px-4"
       >
         <div
-          className={`backdrop-blur-lg bg-black/30 rounded-2xl border border-emerald-500/20 shadow-2xl p-8 md:p-12 relative overflow-hidden ${
+          className={`rounded-3xl border border-emerald-500/20 shadow-xl p-8 md:p-12 relative overflow-hidden ${
             mounted ? 'animate-fadeIn' : 'opacity-0'
           }`}
           style={{
+            background: 'rgba(3, 24, 19, 0.8)',
+            backdropFilter: 'blur(20px)',
             boxShadow: '0 8px 32px rgba(0, 200, 80, 0.1), 0 4px 16px rgba(0, 255, 120, 0.05)'
           }}
         >
-          {/* Digital grid lines overlay */}
-          <div className="absolute inset-0 z-0 opacity-5">
-            <div className="absolute inset-0 bg-gradient-to-b from-emerald-500/5 via-transparent to-transparent" style={{ backgroundSize: '20px 20px', backgroundImage: 'linear-gradient(to right, rgba(0, 204, 100, 0.1) 1px, transparent 1px), linear-gradient(to bottom, rgba(0, 204, 100, 0.1) 1px, transparent 1px)' }}></div>
+          {/* Circuit-inspired decorative elements */}
+          <div className="absolute top-0 left-0 w-full h-full pointer-events-none overflow-hidden">
+            {/* Top-left circuit decoration */}
+            <div className="absolute top-0 left-0 w-16 h-16 opacity-30">
+              <div className="absolute top-4 left-0 w-12 h-1 bg-emerald-500/30"></div>
+              <div className="absolute top-0 left-4 w-1 h-12 bg-emerald-500/30"></div>
+              <div className="absolute top-9 left-4 w-1 h-1 rounded-full bg-emerald-400/60"></div>
+            </div>
+            
+            {/* Bottom-right circuit decoration */}
+            <div className="absolute bottom-0 right-0 w-24 h-24 opacity-30">
+              <div className="absolute bottom-8 right-0 w-16 h-1 bg-emerald-500/30"></div>
+              <div className="absolute bottom-0 right-8 w-1 h-16 bg-emerald-500/30"></div>
+              <div className="absolute bottom-5 right-5 w-6 h-6 border border-emerald-500/40 rounded-sm"></div>
+              <div className="absolute bottom-12 right-12 w-1 h-1 rounded-full bg-emerald-400/60"></div>
+            </div>
           </div>
           
-          {/* Animated glowing orbs */}
-          <div className="absolute -top-24 -right-24 w-48 h-48 rounded-full bg-emerald-500/20 blur-3xl animate-pulse"></div>
-          <div className="absolute -bottom-24 -left-24 w-48 h-48 rounded-full bg-green-500/20 blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
-          <div className="absolute top-1/2 -translate-y-1/2 -left-32 w-32 h-32 rounded-full bg-lime-500/20 blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
+          {/* Subtle accent light */}
+          <div className="absolute -top-32 -right-32 w-64 h-64 rounded-full bg-emerald-500/10 blur-3xl"></div>
+          <div className="absolute -bottom-32 -left-32 w-64 h-64 rounded-full bg-green-500/10 blur-3xl"></div>
           
           <div className="text-center relative z-10">
-            {/* Name with 3D effect */}
-            <div
-              style={{ transform: `rotateX(${titleRotate}deg)` }}
-              className="relative transition-transform duration-300"
-            >
+            {/* Name with modern styling */}
+            <div className="relative">
               <div
                 className={`relative inline-block ${
                   mounted ? 'animate-scaleIn' : 'opacity-0 scale-90'
                 }`}
                 style={{ animationDelay: '200ms' }}
               >
-                <h1 className="text-5xl md:text-7xl font-bold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-emerald-300 via-green-400 to-lime-300 drop-shadow-md">
+                <h1 className="text-5xl md:text-7xl font-bold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-emerald-300 via-green-400 to-emerald-200">
                   Tuan Khang Phan
                 </h1>
-                
-                {/* Tech-themed highlight effect */}
-                <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/0 via-emerald-500/10 to-emerald-500/0 blur-sm animate-shine"></div>
               </div>
 
-              {/* Animated underline - emerald style */}
-              <div className="max-w-md mx-auto mt-2 h-2 relative">
+              {/* Clean, minimal underline */}
+              <div className="max-w-xs mx-auto mt-2">
                 <div
-                  className={`h-0.5 w-full bg-gradient-to-r from-green-300/50 via-emerald-400/50 to-lime-300/50 ${
+                  className={`h-0.5 w-full bg-gradient-to-r from-emerald-400/50 via-green-400/80 to-emerald-400/50 ${
                     mounted ? 'animate-widthExpand' : 'w-0 opacity-0'
                   }`}
-                  style={{ animationDelay: '800ms' }}
+                  style={{ animationDelay: '600ms' }}
                 />
-                
-                {/* Tech scanner effect */}
-                <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500/0 via-emerald-500/80 to-emerald-500/0 animate-scanner"></div>
               </div>
             </div>
 
-            <div className="h-24 mt-6 flex items-center justify-center">
-              <h2 className="text-2xl md:text-4xl font-light text-emerald-50">
-                <span className="opacity-80">{`< `}</span>
+            {/* Role title with typing effect */}
+            <div className="h-16 mt-8 flex items-center justify-center">
+              <h2 className="text-xl md:text-3xl font-light text-emerald-50/90">
+                <span className="opacity-60">{`< `}</span>
                 {displayText}
                 <span className="animate-blink text-emerald-400">|</span>
-                <span className="opacity-80">{` />`}</span>
+                <span className="opacity-60">{` />`}</span>
               </h2>
             </div>
 
-            {/* Buttons with tech glass effect and hover animations */}
-            <div className="mt-10">
+            {/* Clean, modern action buttons */}
+            <div className="mt-12">
               <div className="flex flex-col md:flex-row justify-center space-y-4 md:space-y-0 md:space-x-6">
-                <a
+                <ActionButton 
                   href="mailto:khang18@usf.edu"
-                  className="group backdrop-blur-md bg-emerald-950/30 border border-emerald-500/30 text-emerald-50 px-6 py-3 rounded-full font-medium hover:bg-emerald-800/20 transition-all duration-300 flex items-center justify-center hover:scale-105 active:scale-95 shadow-lg hover:shadow-emerald-500/20 relative overflow-hidden"
-                >
-                  <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/0 via-emerald-500/20 to-emerald-500/0 opacity-0 group-hover:opacity-100 animate-shine transition-opacity"></div>
-                  <FaEnvelope className="mr-2 text-emerald-400" />
-                  <span>Contact Me</span>
-                  <span className="absolute bottom-0 left-0 h-0.5 bg-gradient-to-r from-emerald-400 to-green-400 w-0 group-hover:w-full transition-all duration-300 rounded-full"></span>
-                </a>
+                  icon={<FaEnvelope className="mr-2" />}
+                  text="Contact Me"
+                  variant="primary"
+                />
                 
-                <a
+                <ActionButton 
                   href="https://github.com/khangpt2k6"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="group backdrop-blur-md bg-green-950/30 border border-green-500/30 text-emerald-50 px-6 py-3 rounded-full font-medium hover:bg-green-800/20 transition-all duration-300 flex items-center justify-center hover:scale-105 active:scale-95 shadow-lg hover:shadow-green-500/20 relative overflow-hidden"
-                >
-                  <div className="absolute inset-0 bg-gradient-to-r from-green-500/0 via-green-500/20 to-green-500/0 opacity-0 group-hover:opacity-100 animate-shine transition-opacity"></div>
-                  <FaGithub className="mr-2 text-green-400" />
-                  <span>View Projects</span>
-                  <span className="absolute bottom-0 left-0 h-0.5 bg-gradient-to-r from-green-400 to-emerald-400 w-0 group-hover:w-full transition-all duration-300 rounded-full"></span>
-                </a>
+                  icon={<FaGithub className="mr-2" />}
+                  text="View Projects"
+                  variant="secondary"
+                />
               </div>
 
-              {/* Social links with tech hover effects */}
+              {/* Social links with clean design */}
               <div 
-                className={`mt-8 flex justify-center space-x-6 ${
+                className={`mt-10 flex justify-center space-x-6 ${
                   mounted ? 'animate-fadeInUp' : 'opacity-0 translate-y-5'
                 }`}
-                style={{ animationDelay: '1200ms' }}
+                style={{ animationDelay: '1000ms' }}
               >
                 <SocialButton
                   href="https://linkedin.com/in/tuankhangphan"
-                  icon={<FaLinkedin size={22} />}
-                  color="green"
+                  icon={<FaLinkedin size={20} />}
+                  label="LinkedIn"
                 />
                 <SocialButton
                   href="https://leetcode.com/u/KHcqTUn9ld/"
-                  icon={<SiLeetcode size={22} />}
-                  color="lime"
+                  icon={<SiLeetcode size={20} />}
+                  label="LeetCode"
                 />
                 <SocialButton
                   href="https://github.com/khangpt2k6"
-                  icon={<FaGithub size={22} />}
-                  color="emerald"
+                  icon={<FaGithub size={20} />}
+                  label="GitHub"
                 />
               </div>
             </div>
@@ -463,41 +515,55 @@ const Hero = () => {
         </div>
       </div>
 
-      {/* Scroll indicator */}
+      {/* Minimal scroll indicator */}
       <div
-        className={`absolute bottom-10 left-1/2 transform -translate-x-1/2 z-20 ${
+        className={`absolute bottom-8 left-1/2 transform -translate-x-1/2 z-20 ${
           mounted ? 'animate-fadeIn' : 'opacity-0'
         }`}
-        style={{ animationDelay: '2000ms' }}
+        style={{ animationDelay: '1500ms' }}
       >
-        <div
-          className="text-emerald-300 flex flex-col items-center animate-bounce"
-        >
-          <span className="text-sm font-light mb-2 text-emerald-200">Scroll Down</span>
-          <HiOutlineArrowNarrowDown size={20} />
+        <div className="text-emerald-300 flex flex-col items-center animate-bounce">
+          <span className="text-sm font-light mb-2 text-emerald-200/80">Scroll Down</span>
+          <HiOutlineArrowNarrowDown size={18} />
         </div>
       </div>
     </section>
   );
 };
 
-// Enhanced social button component with emerald theme hover effects
-const SocialButton = ({ href, icon, color }) => {
-  const colorMap = {
-    green: "after:bg-gradient-to-br after:from-green-400 after:to-emerald-400",
-    lime: "after:bg-gradient-to-br after:from-green-400 after:to-lime-400",
-    emerald: "after:bg-gradient-to-br after:from-emerald-400 after:to-green-400",
+// Clean, modern action button component
+const ActionButton = ({ href, icon, text, variant }) => {
+  const baseClasses = "group px-6 py-3 rounded-full font-medium transition-all duration-300 flex items-center justify-center hover:scale-105 active:scale-95 shadow-lg relative overflow-hidden";
+  
+  const variantClasses = {
+    primary: "bg-emerald-600 text-white hover:bg-emerald-500 hover:shadow-emerald-500/30",
+    secondary: "bg-emerald-950 border border-emerald-600/30 text-emerald-50 hover:bg-emerald-900 hover:border-emerald-500/50 hover:shadow-emerald-600/20"
   };
+  
+  return (
+    <a
+      href={href}
+      target={href.startsWith("http") ? "_blank" : undefined}
+      rel={href.startsWith("http") ? "noopener noreferrer" : undefined}
+      className={`${baseClasses} ${variantClasses[variant]}`}
+    >
+      {icon}
+      <span>{text}</span>
+    </a>
+  );
+};
 
+// Clean social button component
+const SocialButton = ({ href, icon, label }) => {
   return (
     <a
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className={`group flex items-center justify-center w-12 h-12 rounded-full backdrop-blur-md bg-black/20 border border-${color}-500/30 text-${color}-400 hover:text-white transition-all duration-300 relative overflow-hidden hover:scale-110 active:scale-90 ${colorMap[color]} after:absolute after:inset-0 after:opacity-0 after:hover:opacity-100 after:transition-opacity after:duration-300 after:z-0`}
+      aria-label={label}
+      className="group flex items-center justify-center w-10 h-10 rounded-full bg-emerald-900/80 border border-emerald-600/30 text-emerald-400 hover:text-white hover:bg-emerald-700 hover:border-emerald-500/50 transition-all duration-300 hover:scale-110 active:scale-90"
     >
-      <div className="relative z-10">{icon}</div>
-      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-emerald-500/10 to-transparent opacity-0 group-hover:opacity-100 animate-shine"></div>
+      {icon}
     </a>
   );
 };
