@@ -7,3 +7,79 @@
 
   }
 
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  @keyframes scaleIn {
+    from {
+      opacity: 0;
+      transform: scale(0.9);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+  
+  @keyframes widthExpand {
+    from {
+      width: 0;
+      opacity: 0;
+    }
+    to {
+      width: 100%;
+      opacity: 1;
+    }
+  }
+  
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+  }
+  
+  /* Add these to your Tailwind config or use them directly */
+  .animate-fadeIn {
+    animation: fadeIn 0.8s ease-out forwards;
+  }
+  
+  .animate-fadeInUp {
+    animation: fadeInUp 0.8s ease-out forwards;
+  }
+  
+  .animate-scaleIn {
+    animation: scaleIn 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  }
+  
+  .animate-widthExpand {
+    animation: widthExpand 0.8s ease-out forwards;
+  }
+  
+  .animate-blink {
+    animation: blink 1s step-end infinite;
+  }
+  
+  /* Additional utility classes */
+  .text-shadow-glow {
+    text-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+  }
+  
+  .shadow-glow-cyan {
+    box-shadow: 0 0 15px rgba(34, 211, 238, 0.3);
+  }
+  
+  .shadow-glow-emerald {
+    box-shadow: 0 0 15px rgba(16, 185, 129, 0.3);
+  }

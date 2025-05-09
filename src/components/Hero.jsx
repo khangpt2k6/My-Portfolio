@@ -1,534 +1,504 @@
 "use client";
-import { TypeAnimation } from "react-type-animation";
-import { motion } from "framer-motion";
+import { useEffect, useState, useRef } from "react";
 import { FaGithub, FaLinkedin, FaEnvelope, FaCode } from "react-icons/fa";
-import { useEffect, useState } from "react";
+import { HiOutlineArrowNarrowDown } from "react-icons/hi";
+import { SiLeetcode } from "react-icons/si";
 
 const Hero = () => {
-  // For circuit text effect
-  const [textEffect, setTextEffect] = useState(0);
-
-  // Change text effect periodically
+  const [mounted, setMounted] = useState(false);
+  const [textIndex, setTextIndex] = useState(0);
+  const titles = ["Full-Stack Developer", "UI/UX Designer", "Software Engineer", "AI Engineer"];
+  const particlesRef = useRef(null);
+  
+  // For text typing effect
+  const [displayText, setDisplayText] = useState("");
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [typingSpeed, setTypingSpeed] = useState(100);
+  
+  // For parallax effect
+  const [scrollY, setScrollY] = useState(0);
+  
+  // Handle scroll events
   useEffect(() => {
-    const effectInterval = setInterval(() => {
-      setTextEffect((prev) => (prev + 1) % 3);
-    }, 3000);
+    const handleScroll = () => {
+      setScrollY(window.scrollY);
+    };
+    
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+  
+  // Typing animation effect
+  useEffect(() => {
+    const currentTitle = titles[textIndex];
+    const shouldDelete = isDeleting && displayText.length > 0;
+    const shouldType = !isDeleting && displayText.length < currentTitle.length;
+    
+    if (shouldDelete) {
+      // Deleting text
+      const timeout = setTimeout(() => {
+        setDisplayText(currentTitle.substring(0, displayText.length - 1));
+      }, typingSpeed / 2);
+      return () => clearTimeout(timeout);
+    } else if (shouldType) {
+      // Typing text
+      const timeout = setTimeout(() => {
+        setDisplayText(currentTitle.substring(0, displayText.length + 1));
+      }, typingSpeed);
+      return () => clearTimeout(timeout);
+    } else if (isDeleting && displayText.length === 0) {
+      // Move to next text
+      setIsDeleting(false);
+      setTextIndex((textIndex + 1) % titles.length);
+      setTypingSpeed(100);
+    } else if (!isDeleting && displayText.length === currentTitle.length) {
+      // Start deleting after pause
+      const timeout = setTimeout(() => {
+        setIsDeleting(true);
+      }, 2000);
+      return () => clearTimeout(timeout);
+    }
+  }, [displayText, isDeleting, textIndex, titles, typingSpeed]);
 
-    return () => clearInterval(effectInterval);
+  // Animation on mount
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+  
+  // Canvas galaxy-themed particle background
+  useEffect(() => {
+    const canvas = particlesRef.current;
+    if (!canvas) return;
+    
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    
+    let particlesArray = [];
+    let hue = 140; // Start with emerald hue
+    let mouseX = null;
+    let mouseY = null;
+    let galaxyCenterX = canvas.width / 2;
+    let galaxyCenterY = canvas.height / 2;
+    let galaxyRotation = 0;
+    let rotationSpeed = 0.0005;
+    
+    // Create particle class with galaxy theme
+    class Particle {
+      constructor() {
+        // Polar coordinates for galaxy distribution
+        this.distance = Math.random() * canvas.width * 0.4;
+        this.angle = Math.random() * Math.PI * 2;
+        
+        // Convert to cartesian coordinates
+        this.x = galaxyCenterX + Math.cos(this.angle) * this.distance;
+        this.y = galaxyCenterY + Math.sin(this.angle) * this.distance;
+        
+        this.size = Math.random() * 3 + 0.5;
+        this.baseSize = this.size;
+        this.speedX = (Math.random() - 0.5) * 0.3;
+        this.speedY = (Math.random() - 0.5) * 0.3;
+        
+        // Add spiral arm effect
+        const spiralFactor = Math.random() * 0.5 + 0.5;
+        this.speedX += Math.cos(this.angle) * spiralFactor * 0.1;
+        this.speedY += Math.sin(this.angle) * spiralFactor * 0.1;
+        
+        // Emerald-themed colors with occasional stars
+        this.colorType = Math.random() > 0.8 ? 'star' : 'particle';
+        
+        if (this.colorType === 'star') {
+          // Brighter star particles
+          this.color = `rgb(255, 255, 255)`;
+          this.baseSize *= 1.5;
+          this.size = this.baseSize;
+          this.glow = 10 + Math.random() * 10;
+        } else {
+          // Galaxy particles with emerald theme
+          const greenHue = 140 + Math.random() * 30 - 15; // Emerald hue range
+          const saturation = 70 + Math.random() * 30;
+          const lightness = 40 + Math.random() * 30;
+          this.color = `hsl(${greenHue}, ${saturation}%, ${lightness}%)`;
+          this.glow = 5 + Math.random() * 5;
+        }
+        
+        this.density = Math.random() * 30 + 10;
+        this.originalDistance = this.distance;
+        this.originalAngle = this.angle;
+      }
+      
+      update() {
+        // Galaxy rotation
+        this.angle += rotationSpeed;
+        
+        // Mouse interaction
+        if (mouseX !== null && mouseY !== null) {
+          const dx = mouseX - this.x;
+          const dy = mouseY - this.y;
+          const distance = Math.sqrt(dx * dx + dy * dy);
+          const maxDistance = 150;
+          
+          if (distance < maxDistance) {
+            // Create gravitational pull towards mouse
+            const forceDirectionX = dx / distance;
+            const forceDirectionY = dy / distance;
+            const force = (maxDistance - distance) / maxDistance;
+            
+            this.speedX += forceDirectionX * force * 0.2;
+            this.speedY += forceDirectionY * force * 0.2;
+            
+            // Grow particles near mouse
+            this.size = this.baseSize + (force * 3);
+          } else {
+            // Return to original size
+            if (this.size > this.baseSize) {
+              this.size -= 0.1;
+            }
+          }
+        }
+        
+        // Update position with spiral galaxy motion
+        this.x += this.speedX;
+        this.y += this.speedY;
+        
+        // Add slight damping for smoother movement
+        this.speedX *= 0.99;
+        this.speedY *= 0.99;
+        
+        // Pull back to galaxy structure over time
+        const targetX = galaxyCenterX + Math.cos(this.angle) * this.originalDistance;
+        const targetY = galaxyCenterY + Math.sin(this.angle) * this.originalDistance;
+        
+        this.x += (targetX - this.x) * 0.005;
+        this.y += (targetY - this.y) * 0.005;
+        
+        // Wrap around edges with fading effect
+        if (this.x < -100 || this.x > canvas.width + 100 || 
+            this.y < -100 || this.y > canvas.height + 100) {
+          // Reset to a new position in the galaxy
+          this.distance = Math.random() * canvas.width * 0.4;
+          this.angle = Math.random() * Math.PI * 2;
+          this.x = galaxyCenterX + Math.cos(this.angle) * this.distance;
+          this.y = galaxyCenterY + Math.sin(this.angle) * this.distance;
+          this.originalDistance = this.distance;
+          this.originalAngle = this.angle;
+        }
+      }
+      
+      draw() {
+        // Add glow effect
+        if (this.colorType === 'star') {
+          ctx.shadowBlur = this.glow;
+          ctx.shadowColor = 'white';
+        } else {
+          ctx.shadowBlur = this.glow;
+          ctx.shadowColor = this.color;
+        }
+        
+        ctx.fillStyle = this.color;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // Reset shadow for performance
+        ctx.shadowBlur = 0;
+      }
+    }
+    
+    // Init particles
+    function init() {
+      particlesArray = [];
+      const particleCount = Math.min(window.innerWidth * 0.12, 250); // Responsive particle count
+      
+      for (let i = 0; i < particleCount; i++) {
+        particlesArray.push(new Particle());
+      }
+    }
+    
+    // Animation loop
+    function animate() {
+      // Create semi-transparent fade effect for motion trails
+      ctx.fillStyle = 'rgba(0, 10, 2, 0.1)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      
+      // Slowly shift the galaxy center
+      galaxyCenterX = canvas.width/2 + Math.sin(Date.now() * 0.0002) * canvas.width * 0.1;
+      galaxyCenterY = canvas.height/2 + Math.cos(Date.now() * 0.0001) * canvas.height * 0.1;
+      
+      // Draw connecting lines between close particles
+      ctx.lineWidth = 0.3;
+      for (let i = 0; i < particlesArray.length; i++) {
+        for (let j = i; j < particlesArray.length; j++) {
+          const dx = particlesArray[i].x - particlesArray[j].x;
+          const dy = particlesArray[i].y - particlesArray[j].y;
+          const distance = Math.sqrt(dx * dx + dy * dy);
+          
+          if (distance < 80) {
+            // Emerald-themed gradient connections
+            const opacity = 0.1 - (distance/80) * 0.1;
+            const gradient = ctx.createLinearGradient(
+              particlesArray[i].x, 
+              particlesArray[i].y, 
+              particlesArray[j].x, 
+              particlesArray[j].y
+            );
+            
+            gradient.addColorStop(0, `rgba(30, 215, 96, ${opacity})`);
+            gradient.addColorStop(1, `rgba(0, 180, 100, ${opacity})`);
+            
+            ctx.beginPath();
+            ctx.strokeStyle = gradient;
+            ctx.moveTo(particlesArray[i].x, particlesArray[i].y);
+            ctx.lineTo(particlesArray[j].x, particlesArray[j].y);
+            ctx.stroke();
+          }
+        }
+      }
+      
+      // Update and draw all particles
+      for (let i = 0; i < particlesArray.length; i++) {
+        particlesArray[i].update();
+        particlesArray[i].draw();
+      }
+      
+      // Cycle hue for color variation
+      hue += 0.2;
+      
+      requestAnimationFrame(animate);
+    }
+    
+    // Track mouse position
+    const handleMouseMove = (event) => {
+      mouseX = event.x;
+      mouseY = event.y;
+      
+      // Slightly increase rotation speed on mouse movement
+      rotationSpeed = 0.001;
+      setTimeout(() => {
+        rotationSpeed = 0.0005;
+      }, 1000);
+    };
+    
+    const handleMouseLeave = () => {
+      mouseX = null;
+      mouseY = null;
+    };
+    
+    // Handle window resize
+    const handleResize = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      galaxyCenterX = canvas.width / 2;
+      galaxyCenterY = canvas.height / 2;
+      init();
+    };
+    
+    window.addEventListener('resize', handleResize);
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseleave', handleMouseLeave);
+    
+    // Initialize and start animation
+    init();
+    animate();
+    
+    // Cleanup
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseleave', handleMouseLeave);
+    };
   }, []);
 
+  // Calculate styles based on scroll
+  const bgOpacity = Math.max(0.2, 1 - (scrollY * 0.002));
+  const contentScale = Math.max(0.95, 1 - (scrollY * 0.0005));
+  const contentY = scrollY * -0.2;
+  const titleRotate = scrollY * -0.02;
+  
   return (
     <section
       id="hero"
       className="h-screen flex items-center justify-center relative overflow-hidden"
     >
-      {/* Gradient background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-emerald-900 via-teal-800 to-emerald-700 z-0"></div>
+      {/* Canvas particle background */}
+      <canvas 
+        ref={particlesRef} 
+        className="absolute inset-0 z-0 bg-slate-900"
+      />
 
-      {/* Ocean Waves Animation */}
+      {/* Gradient background - updated with emerald theme */}
+      <div 
+        style={{ opacity: bgOpacity }}
+        className="absolute inset-0 bg-gradient-to-br from-emerald-900/50 via-emerald-800/30 to-green-900/40 z-0"
+      />
+      
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-transparent via-emerald-900/30 to-slate-900/80 z-1"></div>
 
-      {/* Circuit animations */}
-      <CircuitAnimations />
+      {/* Circuit board pattern overlay with emerald theme */}
+      <div className="absolute inset-0 z-1 opacity-5 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgdmlld0JveD0iMCAwIDQwIDQwIj48ZyBmaWxsPSJub25lIiBzdHJva2U9IiMxMGI5ODEiIHN0cm9rZS13aWR0aD0iMC41Ij48cmVjdCB4PSIxIiB5PSIxIiB3aWR0aD0iMTAiIGhlaWdodD0iMTAiLz48cmVjdCB4PSIxMSIgeT0iMTEiIHdpZHRoPSIxMCIgaGVpZ2h0PSIxMCIvPjxyZWN0IHg9IjExIiB5PSIyMSIgd2lkdGg9IjEwIiBoZWlnaHQ9IjEwIi8+PHJlY3QgeD0iMjEiIHk9IjExIiB3aWR0aD0iMTAiIGhlaWdodD0iMTAiLz48bGluZSB4MT0iMTYiIHkxPSI2IiB4Mj0iMTYiIHkyPSIxMSIvPjxsaW5lIHgxPSIyNiIgeTE9IjE2IiB4Mj0iMzEiIHkyPSIxNiIvPjxsaW5lIHgxPSIxNiIgeTE9IjIxIiB4Mj0iMTYiIHkyPSIxNiIvPjxsaW5lIHgxPSI2IiB5MT0iMTYiIHgyPSIxMSIgeTI9IjE2Ii8+PGNpcmNsZSBjeD0iMTYiIGN5PSIxNiIgcj0iMiIvPjxjaXJjbGUgY3g9IjI2IiBjeT0iMTYiIHI9IjIiLz48Y2lyY2xlIGN4PSIxNiIgY3k9IjYiIHI9IjIiLz48Y2lyY2xlIGN4PSI2IiBjeT0iMTYiIHI9IjIiLz48Y2lyY2xlIGN4PSIxNiIgY3k9IjI2IiByPSIyIi8+PC9nPjwvc3ZnPg==')]"></div>
 
-      {/* Arduino-like PCB traces */}
-      <PCBTraces />
+      {/* Digital noise overlay - subtle emerald pattern */}
+      <div className="absolute inset-0 z-1 opacity-10 mix-blend-screen bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMDAiIGhlaWdodD0iMzAwIj48ZmlsdGVyIGlkPSJub2lzZSI+PGZlVHVyYnVsZW5jZSB0eXBlPSJmcmFjdGFsTm9pc2UiIGJhc2VGcmVxdWVuY3k9IjAuOCIgbnVtT2N0YXZlcz0iNCIgc3RpdGNoVGlsZXM9InN0aXRjaCIvPjxmZUNvbG9yTWF0cml4IHR5cGU9InNhdHVyYXRlIiB2YWx1ZXM9IjAiLz48L2ZpbHRlcj48cmVjdCB3aWR0aD0iMzAwIiBoZWlnaHQ9IjMwMCIgZmlsdGVyPSJ1cmwoI25vaXNlKSIgb3BhY2l0eT0iMC4wNSIvPjwvc3ZnPg==')]"></div>
 
-      {/* Glass card container - without elliptical boundary */}
-      <div className="container relative z-20 max-w-5xl mx-auto px-4">
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.8 }}
-          className="backdrop-blur-lg bg-white/10 rounded-2xl border border-white/20 shadow-2xl p-8 md:p-12"
+      {/* Main content with parallax effect */}
+      <div
+        style={{ 
+          transform: `scale(${contentScale}) translateY(${contentY}px)`,
+          transition: 'transform 0.1s ease-out'
+        }}
+        className="container relative z-20 max-w-5xl mx-auto px-4"
+      >
+        <div
+          className={`backdrop-blur-lg bg-black/30 rounded-2xl border border-emerald-500/20 shadow-2xl p-8 md:p-12 relative overflow-hidden ${
+            mounted ? 'animate-fadeIn' : 'opacity-0'
+          }`}
+          style={{
+            boxShadow: '0 8px 32px rgba(0, 200, 80, 0.1), 0 4px 16px rgba(0, 255, 120, 0.05)'
+          }}
         >
-          <div className="text-center">
-            {/* Name with circuit effect */}
-            <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-              className="relative"
+          {/* Digital grid lines overlay */}
+          <div className="absolute inset-0 z-0 opacity-5">
+            <div className="absolute inset-0 bg-gradient-to-b from-emerald-500/5 via-transparent to-transparent" style={{ backgroundSize: '20px 20px', backgroundImage: 'linear-gradient(to right, rgba(0, 204, 100, 0.1) 1px, transparent 1px), linear-gradient(to bottom, rgba(0, 204, 100, 0.1) 1px, transparent 1px)' }}></div>
+          </div>
+          
+          {/* Animated glowing orbs */}
+          <div className="absolute -top-24 -right-24 w-48 h-48 rounded-full bg-emerald-500/20 blur-3xl animate-pulse"></div>
+          <div className="absolute -bottom-24 -left-24 w-48 h-48 rounded-full bg-green-500/20 blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+          <div className="absolute top-1/2 -translate-y-1/2 -left-32 w-32 h-32 rounded-full bg-lime-500/20 blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
+          
+          <div className="text-center relative z-10">
+            {/* Name with 3D effect */}
+            <div
+              style={{ transform: `rotateX(${titleRotate}deg)` }}
+              className="relative transition-transform duration-300"
             >
-              <div className="relative inline-block">
-                <CircuitText
-                  text="Tuan Khang Phan"
-                  effectMode={textEffect}
-                  className="text-5xl md:text-7xl font-bold mb-4 text-white"
+              <div
+                className={`relative inline-block ${
+                  mounted ? 'animate-scaleIn' : 'opacity-0 scale-90'
+                }`}
+                style={{ animationDelay: '200ms' }}
+              >
+                <h1 className="text-5xl md:text-7xl font-bold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-emerald-300 via-green-400 to-lime-300 drop-shadow-md">
+                  Tuan Khang Phan
+                </h1>
+                
+                {/* Tech-themed highlight effect */}
+                <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/0 via-emerald-500/10 to-emerald-500/0 blur-sm animate-shine"></div>
+              </div>
+
+              {/* Animated underline - emerald style */}
+              <div className="max-w-md mx-auto mt-2 h-2 relative">
+                <div
+                  className={`h-0.5 w-full bg-gradient-to-r from-green-300/50 via-emerald-400/50 to-lime-300/50 ${
+                    mounted ? 'animate-widthExpand' : 'w-0 opacity-0'
+                  }`}
+                  style={{ animationDelay: '800ms' }}
                 />
+                
+                {/* Tech scanner effect */}
+                <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500/0 via-emerald-500/80 to-emerald-500/0 animate-scanner"></div>
               </div>
+            </div>
 
-              {/* Circuit underline */}
-              <div className="relative h-2 w-32 md:w-48 mx-auto mt-2 overflow-hidden">
-                <div className="absolute inset-0 rounded-full bg-gradient-to-r from-emerald-300 to-teal-200"></div>
-                <div className="absolute inset-0 flex items-center">
-                  <CircuitLine />
-                </div>
-              </div>
-            </motion.div>
+            <div className="h-24 mt-6 flex items-center justify-center">
+              <h2 className="text-2xl md:text-4xl font-light text-emerald-50">
+                <span className="opacity-80">{`< `}</span>
+                {displayText}
+                <span className="animate-blink text-emerald-400">|</span>
+                <span className="opacity-80">{` />`}</span>
+              </h2>
+            </div>
 
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.3, duration: 0.5 }}
-              className="h-16 md:h-24 mt-6"
-            >
-              <TypeAnimation
-                sequence={[
-                  "Full-Stack Developer",
-                  1000,
-                  "AI Engineer",
-                  1000,
-                  "Web Developer",
-                  1000,
-                  "Tech Enthusiast",
-                  1000,
-                ]}
-                wrapper="h2"
-                speed={50}
-                className="text-2xl md:text-4xl font-light text-white"
-                repeat={Infinity}
-              />
-            </motion.div>
-
-            {/* Buttons with glass effect */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.6, duration: 0.5 }}
-              className="mt-10"
-            >
+            {/* Buttons with tech glass effect and hover animations */}
+            <div className="mt-10">
               <div className="flex flex-col md:flex-row justify-center space-y-4 md:space-y-0 md:space-x-6">
-                <motion.a
+                <a
                   href="mailto:khang18@usf.edu"
-                  className="backdrop-blur-md bg-white/20 border border-white/30 text-white px-6 py-3 rounded-full font-medium hover:bg-white/30 transition-all duration-300 flex items-center justify-center group"
-                  whileHover={{ scale: 1.03 }}
-                  whileTap={{ scale: 0.97 }}
+                  className="group backdrop-blur-md bg-emerald-950/30 border border-emerald-500/30 text-emerald-50 px-6 py-3 rounded-full font-medium hover:bg-emerald-800/20 transition-all duration-300 flex items-center justify-center hover:scale-105 active:scale-95 shadow-lg hover:shadow-emerald-500/20 relative overflow-hidden"
                 >
-                  <FaEnvelope className="mr-2 group-hover:animate-pulse" />
-                  Contact Me
-                  <span className="absolute -inset-0.5 opacity-0 group-hover:opacity-20 rounded-full bg-emerald-400 blur-sm transition-all duration-300"></span>
-                </motion.a>
-                <motion.a
+                  <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/0 via-emerald-500/20 to-emerald-500/0 opacity-0 group-hover:opacity-100 animate-shine transition-opacity"></div>
+                  <FaEnvelope className="mr-2 text-emerald-400" />
+                  <span>Contact Me</span>
+                  <span className="absolute bottom-0 left-0 h-0.5 bg-gradient-to-r from-emerald-400 to-green-400 w-0 group-hover:w-full transition-all duration-300 rounded-full"></span>
+                </a>
+                
+                <a
                   href="https://github.com/khangpt2k6"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="backdrop-blur-md bg-emerald-600/40 border border-emerald-400/30 text-white px-6 py-3 rounded-full font-medium hover:bg-emerald-600/60 transition-all duration-300 flex items-center justify-center group"
-                  whileHover={{ scale: 1.03 }}
-                  whileTap={{ scale: 0.97 }}
+                  className="group backdrop-blur-md bg-green-950/30 border border-green-500/30 text-emerald-50 px-6 py-3 rounded-full font-medium hover:bg-green-800/20 transition-all duration-300 flex items-center justify-center hover:scale-105 active:scale-95 shadow-lg hover:shadow-green-500/20 relative overflow-hidden"
                 >
-                  <FaGithub className="mr-2 group-hover" />
-                  View Projects
-                  <span className="absolute -inset-0.5 opacity-0 group-hover:opacity-20 rounded-full bg-emerald-400 blur-sm transition-all duration-300"></span>
-                </motion.a>
+                  <div className="absolute inset-0 bg-gradient-to-r from-green-500/0 via-green-500/20 to-green-500/0 opacity-0 group-hover:opacity-100 animate-shine transition-opacity"></div>
+                  <FaGithub className="mr-2 text-green-400" />
+                  <span>View Projects</span>
+                  <span className="absolute bottom-0 left-0 h-0.5 bg-gradient-to-r from-green-400 to-emerald-400 w-0 group-hover:w-full transition-all duration-300 rounded-full"></span>
+                </a>
               </div>
 
-              {/* Social links with glass effect */}
-              <motion.div
-                className="mt-8 flex justify-center space-x-6"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.9, duration: 0.5 }}
+              {/* Social links with tech hover effects */}
+              <div 
+                className={`mt-8 flex justify-center space-x-6 ${
+                  mounted ? 'animate-fadeInUp' : 'opacity-0 translate-y-5'
+                }`}
+                style={{ animationDelay: '1200ms' }}
               >
                 <SocialButton
                   href="https://linkedin.com/in/tuankhangphan"
                   icon={<FaLinkedin size={22} />}
+                  color="green"
                 />
                 <SocialButton
                   href="https://leetcode.com/u/KHcqTUn9ld/"
-                  icon={<FaCode size={22} />}
+                  icon={<SiLeetcode size={22} />}
+                  color="lime"
                 />
-              </motion.div>
-            </motion.div>
+                <SocialButton
+                  href="https://github.com/khangpt2k6"
+                  icon={<FaGithub size={22} />}
+                  color="emerald"
+                />
+              </div>
+            </div>
           </div>
-        </motion.div>
+        </div>
       </div>
 
-      {/* Gradient orbs */}
-      <GradientOrbs />
+      {/* Scroll indicator */}
+      <div
+        className={`absolute bottom-10 left-1/2 transform -translate-x-1/2 z-20 ${
+          mounted ? 'animate-fadeIn' : 'opacity-0'
+        }`}
+        style={{ animationDelay: '2000ms' }}
+      >
+        <div
+          className="text-emerald-300 flex flex-col items-center animate-bounce"
+        >
+          <span className="text-sm font-light mb-2 text-emerald-200">Scroll Down</span>
+          <HiOutlineArrowNarrowDown size={20} />
+        </div>
+      </div>
     </section>
   );
 };
 
-
-
-// Circuit text component with several effect modes
-const CircuitText = ({ text, className, effectMode }) => {
-  // Split text into individual characters for animation
-  const characters = text.split("");
-
-  // Different effect styles
-  const effectStyles = [
-    {
-      // Effect 0: Subtle pulse with circuit dots
-      container: "relative inline-block",
-      char: "relative inline-block transition-all duration-300",
-      animation: (index) => ({
-        y: [0, index % 2 === 0 ? -2 : 2, 0],
-        transition: { duration: 2, repeat: Infinity, delay: index * 0.1 },
-      }),
-      decoration: (index) =>
-        index % 3 === 0 && (
-          <motion.span
-            className="absolute -bottom-2 h-1 w-1 bg-emerald-400 rounded-full"
-            style={{ left: "50%", transform: "translateX(-50%)" }}
-            animate={{
-              opacity: [0.6, 1, 0.6],
-              scale: [1, 1.3, 1],
-            }}
-            transition={{ duration: 2, repeat: Infinity, delay: index * 0.1 }}
-          />
-        ),
-    },
-    {
-      // Effect 1: Subtle electric charge
-      container: "relative inline-block",
-      char: "relative inline-block transition-all duration-300",
-      animation: (index) => ({
-        textShadow: [
-          "0 0 5px rgba(52, 211, 153, 0)",
-          "0 0 10px rgba(52, 211, 153, 0.8)",
-          "0 0 5px rgba(52, 211, 153, 0)",
-        ],
-        transition: {
-          duration: 2,
-          repeat: Infinity,
-          delay: index * 0.15,
-          ease: "easeInOut",
-        },
-      }),
-      decoration: null,
-    },
-    {
-      // Effect 2: Circuit connection lines between characters
-      container: "relative inline-block",
-      char: "relative inline-block transition-all duration-300",
-      animation: null,
-      decoration: (index, length) =>
-        index < length - 1 && (
-          <motion.span
-            className="absolute top-1/2 h-px bg-emerald-400"
-            style={{
-              left: "100%",
-              width: "8px",
-              transform: "translateY(-50%)",
-            }}
-            animate={{
-              opacity: [0.3, 0.8, 0.3],
-              width: ["2px", "8px", "2px"],
-            }}
-            transition={{
-              duration: 3,
-              repeat: Infinity,
-              delay: index * 0.2,
-              ease: "easeInOut",
-            }}
-          />
-        ),
-    },
-  ];
-
-  // Current effect style
-  const currentEffect = effectStyles[effectMode];
-
-  return (
-    <h1 className={className}>
-      <span className={currentEffect.container}>
-        {characters.map((char, index) => (
-          <motion.span
-            key={index}
-            className={currentEffect.char}
-            animate={currentEffect.animation && currentEffect.animation(index)}
-          >
-            {char}
-            {currentEffect.decoration &&
-              currentEffect.decoration(index, characters.length)}
-          </motion.span>
-        ))}
-      </span>
-    </h1>
-  );
-};
-
-// Circuit line for underline effect
-const CircuitLine = () => {
-  return (
-    <svg className="w-full h-full" viewBox="0 0 200 10">
-      <motion.path
-        d="M0,5 L40,5 L45,2 L55,8 L65,2 L75,8 L85,2 L95,8 L105,2 L115,8 L125,2 L135,8 L145,5 L200,5"
-        stroke="rgba(52, 211, 153, 0.6)"
-        strokeWidth="1.5"
-        fill="none"
-        initial={{ pathLength: 0, pathOffset: 0 }}
-        animate={{
-          pathLength: 1,
-          pathOffset: [0, 1],
-        }}
-        transition={{
-          duration: 10,
-          repeat: Infinity,
-          ease: "linear",
-        }}
-      />
-      <motion.circle
-        r="2"
-        fill="rgba(52, 211, 153, 1)"
-        filter="drop-shadow(0 0 2px rgba(52, 211, 153, 0.8))"
-        initial={{ offsetDistance: "0%" }}
-        animate={{ offsetDistance: "100%" }}
-        transition={{
-          duration: 10,
-          repeat: Infinity,
-          ease: "linear",
-        }}
-        style={{
-          offsetPath: `path("M0,5 L40,5 L45,2 L55,8 L65,2 L75,8 L85,2 L95,8 L105,2 L115,8 L125,2 L135,8 L145,5 L200,5")`,
-        }}
-      />
-    </svg>
-  );
-};
-
-// Social button component with glass effect
-const SocialButton = ({ href, icon }) => {
-  return (
-    <motion.a
-      href={href}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="flex items-center justify-center w-12 h-12 rounded-full backdrop-blur-md bg-white/10 border border-white/20 text-white hover:bg-white/20 transition-all duration-300 group"
-      whileHover={{ scale: 1.1, rotate: 5 }}
-      whileTap={{ scale: 0.9 }}
-    >
-      {icon}
-      <span className="absolute inset-0 rounded-full border border-white/30 group-hover:scale-150 group-hover:opacity-0 transition-all duration-500"></span>
-    </motion.a>
-  );
-};
-
-// PCB trace animations (Arduino-like)
-const PCBTraces = () => {
-  return (
-    <div className="absolute inset-0 z-5 overflow-hidden opacity-70">
-      <svg width="100%" height="100%" className="opacity-10">
-        {/* Horizontal traces */}
-        {Array.from({ length: 10 }).map((_, i) => (
-          <motion.path
-            key={`h-${i}`}
-            d={`M0,${(i + 1) * 100} H${window.innerWidth}`}
-            stroke="rgba(52, 211, 153, 0.7)"
-            strokeWidth="1"
-            fill="none"
-            initial={{ pathLength: 0 }}
-            animate={{ pathLength: 1 }}
-            transition={{ duration: 3, delay: i * 0.2 }}
-          />
-        ))}
-
-        {/* Vertical traces */}
-        {Array.from({ length: 15 }).map((_, i) => (
-          <motion.path
-            key={`v-${i}`}
-            d={`M${(i + 1) * 100},0 V${window.innerHeight}`}
-            stroke="rgba(52, 211, 153, 0.7)"
-            strokeWidth="1"
-            fill="none"
-            initial={{ pathLength: 0 }}
-            animate={{ pathLength: 1 }}
-            transition={{ duration: 3, delay: i * 0.15 }}
-          />
-        ))}
-
-        {/* Connection pads at intersections */}
-        {Array.from({ length: 10 }).map((_, y) =>
-          Array.from({ length: 15 }).map(
-            (_, x) =>
-              Math.random() > 0.5 && (
-                <motion.circle
-                  key={`pad-${x}-${y}`}
-                  cx={(x + 1) * 100}
-                  cy={(y + 1) * 100}
-                  r="3"
-                  fill="rgba(52, 211, 153, 0.5)"
-                  initial={{ scale: 0, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  transition={{
-                    duration: 0.5,
-                    delay: x * 0.15 + y * 0.2 + 3,
-                  }}
-                />
-              )
-          )
-        )}
-      </svg>
-    </div>
-  );
-};
-
-// Circuit animations component
-const CircuitAnimations = () => {
-  // Create circuit paths with different properties
-  const circuits = Array.from({ length: 8 }).map((_, index) => {
-    const startX = Math.random() * 100;
-    const startY = Math.random() * 100;
-
-    // Create a more structured path with right angles for circuit-like appearance
-    const segments = [];
-    let currentX = startX;
-    let currentY = startY;
-
-    for (let i = 0; i < 6; i++) {
-      const direction = i % 2; // Alternate between horizontal (0) and vertical (1)
-      const distance = Math.random() * 20 + 10;
-
-      if (direction === 0) {
-        // Horizontal movement
-        const newX = currentX + (Math.random() > 0.5 ? distance : -distance);
-        segments.push({ x1: currentX, y1: currentY, x2: newX, y2: currentY });
-        currentX = newX;
-      } else {
-        // Vertical movement
-        const newY = currentY + (Math.random() > 0.5 ? distance : -distance);
-        segments.push({ x1: currentX, y1: currentY, x2: currentX, y2: newY });
-        currentY = newY;
-      }
-    }
-
-    return {
-      id: index,
-      segments,
-      speed: Math.random() * 15 + 30, // Speed between 30-45s (slower)
-      delay: Math.random() * 5,
-      opacity: Math.random() * 0.2 + 0.1, // Keep subtle
-      color: `rgba(${Math.random() * 100 + 100}, ${
-        Math.random() * 150 + 100
-      }, ${Math.random() * 50 + 150}, 0.6)`,
-    };
-  });
-
-  return (
-    <div className="absolute inset-0 z-10 overflow-hidden">
-      {circuits.map((circuit) => (
-        <CircuitPath key={circuit.id} circuit={circuit} />
-      ))}
-    </div>
-  );
-};
-
-// Individual circuit path
-const CircuitPath = ({ circuit }) => {
-  // Generate SVG path from segments
-  const generatePath = () => {
-    if (!circuit.segments.length) return "";
-
-    let path = `M ${circuit.segments[0].x1} ${circuit.segments[0].y1}`;
-
-    circuit.segments.forEach((segment) => {
-      path += ` L ${segment.x2} ${segment.y2}`;
-    });
-
-    return path;
+// Enhanced social button component with emerald theme hover effects
+const SocialButton = ({ href, icon, color }) => {
+  const colorMap = {
+    green: "after:bg-gradient-to-br after:from-green-400 after:to-emerald-400",
+    lime: "after:bg-gradient-to-br after:from-green-400 after:to-lime-400",
+    emerald: "after:bg-gradient-to-br after:from-emerald-400 after:to-green-400",
   };
 
   return (
-    <motion.svg
-      className="absolute inset-0 w-full h-full"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: circuit.opacity }}
-      transition={{ duration: 1, delay: circuit.delay }}
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className={`group flex items-center justify-center w-12 h-12 rounded-full backdrop-blur-md bg-black/20 border border-${color}-500/30 text-${color}-400 hover:text-white transition-all duration-300 relative overflow-hidden hover:scale-110 active:scale-90 ${colorMap[color]} after:absolute after:inset-0 after:opacity-0 after:hover:opacity-100 after:transition-opacity after:duration-300 after:z-0`}
     >
-      <motion.path
-        d={generatePath()}
-        fill="none"
-        stroke="rgba(255, 255, 255, 0.4)"
-        strokeWidth="1"
-        strokeDasharray="4,4"
-        initial={{ pathLength: 0, pathOffset: 0 }}
-        animate={{
-          pathLength: 1,
-          pathOffset: [0, 1],
-        }}
-        transition={{
-          duration: circuit.speed,
-          repeat: Infinity,
-          ease: "linear",
-        }}
-      />
-      <motion.circle
-        r="3"
-        fill={circuit.color}
-        filter="blur(1px) drop-shadow(0 0 2px rgba(134, 239, 172, 0.6))"
-        initial={{ offsetDistance: "0%" }}
-        animate={{ offsetDistance: "100%" }}
-        transition={{
-          duration: circuit.speed,
-          repeat: Infinity,
-          ease: "linear",
-        }}
-        style={{ offsetPath: `path("${generatePath()}")` }}
-      />
-
-      {/* Circuit connection nodes at path joints */}
-      {circuit.segments.map((segment, idx) => (
-        <circle
-          key={idx}
-          cx={segment.x2}
-          cy={segment.y2}
-          r="2"
-          fill="rgba(134, 239, 172, 0.4)"
-          filter="drop-shadow(0 0 1px rgba(134, 239, 172, 0.6))"
-        />
-      ))}
-    </motion.svg>
-  );
-};
-
-// Gradient orbs component
-const GradientOrbs = () => {
-  return (
-    <>
-      <motion.div
-        className="absolute top-1/4 left-1/4 w-48 h-48 rounded-full bg-gradient-to-r from-emerald-500/20 to-green-300/20 blur-3xl"
-        animate={{
-          scale: [1, 1.2, 1],
-          opacity: [0.1, 0.15, 0.1],
-          x: [0, -30, 0],
-          y: [0, 30, 0],
-        }}
-        transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
-      />
-
-      <motion.div
-        className="absolute bottom-1/4 right-1/3 w-64 h-64 rounded-full bg-gradient-to-r from-teal-400/20 to-cyan-300/20 blur-3xl"
-        animate={{
-          scale: [1, 1.3, 1],
-          opacity: [0.07, 0.12, 0.07],
-          x: [0, 40, 0],
-          y: [0, -40, 0],
-        }}
-        transition={{
-          duration: 25,
-          repeat: Infinity,
-          ease: "easeInOut",
-          delay: 2,
-        }}
-      />
-
-      <motion.div
-        className="absolute bottom-1/3 left-1/6 w-32 h-32 rounded-full bg-gradient-to-r from-blue-400/10 to-emerald-300/10 blur-3xl"
-        animate={{
-          scale: [1, 1.4, 1],
-          opacity: [0.05, 0.1, 0.05],
-          x: [0, 20, 0],
-          y: [0, -20, 0],
-        }}
-        transition={{
-          duration: 23,
-          repeat: Infinity,
-          ease: "easeInOut",
-          delay: 5,
-        }}
-      />
-    </>
+      <div className="relative z-10">{icon}</div>
+      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-emerald-500/10 to-transparent opacity-0 group-hover:opacity-100 animate-shine"></div>
+    </a>
   );
 };
 
