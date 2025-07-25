@@ -34,19 +34,6 @@ const Experience = () => {
   const experiences = {
     professional: [
       {
-        title: "Student Software Engineer",
-        company: "Moffitt Cancer Center",
-        location: "Tampa, FL",
-        period: "August 2025 – Present",
-        image: "/moffitt.jpg",
-        icon: <FaCode />,
-        description: [
-          "Incoming position focused on developing innovative software solutions for cancer research and patient care systems.",
-          "Will work on cutting-edge healthcare technology projects to improve patient outcomes and research efficiency."
-        ],
-        tags: ["R", "Python", "AI/ML", "Healthcare Tech"]
-      },
-      {
         title: "Software Engineer Intern",
         company: "VNPT IT",
         location: "Da Nang City, Viet Nam",
