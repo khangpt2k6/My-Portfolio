@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Link } from "react-scroll";
-import { FaGithub, FaLinkedin, FaLaptopCode } from "react-icons/fa";
+import { FaGithub, FaLinkedin, FaFilePdf } from "react-icons/fa";
 import { 
   FaHome, 
   FaUser, 
@@ -84,12 +84,12 @@ const Navbar = () => {
 
   const navbarVariants = {
     transparent: {
-      backgroundColor: "rgba(0,0,0,0)",
+      backgroundColor: "rgba(255, 255, 255, 0)",
       height: "80px",
       boxShadow: "0 0 0 rgba(0,0,0,0)",
     },
     solid: {
-      backgroundColor: "rgba(255,255,255,0.95)",
+      backgroundColor: "rgba(255, 255, 255, 0.95)",
       height: "70px",
       boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
     },
@@ -115,7 +115,7 @@ const Navbar = () => {
       },
     },
     active: {
-      color: "#059669",
+      color: "#16A34A",
       fontWeight: 600,
       scale: 1.05,
     },
@@ -147,16 +147,6 @@ const Navbar = () => {
     open: { x: 0, opacity: 1 },
   };
 
-  // Generate a random technical pattern for background
-  const generateRandomPattern = () => {
-    const patterns = [
-      "radial-gradient(circle at 10% 20%, rgba(5, 150, 105, 0.1) 0%, rgba(5, 150, 105, 0) 50%)",
-      "linear-gradient(45deg, rgba(5, 150, 105, 0.05) 25%, transparent 25%, transparent 50%, rgba(5, 150, 105, 0.05) 50%, rgba(5, 150, 105, 0.05) 75%, transparent 75%, transparent)",
-      "radial-gradient(circle at 90% 10%, rgba(5, 150, 105, 0.1) 0%, rgba(5, 150, 105, 0) 50%)",
-    ];
-    return patterns.join(", ");
-  };
-
   return (
     <motion.nav
       initial="transparent"
@@ -165,12 +155,12 @@ const Navbar = () => {
       transition={{ duration: 0.3 }}
       className="fixed w-full z-50 backdrop-blur-sm"
     >
-      {/* Updated to all emerald color theme */}
-      <div className="absolute inset-0 bg-gradient-to-r from-emerald-950/50 via-emerald-800/50 to-emerald-600/50 z-0" />
+      {/* Clean white background with subtle border */}
+      <div className="absolute inset-0 bg-white/95 backdrop-blur-sm border-b border-gray-100 z-0" />
       
       <div className="container mx-auto px-4 md:px-6 h-full relative z-10">
         <div className="flex justify-between items-center h-full">
-          {/* Logo - adjusted size */}
+          {/* Logo */}
           <Link
             to="hero"
             smooth={true}
@@ -183,10 +173,7 @@ const Navbar = () => {
               initial="initial"
               whileHover="hover"
             >
-              {/* Dynamic logo with glowing effect */}
-              
               <div className="relative flex items-center space-x-2">
-                {/* Adjusted logo size with height and width classes */}
                 <img src="RiK.png" alt="RiK Logo" className="h-10 w-auto max-h-10" />
               </div>
             </motion.div>
@@ -212,11 +199,11 @@ const Navbar = () => {
                   duration={500}
                   className={`
                     px-3 py-2 rounded-md flex items-center justify-center 
-                    transition-all duration-300 relative z-10 text-white
+                    transition-all duration-300 relative z-10 text-gray-700
                     ${
                       activeSection === link.to
-                        ? "text-emerald-300 font-semibold"
-                        : "hover:text-emerald-200"
+                        ? "text-green-600 font-semibold"
+                        : "hover:text-green-600"
                     }
                   `}
                 >
@@ -227,7 +214,7 @@ const Navbar = () => {
                   {/* Active indicator */}
                   {activeSection === link.to && (
                     <motion.div
-                      className="absolute bottom-0 left-0 right-0 h-0.5 bg-emerald-300"
+                      className="absolute bottom-0 left-0 right-0 h-0.5 bg-green-600"
                       layoutId="activeSection"
                       transition={{
                         type: "spring",
@@ -240,7 +227,7 @@ const Navbar = () => {
 
                 {/* Hover background effect */}
                 <motion.div
-                  className="absolute inset-0 rounded-md -z-10 bg-white/10"
+                  className="absolute inset-0 rounded-md -z-10 bg-gray-50"
                   initial={{ opacity: 0 }}
                   whileHover={{ opacity: 1 }}
                   transition={{ duration: 0.2 }}
@@ -248,7 +235,7 @@ const Navbar = () => {
               </motion.div>
             ))}
 
-            {/* Social Links with cool hover effects */}
+            {/* Social Links with clean hover effects */}
             <div className="flex items-center space-x-2 ml-4">
               <motion.a
                 href="https://github.com/khangpt2k6"
@@ -256,7 +243,7 @@ const Navbar = () => {
                 rel="noopener noreferrer"
                 whileHover={{ scale: 1.2, rotate: 5 }}
                 whileTap={{ scale: 0.9 }}
-                className="p-2 rounded-full text-white hover:text-emerald-300 hover:bg-white/10 transition-colors duration-300"
+                className="p-2 rounded-full text-gray-600 hover:text-green-600 hover:bg-gray-50 transition-colors duration-300"
               >
                 <FaGithub size={20} />
               </motion.a>
@@ -266,25 +253,25 @@ const Navbar = () => {
                 rel="noopener noreferrer"
                 whileHover={{ scale: 1.2, rotate: -5 }}
                 whileTap={{ scale: 0.9 }}
-                className="p-2 rounded-full text-white hover:text-emerald-300 hover:bg-white/10 transition-colors duration-300"
+                className="p-2 rounded-full text-gray-600 hover:text-green-600 hover:bg-gray-50 transition-colors duration-300"
               >
                 <FaLinkedin size={20} />
               </motion.a>
 
-              {/* Resume button with glow effect */}
+              {/* Resume button with clean design */}
               <motion.a
                 href="https://drive.google.com/file/d/1MHXQAMywqMBuJxNzHK5LSmtFZjVww536/view?usp=sharing"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="hidden lg:flex items-center space-x-1 px-4 py-1.5 rounded-full font-medium text-sm
-                   bg-white/20 backdrop-blur-sm text-white border border-white/30 hover:bg-white/30"
+                   bg-green-600 text-white border border-green-600 hover:bg-green-700 hover:border-green-700"
                 whileHover={{
                   scale: 1.05,
-                  boxShadow: "0 0 10px rgba(255, 255, 255, 0.5)",
+                  boxShadow: "0 4px 12px rgba(22, 163, 74, 0.3)",
                 }}
                 whileTap={{ scale: 0.95 }}
               >
-                <FaLaptopCode className="mr-1" />
+                <FaFilePdf className="mr-1" />
                 <span>Resume</span>
               </motion.a>
             </div>
@@ -294,7 +281,7 @@ const Navbar = () => {
           <div className="md:hidden">
             <motion.button
               onClick={() => setIsOpen(!isOpen)}
-              className="text-white focus:outline-none p-2"
+              className="text-gray-700 focus:outline-none p-2"
               whileTap={{ scale: 0.9 }}
             >
               <div className="relative w-6 h-5">
@@ -360,11 +347,7 @@ const Navbar = () => {
               initial="closed"
               animate="open"
               exit="closed"
-              className="md:hidden mt-2 bg-gradient-to-br from-green-700/90 via-lime-800/90 to-emerald-800/90 backdrop-blur-sm rounded-xl shadow-lg overflow-hidden absolute left-4 right-4 z-50 border border-white/10"
-              style={{
-                backgroundImage: generateRandomPattern(),
-                backgroundSize: "cover",
-              }}
+              className="md:hidden mt-2 bg-white/95 backdrop-blur-sm rounded-xl shadow-lg overflow-hidden absolute left-4 right-4 z-50 border border-gray-200"
             >
               <div className="p-4">
                 <div className="flex flex-col space-y-1">
@@ -381,11 +364,11 @@ const Navbar = () => {
                         smooth={true}
                         offset={-70}
                         duration={500}
-                        className={`flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-white/10 transition-colors duration-300
+                        className={`flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-gray-50 transition-colors duration-300
                           ${
                             activeSection === link.to
-                              ? "text-emerald-300 font-medium bg-white/5"
-                              : "text-white"
+                              ? "text-green-600 font-medium bg-green-50"
+                              : "text-gray-700"
                           }
                         `}
                         onClick={() => setIsOpen(false)}
@@ -396,7 +379,7 @@ const Navbar = () => {
                         {/* Active indicator */}
                         {activeSection === link.to && (
                           <motion.div
-                            className="absolute left-0 top-0 bottom-0 w-1 bg-emerald-400 rounded-r-full"
+                            className="absolute left-0 top-0 bottom-0 w-1 bg-green-600 rounded-r-full"
                             layoutId="mobileActiveSection"
                           />
                         )}
@@ -406,7 +389,7 @@ const Navbar = () => {
                 </div>
 
                 <motion.div
-                  className="flex items-center justify-between mt-5 pt-5 border-t border-white/10"
+                  className="flex items-center justify-between mt-5 pt-5 border-t border-gray-200"
                   variants={mobileLinkVariants}
                 >
                   <div className="flex space-x-4">
@@ -414,7 +397,7 @@ const Navbar = () => {
                       href="https://github.com/khangpt2k6"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="bg-white/10 p-3 rounded-full text-white hover:bg-white/20 transition-colors duration-300"
+                      className="bg-gray-50 p-3 rounded-full text-gray-600 hover:bg-green-50 hover:text-green-600 transition-colors duration-300"
                       whileHover={{ scale: 1.1, rotate: 5 }}
                       whileTap={{ scale: 0.9 }}
                     >
@@ -424,7 +407,7 @@ const Navbar = () => {
                       href="https://linkedin.com/in/tuankhangphan"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="bg-white/10 p-3 rounded-full text-white hover:bg-white/20 transition-colors duration-300"
+                      className="bg-gray-50 p-3 rounded-full text-gray-600 hover:bg-green-50 hover:text-green-600 transition-colors duration-300"
                       whileHover={{ scale: 1.1, rotate: -5 }}
                       whileTap={{ scale: 0.9 }}
                     >
@@ -436,14 +419,14 @@ const Navbar = () => {
                     href="https://drive.google.com/file/d/1MHXQAMywqMBuJxNzHK5LSmtFZjVww536/view?usp=sharing"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center space-x-2 px-4 py-2 rounded-lg bg-white/20 text-white font-medium text-sm border border-white/20"
+                    className="flex items-center space-x-2 px-4 py-2 rounded-lg bg-green-600 text-white font-medium text-sm border border-green-600 hover:bg-green-700"
                     whileHover={{
                       scale: 1.05,
-                      boxShadow: "0 4px 12px rgba(255, 255, 255, 0.2)",
+                      boxShadow: "0 4px 12px rgba(22, 163, 74, 0.3)",
                     }}
                     whileTap={{ scale: 0.95 }}
                   >
-                    <FaLaptopCode className="text-emerald-200" />
+                    <FaFilePdf className="text-white" />
                     <span>Resume</span>
                   </motion.a>
                 </motion.div>

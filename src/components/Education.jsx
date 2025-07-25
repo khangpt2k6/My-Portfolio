@@ -26,7 +26,7 @@ const Education = () => {
     },
     hover: {
       scale: 1.03,
-      boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
+      boxShadow: "0 20px 25px -5px rgba(22, 163, 74, 0.2), 0 10px 10px -5px rgba(22, 163, 74, 0.1)",
       transition: { type: "spring", stiffness: 300, damping: 20 }
     }
   };
@@ -37,14 +37,6 @@ const Education = () => {
       opacity: 1, 
       y: 0,
       transition: { duration: 0.6, ease: "easeOut" }
-    }
-  };
-
-  const underlineVariants = {
-    hidden: { width: "0%" },
-    visible: { 
-      width: "100%",
-      transition: { duration: 1.2, ease: "easeInOut", delay: 0.2 }
     }
   };
 
@@ -66,57 +58,9 @@ const Education = () => {
     }
   };
 
-  // Floating binary effect component
-  const FloatingBinary = () => {
-    return (
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {[...Array(20)].map((_, i) => (
-          <motion.div
-            key={i}
-            className="absolute text-emerald-600/20 text-xs md:text-sm font-mono"
-            initial={{ 
-              x: Math.random() * 100 + "%", 
-              y: -20, 
-              opacity: 0.3 
-            }}
-            animate={{ 
-              y: "120%",
-              opacity: [0.3, 0.7, 0.3],
-              transition: { 
-                repeat: Infinity, 
-                duration: 10 + Math.random() * 20,
-                ease: "linear",
-                delay: Math.random() * 5
-              }
-            }}
-          >
-            {Math.random() > 0.5 ? "1" : "0"}
-          </motion.div>
-        ))}
-      </div>
-    );
-  };
-
   return (
-    <section id="education" className="py-20 bg-emerald-50 relative overflow-hidden">
-      <FloatingBinary />
-      
-      {/* Tech-inspired decorative elements */}
-      <motion.div 
-        className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-emerald-300/30 to-cyan-300/10 rounded-full blur-3xl"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 2 }}
-      />
-      
-      <motion.div 
-        className="absolute bottom-0 left-0 w-96 h-96 bg-gradient-to-tr from-emerald-400/20 to-transparent rounded-full blur-3xl"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 2, delay: 0.5 }}
-      />
-
-      <div className="container mx-auto px-4 md:px-6 relative z-10">
+    <section id="education" className="py-20 bg-white">
+      <div className="container mx-auto px-4 md:px-6">
         <motion.div 
           className="text-center mb-16"
           initial="hidden"
@@ -125,7 +69,13 @@ const Education = () => {
           variants={containerVariants}
         >
           <motion.h2 
-            className="text-3xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-emerald-600 to-cyan-600 bg-clip-text text-transparent"
+            className="text-3xl md:text-5xl font-bold mb-4"
+            style={{ 
+              background: `linear-gradient(to right, #16A34A, #16A34A)`,
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text'
+            }}
             variants={titleVariants}
           >
             Education
@@ -135,14 +85,16 @@ const Education = () => {
             whileInView={{ width: "12rem" }}
             transition={{ duration: 0.8, delay: 0.3 }}
             viewport={{ once: true }}
-            className="h-1 bg-gradient-to-r from-emerald-400 to-emerald-600 mx-auto"
+            className="h-1 mx-auto"
+            style={{ background: 'linear-gradient(to right, #16A34A, #16A34A)' }}
           ></motion.div>
           <motion.p 
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             transition={{ duration: 0.6, delay: 0.4 }}
             viewport={{ once: true }}
-            className="text-gray-600 mt-10 max-w-2xl mx-auto"
+            className="mt-10 max-w-2xl mx-auto"
+            style={{ color: '#1F2937' }}
           >
             Building a foundation of knowledge and expertise
           </motion.p>
@@ -159,13 +111,10 @@ const Education = () => {
           <motion.div
             variants={cardVariants}
             whileHover="hover"
-            className="bg-white rounded-xl p-8 shadow-lg relative overflow-hidden backdrop-blur-sm border border-emerald-100"
+            className="bg-white rounded-xl p-8 shadow-lg border"
+            style={{ borderColor: 'rgba(22, 163, 74, 0.2)' }}
             onClick={() => setActiveCard(activeCard === "usf" ? null : "usf")}
           >
-            {/* Tech decoration */}
-            <div className="absolute top-0 right-0 w-full h-1 bg-gradient-to-r from-emerald-400 to-cyan-400"></div>
-            <div className="absolute -top-20 -right-20 w-40 h-40 bg-emerald-100 rounded-full opacity-30"></div>
-            
             <motion.div 
               className="flex items-center mb-6"
               initial="hidden"
@@ -173,7 +122,11 @@ const Education = () => {
               viewport={{ once: true }}
             >
               <motion.div 
-                className="w-16 h-16 bg-gradient-to-br from-emerald-100 to-emerald-200 rounded-full flex items-center justify-center mr-4 overflow-hidden border-2 border-emerald-300"
+                className="w-16 h-16 rounded-full flex items-center justify-center mr-4 overflow-hidden border-2"
+                style={{ 
+                  background: 'linear-gradient(135deg, rgba(22, 163, 74, 0.1), rgba(22, 163, 74, 0.2))',
+                  borderColor: '#16A34A'
+                }}
                 variants={iconVariants}
               >
                 <img
@@ -184,7 +137,8 @@ const Education = () => {
               </motion.div>
               <div>
                 <motion.h3 
-                  className="text-xl font-bold text-gray-800"
+                  className="text-xl font-bold"
+                  style={{ color: '#1F2937' }}
                   initial={{ opacity: 0, y: 10 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.1 }}
@@ -193,7 +147,7 @@ const Education = () => {
                   University of South Florida
                 </motion.h3>
                 <motion.p 
-                  className="text-emerald-600"
+                  style={{ color: '#16A34A' }}
                   initial={{ opacity: 0, y: 10 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.2 }}
@@ -209,19 +163,20 @@ const Education = () => {
               variants={listItemVariants}
             >
               <div className="flex items-center">
-                <FaCode className="text-emerald-500 mr-2" />
-                <p className="text-gray-700 font-medium">Bachelor of Science in Computer Science</p>
+                <FaCode className="mr-2" style={{ color: '#16A34A' }} />
+                <p className="font-medium" style={{ color: '#1F2937' }}>Bachelor of Science in Computer Science</p>
               </div>
-              <p className="text-gray-600 ml-6">Tampa, FL | August 2024 - May 2028</p>
+              <p className="ml-6" style={{ color: '#1F2937' }}>Tampa, FL | August 2024 - May 2028</p>
             </motion.div>
 
             <motion.div 
               className="mb-6"
               variants={listItemVariants}
             >
-              <div className="w-full bg-gray-200 h-2 rounded-full overflow-hidden">
+              <div className="w-full h-2 rounded-full overflow-hidden" style={{ backgroundColor: '#F3F4F6' }}>
                 <motion.div 
-                  className="h-full bg-gradient-to-r from-emerald-500 to-cyan-500"
+                  className="h-full"
+                  style={{ background: 'linear-gradient(to right, #16A34A, #16A34A)' }}
                   initial={{ width: 0 }}
                   whileInView={{ width: "100%" }}
                   transition={{ duration: 1.5, delay: 0.5 }}
@@ -229,8 +184,8 @@ const Education = () => {
                 ></motion.div>
               </div>
               <div className="flex justify-between mt-2">
-                <span className="text-xs text-gray-500">GPA</span>
-                <span className="text-gray-700 font-medium">4.0/4.0</span>
+                <span className="text-xs" style={{ color: '#1F2937' }}>GPA</span>
+                <span className="font-medium" style={{ color: '#1F2937' }}>4.0/4.0</span>
               </div>
             </motion.div>
 
@@ -240,8 +195,8 @@ const Education = () => {
               transition={{ delay: 0.3 }}
               viewport={{ once: true }}
             >
-              <h4 className="text-lg font-semibold text-gray-800 mb-3 flex items-center">
-                <FaMedal className="text-emerald-500 mr-2" /> 
+              <h4 className="text-lg font-semibold mb-3 flex items-center" style={{ color: '#1F2937' }}>
+                <FaMedal className="mr-2" style={{ color: '#16A34A' }} /> 
                 <span>Awards & Honors</span>
               </h4>
               <motion.ul 
@@ -253,15 +208,17 @@ const Education = () => {
               >
                 {[
                   "Green and Gold Presidential Scholarship Award ($44,000)",
-                  "Dean's List (Fall 2024)"
+                  "Dean's List (Fall 2024)",
+                  "Dean's List (Spring 2024)"
                 ].map((item, index) => (
                   <motion.li 
                     key={index}
-                    className="flex items-start text-gray-700"
+                    className="flex items-start"
+                    style={{ color: '#1F2937' }}
                     variants={listItemVariants}
                     custom={index}
                   >
-                    <span className="text-emerald-500 mr-2 mt-1">•</span>
+                    <span className="mr-2 mt-1" style={{ color: '#16A34A' }}>•</span>
                     <span>{item}</span>
                   </motion.li>
                 ))}
@@ -273,13 +230,10 @@ const Education = () => {
           <motion.div
             variants={cardVariants}
             whileHover="hover"
-            className="rounded-xl p-8 shadow-lg relative overflow-hidden backdrop-blur-sm bg-white/90 border border-emerald-100"
+            className="bg-white rounded-xl p-8 shadow-lg border"
+            style={{ borderColor: 'rgba(22, 163, 74, 0.2)' }}
             onClick={() => setActiveCard(activeCard === "highschool" ? null : "highschool")}
           >
-            {/* Tech decoration */}
-            <div className="absolute top-0 right-0 w-full h-1 bg-gradient-to-r from-cyan-400 to-emerald-400"></div>
-            <div className="absolute -top-20 -right-20 w-40 h-40 bg-cyan-100 rounded-full opacity-30"></div>
-            
             <motion.div 
               className="flex items-center mb-6"
               initial="hidden"
@@ -287,7 +241,11 @@ const Education = () => {
               viewport={{ once: true }}
             >
               <motion.div 
-                className="w-16 h-16 bg-gradient-to-br from-emerald-100 to-cyan-200 rounded-full flex items-center justify-center mr-4 overflow-hidden border-2 border-emerald-300"
+                className="w-16 h-16 rounded-full flex items-center justify-center mr-4 overflow-hidden border-2"
+                style={{ 
+                  background: 'linear-gradient(135deg, rgba(22, 163, 74, 0.1), rgba(22, 163, 74, 0.2))',
+                  borderColor: '#16A34A'
+                }}
                 variants={iconVariants}
               >
                 <img
@@ -298,7 +256,8 @@ const Education = () => {
               </motion.div>
               <div>
                 <motion.h3 
-                  className="text-xl font-bold text-gray-800"
+                  className="text-xl font-bold"
+                  style={{ color: '#1F2937' }}
                   initial={{ opacity: 0, y: 10 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.1 }}
@@ -307,7 +266,7 @@ const Education = () => {
                   Le Quy Don High School for the Gifted
                 </motion.h3>
                 <motion.p 
-                  className="text-emerald-600"
+                  style={{ color: '#16A34A' }}
                   initial={{ opacity: 0, y: 10 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.2 }}
@@ -323,19 +282,20 @@ const Education = () => {
               variants={listItemVariants}
             >
               <div className="flex items-center">
-                <FaGraduationCap className="text-emerald-500 mr-2" />
-                <p className="text-gray-700 font-medium">High School Diploma</p>
+                <FaGraduationCap className="mr-2" style={{ color: '#16A34A' }} />
+                <p className="font-medium" style={{ color: '#1F2937' }}>High School Diploma</p>
               </div>
-              <p className="text-gray-600 ml-6">Da Nang, Vietnam | September 2021 - June 2024</p>
+              <p className="ml-6" style={{ color: '#1F2937' }}>Da Nang, Vietnam | September 2021 - June 2024</p>
             </motion.div>
 
             <motion.div 
               className="mb-6"
               variants={listItemVariants}
             >
-              <div className="w-full bg-gray-200 h-2 rounded-full overflow-hidden">
+              <div className="w-full h-2 rounded-full overflow-hidden" style={{ backgroundColor: '#F3F4F6' }}>
                 <motion.div 
-                  className="h-full bg-gradient-to-r from-cyan-500 to-emerald-500"
+                  className="h-full"
+                  style={{ background: 'linear-gradient(to right, #16A34A, #16A34A)' }}
                   initial={{ width: 0 }}
                   whileInView={{ width: "100%" }}
                   transition={{ duration: 1.5, delay: 0.5 }}
@@ -343,8 +303,8 @@ const Education = () => {
                 ></motion.div>
               </div>
               <div className="flex justify-between mt-2">
-                <span className="text-xs text-gray-500">GPA</span>
-                <span className="text-gray-700 font-medium">4.0/4.0</span>
+                <span className="text-xs" style={{ color: '#1F2937' }}>GPA</span>
+                <span className="font-medium" style={{ color: '#1F2937' }}>4.0/4.0</span>
               </div>
             </motion.div>
 
@@ -354,8 +314,8 @@ const Education = () => {
               transition={{ delay: 0.3 }}
               viewport={{ once: true }}
             >
-              <h4 className="text-lg font-semibold text-gray-800 mb-3 flex items-center">
-                <FaTrophy className="text-emerald-500 mr-2" /> 
+              <h4 className="text-lg font-semibold mb-3 flex items-center" style={{ color: '#1F2937' }}>
+                <FaTrophy className="mr-2" style={{ color: '#16A34A' }} /> 
                 <span>Awards</span>
               </h4>
               <motion.ul 
@@ -373,11 +333,12 @@ const Education = () => {
                 ].map((item, index) => (
                   <motion.li 
                     key={index}
-                    className="flex items-start text-gray-700"
+                    className="flex items-start"
+                    style={{ color: '#1F2937' }}
                     variants={listItemVariants}
                     custom={index}
                   >
-                    <span className="text-emerald-500 mr-2 mt-1">•</span>
+                    <span className="mr-2 mt-1" style={{ color: '#16A34A' }}>•</span>
                     <span>{item}</span>
                   </motion.li>
                 ))}
@@ -385,16 +346,21 @@ const Education = () => {
             </motion.div>
 
             <motion.div 
-              className="mt-4 p-3 rounded-lg bg-gradient-to-r from-emerald-50 to-cyan-50 border border-emerald-100"
+              className="mt-4 p-3 rounded-lg border"
+              style={{ 
+                background: 'linear-gradient(to right, rgba(22, 163, 74, 0.05), rgba(22, 163, 74, 0.05))',
+                borderColor: 'rgba(22, 163, 74, 0.2)'
+              }}
               variants={listItemVariants}
             >
-              <p className="text-gray-700">
+              <p style={{ color: '#1F2937' }}>
                 <span className="font-medium">Featured in National Newspaper:</span>{" "}
                 <motion.a
                   href="https://svvn.tienphong.vn/phan-tuan-khang-nam-sinh-chuyen-tin-tai-nang-am-loat-hoc-bong-danh-gia-o-tuoi-18-post1635689.tpo"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-emerald-600 hover:underline inline-flex items-center"
+                  className="hover:underline inline-flex items-center"
+                  style={{ color: '#16A34A' }}
                   whileHover={{ scale: 1.03 }}
                 >
                   Read Article
@@ -410,21 +376,6 @@ const Education = () => {
             </motion.div>
           </motion.div>
         </motion.div>
-      </div>
-      
-      {/* Animated bottom decoration */}
-      <div className="absolute bottom-0 left-0 right-0 h-1 overflow-hidden">
-        <motion.div 
-          className="h-full bg-gradient-to-r from-emerald-400 via-cyan-500 to-emerald-400 w-[200%]"
-          animate={{ 
-            x: [0, "-50%"],
-          }}
-          transition={{ 
-            repeat: Infinity,
-            duration: 8,
-            ease: "linear"
-          }}
-        />
       </div>
     </section>
   )

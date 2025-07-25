@@ -18,6 +18,10 @@ const Hero = () => {
   // For parallax effect
   const [scrollY, setScrollY] = useState(0);
   
+  // For mouse glow effect
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [isMouseInside, setIsMouseInside] = useState(false);
+  
   // Handle scroll events
   useEffect(() => {
     const handleScroll = () => {
@@ -26,6 +30,31 @@ const Hero = () => {
     
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+  
+  // Handle mouse movement for glow effect
+  useEffect(() => {
+    const handleMouseMove = (e) => {
+      setMousePosition({ x: e.clientX, y: e.clientY });
+    };
+    
+    const handleMouseEnter = () => {
+      setIsMouseInside(true);
+    };
+    
+    const handleMouseLeave = () => {
+      setIsMouseInside(false);
+    };
+    
+    document.addEventListener("mousemove", handleMouseMove);
+    document.addEventListener("mouseenter", handleMouseEnter);
+    document.addEventListener("mouseleave", handleMouseLeave);
+    
+    return () => {
+      document.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("mouseenter", handleMouseEnter);
+      document.removeEventListener("mouseleave", handleMouseLeave);
+    };
   }, []);
   
   // Typing animation effect
@@ -65,7 +94,7 @@ const Hero = () => {
     setMounted(true);
   }, []);
   
-  // Tech-themed background animation with circuits and particles
+  // Minimalist tech-themed background animation
   useEffect(() => {
     const canvas = backgroundCanvasRef.current;
     if (!canvas) return;
@@ -74,33 +103,33 @@ const Hero = () => {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
     
-    // Dark tech gradient background
+    // Pure white background
     const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-    gradient.addColorStop(0, 'rgba(6, 78, 59, 1)'); // Dark emerald
-    gradient.addColorStop(1, 'rgba(5, 46, 22, 1)'); // Dark green
+    gradient.addColorStop(0, '#FFFFFF'); // Pure white
+    gradient.addColorStop(1, '#FFFFFF'); // Pure white
     
-    // Circuit node points for tech patterns
+    // Minimal circuit node points
     const circuitPoints = [];
-    const nodeCount = Math.min(25, Math.floor(canvas.width / 80));
+    const nodeCount = Math.min(15, Math.floor(canvas.width / 120));
     
-    // Create circuit nodes
+    // Create minimal circuit nodes
     for (let i = 0; i < nodeCount; i++) {
       circuitPoints.push({
         x: Math.random() * canvas.width,
         y: Math.random() * canvas.height,
-        size: Math.random() * 3 + 2,
+        size: Math.random() * 2 + 1,
         connections: [],
         pulseRadius: 0,
         pulseOpacity: 0,
-        nextPulseTime: Math.random() * 5000 + 2000,
+        nextPulseTime: Math.random() * 8000 + 4000,
         lastPulseTime: 0
       });
     }
     
-    // Create connections between nodes
+    // Create minimal connections between nodes
     circuitPoints.forEach((point, i) => {
-      // Connect to 1-3 nearest points
-      const connectionsCount = Math.floor(Math.random() * 3) + 1;
+      // Connect to 1-2 nearest points only
+      const connectionsCount = Math.floor(Math.random() * 2) + 1;
       
       // Find distances to all other points
       const distances = circuitPoints.map((otherPoint, j) => {
@@ -118,28 +147,27 @@ const Hero = () => {
       
       // Connect to closest points
       for (let c = 0; c < connectionsCount && c < sortedDistances.length; c++) {
-        if (sortedDistances[c].distance < Math.min(canvas.width, canvas.height) * 0.25) {
+        if (sortedDistances[c].distance < Math.min(canvas.width, canvas.height) * 0.3) {
           point.connections.push(sortedDistances[c].index);
         }
       }
     });
     
-    // Particles
+    // Minimal floating particles
     const particles = [];
-    const particleCount = Math.min(40, Math.floor(canvas.width / 40));
+    const particleCount = Math.min(25, Math.floor(canvas.width / 60));
     
-    // Create tech-themed particles
+    // Create subtle floating particles
     for (let i = 0; i < particleCount; i++) {
       particles.push({
         x: Math.random() * canvas.width,
         y: Math.random() * canvas.height,
-        size: Math.random() * 2 + 1,
-        opacity: Math.random() * 0.5 + 0.2,
-        speed: Math.random() * 0.4 + 0.1,
+        size: Math.random() * 1.5 + 0.5,
+        opacity: Math.random() * 0.3 + 0.1,
+        speed: Math.random() * 0.2 + 0.05,
         direction: Math.random() * Math.PI * 2,
-        type: Math.random() > 0.7 ? 'circle' : 'square',
-        pulse: false,
-        glowing: Math.random() > 0.8
+        type: 'circle',
+        glowing: Math.random() > 0.9
       });
     }
     
@@ -150,14 +178,14 @@ const Hero = () => {
       const deltaTime = currentTime - lastTime;
       lastTime = currentTime;
       
-      // Fill background with gradient
-      ctx.fillStyle = gradient;
+      // Fill background with pure white
+      ctx.fillStyle = '#FFFFFF';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
       
-      // Draw subtle grid
-      ctx.strokeStyle = 'rgba(16, 185, 129, 0.07)';
-      ctx.lineWidth = 0.5;
-      const gridSize = 50;
+      // Draw very subtle grid (barely visible)
+      ctx.strokeStyle = 'rgba(22, 163, 74, 0.03)';
+      ctx.lineWidth = 0.3;
+      const gridSize = 80;
       
       // Vertical grid lines
       for (let x = 0; x <= canvas.width; x += gridSize) {
@@ -175,8 +203,8 @@ const Hero = () => {
         ctx.stroke();
       }
       
-      // Draw circuit connections
-      ctx.lineWidth = 0.8;
+      // Draw minimal circuit connections
+      ctx.lineWidth = 0.5;
       circuitPoints.forEach((point, i) => {
         point.connections.forEach(connectionIndex => {
           const connectedPoint = circuitPoints[connectionIndex];
@@ -189,97 +217,60 @@ const Hero = () => {
           // Calculate if any pulse is traveling this connection
           const pulsing = point.pulseOpacity > 0 || connectedPoint.pulseOpacity > 0;
           
-          // Line gradient
+          // Minimal line gradient
           const gradient = ctx.createLinearGradient(
             point.x, point.y, connectedPoint.x, connectedPoint.y
           );
           
           if (pulsing) {
-            gradient.addColorStop(0, `rgba(16, 185, 129, ${0.2 + point.pulseOpacity * 0.6})`);
-            gradient.addColorStop(1, `rgba(16, 185, 129, ${0.2 + connectedPoint.pulseOpacity * 0.6})`);
+            gradient.addColorStop(0, `rgba(22, 163, 74, ${0.15 + point.pulseOpacity * 0.3})`);
+            gradient.addColorStop(1, `rgba(22, 163, 74, ${0.15 + connectedPoint.pulseOpacity * 0.3})`);
           } else {
-            gradient.addColorStop(0, 'rgba(16, 185, 129, 0.2)');
-            gradient.addColorStop(1, 'rgba(16, 185, 129, 0.2)');
+            gradient.addColorStop(0, 'rgba(22, 163, 74, 0.08)');
+            gradient.addColorStop(1, 'rgba(22, 163, 74, 0.08)');
           }
           
           ctx.strokeStyle = gradient;
           ctx.stroke();
-          
-          // Add circuit "breaks" (small perpendicular line segments)
-          const dx = connectedPoint.x - point.x;
-          const dy = connectedPoint.y - point.y;
-          const distance = Math.sqrt(dx * dx + dy * dy);
-          
-          // Normalize direction vector
-          const nx = dx / distance;
-          const ny = dy / distance;
-          
-          // Perpendicular vector
-          const px = -ny;
-          const py = nx;
-          
-          // Draw circuit breaks (small perpendicular lines)
-          const breakCount = Math.floor(distance / 40);
-          
-          for (let b = 1; b < breakCount; b++) {
-            const breakPos = b / breakCount;
-            const breakX = point.x + dx * breakPos;
-            const breakY = point.y + dy * breakPos;
-            
-            const breakLength = 4;
-            
-            ctx.beginPath();
-            ctx.moveTo(breakX - px * breakLength, breakY - py * breakLength);
-            ctx.lineTo(breakX + px * breakLength, breakY + py * breakLength);
-            ctx.strokeStyle = 'rgba(16, 185, 129, 0.3)';
-            ctx.lineWidth = 0.6;
-            ctx.stroke();
-          }
         });
       });
       
-      // Update and draw circuit nodes
+      // Update and draw minimal circuit nodes
       circuitPoints.forEach(point => {
-        // Occasionally start a new pulse
+        // Occasionally start a new pulse (less frequent)
         if (deltaTime && currentTime - point.lastPulseTime > point.nextPulseTime) {
           point.pulseRadius = 0;
-          point.pulseOpacity = 0.8;
+          point.pulseOpacity = 0.4;
           point.lastPulseTime = currentTime;
-          point.nextPulseTime = Math.random() * 5000 + 3000;
+          point.nextPulseTime = Math.random() * 8000 + 6000;
         }
         
         // Update pulse
         if (point.pulseOpacity > 0) {
-          point.pulseRadius += deltaTime * 0.05;
-          point.pulseOpacity -= deltaTime * 0.0005;
+          point.pulseRadius += deltaTime * 0.03;
+          point.pulseOpacity -= deltaTime * 0.0003;
           
           if (point.pulseOpacity <= 0) {
             point.pulseOpacity = 0;
           }
           
-          // Draw pulse
+          // Draw subtle pulse
           ctx.beginPath();
           ctx.arc(point.x, point.y, point.pulseRadius, 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(16, 185, 129, ${point.pulseOpacity * 0.2})`;
+          ctx.fillStyle = `rgba(22, 163, 74, ${point.pulseOpacity * 0.1})`;
           ctx.fill();
         }
         
-        // Draw node
+        // Draw minimal node
         ctx.beginPath();
         ctx.arc(point.x, point.y, point.size, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(16, 185, 129, 0.5)';
-        ctx.fill();
-        
-        // Draw node glow
-        ctx.beginPath();
-        ctx.arc(point.x, point.y, point.size + 2, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(16, 185, 129, ${0.1 + point.pulseOpacity * 0.3})`;
+        ctx.fillStyle = 'rgba(22, 163, 74, 0.2)';
         ctx.fill();
       });
       
-      // Update and draw particles
+      // Update and draw minimal particles
       particles.forEach(particle => {
-        // Update position with slight movement
+        // Update position with gentle movement
         particle.x += Math.cos(particle.direction) * particle.speed;
         particle.y += Math.sin(particle.direction) * particle.speed;
         
@@ -289,72 +280,15 @@ const Hero = () => {
         if (particle.y < -20) particle.y = canvas.height + 20;
         if (particle.y > canvas.height + 20) particle.y = -20;
         
-        // Draw particle
+        // Draw subtle particle
         ctx.fillStyle = particle.glowing 
-          ? `rgba(16, 185, 129, ${0.3 + Math.sin(currentTime * 0.001) * 0.2})`
-          : `rgba(16, 185, 129, ${particle.opacity})`;
+          ? `rgba(22, 163, 74, ${0.15 + Math.sin(currentTime * 0.001) * 0.1})`
+          : `rgba(22, 163, 74, ${particle.opacity})`;
           
-        if (particle.type === 'circle') {
-          ctx.beginPath();
-          ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
-          ctx.fill();
-        } else {
-          // Rotating square for more tech feel
-          ctx.save();
-          ctx.translate(particle.x, particle.y);
-          ctx.rotate(currentTime * 0.001);
-          ctx.fillRect(-particle.size / 2, -particle.size / 2, particle.size, particle.size);
-          ctx.restore();
-        }
+        ctx.beginPath();
+        ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+        ctx.fill();
       });
-      
-      // Add a few random small tech symbols and dots
-      // (microchip patterns, etc.)
-      const techPatternCount = 12;
-      
-      for (let t = 0; t < techPatternCount; t++) {
-        const x = (t / techPatternCount) * canvas.width;
-        const y = (Math.sin(x * 0.01 + currentTime * 0.0005) * 0.3 + 0.5) * canvas.height;
-        
-        // Tech pattern type
-        const patternType = t % 3;
-        
-        if (patternType === 0) {
-          // Circuit corner pattern
-          ctx.beginPath();
-          ctx.moveTo(x, y);
-          ctx.lineTo(x + 15, y);
-          ctx.lineTo(x + 15, y + 15);
-          ctx.strokeStyle = 'rgba(16, 185, 129, 0.15)';
-          ctx.lineWidth = 0.7;
-          ctx.stroke();
-        } else if (patternType === 1) {
-          // Dot matrix pattern
-          for (let dx = 0; dx < 3; dx++) {
-            for (let dy = 0; dy < 3; dy++) {
-              if ((dx + dy) % 2 === 0) {
-                ctx.fillStyle = 'rgba(16, 185, 129, 0.12)';
-                ctx.fillRect(x + dx * 5, y + dy * 5, 1.5, 1.5);
-              }
-            }
-          }
-        } else {
-          // Microchip-like line
-          ctx.beginPath();
-          ctx.moveTo(x - 10, y);
-          ctx.lineTo(x + 10, y);
-          
-          // Add small perpendicular ticks
-          for (let tick = -8; tick <= 8; tick += 4) {
-            ctx.moveTo(x + tick, y);
-            ctx.lineTo(x + tick, y + (tick % 8 === 0 ? 6 : 3));
-          }
-          
-          ctx.strokeStyle = 'rgba(16, 185, 129, 0.15)';
-          ctx.lineWidth = 0.7;
-          ctx.stroke();
-        }
-      }
       
       requestAnimationFrame(draw);
     }
@@ -383,16 +317,27 @@ const Hero = () => {
   return (
     <section
       id="hero"
-      className="h-screen flex items-center justify-center relative overflow-hidden"
+      className="h-screen flex items-center justify-center relative overflow-hidden bg-white"
     >
-      {/* Tech-themed animated background */}
+      {/* Mouse glow effect */}
+      <div
+        className="fixed inset-0 pointer-events-none z-10"
+        style={{
+          background: isMouseInside
+            ? `radial-gradient(600px circle at ${mousePosition.x}px ${mousePosition.y}px, rgba(22, 163, 74, 0.08), rgba(22, 163, 74, 0.03) 40%, transparent 70%)`
+            : 'transparent',
+          transition: 'background 0.3s ease-out',
+        }}
+      />
+      
+      {/* Minimalist animated background */}
       <canvas 
         ref={backgroundCanvasRef} 
         className="absolute inset-0 z-0"
       />
 
-      {/* Subtle overlay gradient */}
-      <div className="absolute inset-0 bg-gradient-to-b from-emerald-900/10 to-emerald-950/30 z-0"></div>
+      {/* Subtle overlay gradient - now pure white */}
+      <div className="absolute inset-0 bg-gradient-to-b from-white/30 to-white/50 z-0"></div>
       
       {/* Main content with parallax effect */}
       <div
@@ -403,36 +348,33 @@ const Hero = () => {
         className="container relative z-20 max-w-4xl mx-auto px-4"
       >
         <div
-          className={`rounded-3xl border border-emerald-500/20 shadow-xl p-8 md:p-12 relative overflow-hidden ${
+          className={`rounded-3xl border border-gray-200 shadow-xl p-8 md:p-12 relative overflow-hidden bg-white/80 backdrop-blur-sm ${
             mounted ? 'animate-fadeIn' : 'opacity-0'
           }`}
           style={{
-            background: 'rgba(3, 24, 19, 0.8)',
-            backdropFilter: 'blur(20px)',
-            boxShadow: '0 8px 32px rgba(0, 200, 80, 0.1), 0 4px 16px rgba(0, 255, 120, 0.05)'
+            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.08), 0 4px 16px rgba(22, 163, 74, 0.05)'
           }}
         >
-          {/* Circuit-inspired decorative elements */}
+          {/* Minimal decorative elements */}
           <div className="absolute top-0 left-0 w-full h-full pointer-events-none overflow-hidden">
-            {/* Top-left circuit decoration */}
-            <div className="absolute top-0 left-0 w-16 h-16 opacity-30">
-              <div className="absolute top-4 left-0 w-12 h-1 bg-emerald-500/30"></div>
-              <div className="absolute top-0 left-4 w-1 h-12 bg-emerald-500/30"></div>
-              <div className="absolute top-9 left-4 w-1 h-1 rounded-full bg-emerald-400/60"></div>
+            {/* Top-left minimal decoration */}
+            <div className="absolute top-0 left-0 w-12 h-12 opacity-20">
+              <div className="absolute top-4 left-0 w-8 h-0.5 bg-green-600"></div>
+              <div className="absolute top-0 left-4 w-0.5 h-8 bg-green-600"></div>
+              <div className="absolute top-6 left-4 w-0.5 h-0.5 rounded-full bg-green-600"></div>
             </div>
             
-            {/* Bottom-right circuit decoration */}
-            <div className="absolute bottom-0 right-0 w-24 h-24 opacity-30">
-              <div className="absolute bottom-8 right-0 w-16 h-1 bg-emerald-500/30"></div>
-              <div className="absolute bottom-0 right-8 w-1 h-16 bg-emerald-500/30"></div>
-              <div className="absolute bottom-5 right-5 w-6 h-6 border border-emerald-500/40 rounded-sm"></div>
-              <div className="absolute bottom-12 right-12 w-1 h-1 rounded-full bg-emerald-400/60"></div>
+            {/* Bottom-right minimal decoration */}
+            <div className="absolute bottom-0 right-0 w-16 h-16 opacity-20">
+              <div className="absolute bottom-6 right-0 w-12 h-0.5 bg-green-600"></div>
+              <div className="absolute bottom-0 right-6 w-0.5 h-12 bg-green-600"></div>
+              <div className="absolute bottom-4 right-4 w-4 h-4 border border-green-600/40 rounded-sm"></div>
             </div>
           </div>
           
           {/* Subtle accent light */}
-          <div className="absolute -top-32 -right-32 w-64 h-64 rounded-full bg-emerald-500/10 blur-3xl"></div>
-          <div className="absolute -bottom-32 -left-32 w-64 h-64 rounded-full bg-green-500/10 blur-3xl"></div>
+          <div className="absolute -top-32 -right-32 w-64 h-64 rounded-full bg-green-600/5 blur-3xl"></div>
+          <div className="absolute -bottom-32 -left-32 w-64 h-64 rounded-full bg-green-600/5 blur-3xl"></div>
           
           <div className="text-center relative z-10">
             {/* Name with modern styling */}
@@ -443,7 +385,7 @@ const Hero = () => {
                 }`}
                 style={{ animationDelay: '200ms' }}
               >
-                <h1 className="text-5xl md:text-7xl font-bold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-emerald-300 via-green-400 to-emerald-200">
+                <h1 className="text-5xl md:text-7xl font-bold mb-6 text-gray-800">
                   Tuan Khang Phan
                 </h1>
               </div>
@@ -451,7 +393,7 @@ const Hero = () => {
               {/* Clean, minimal underline */}
               <div className="max-w-xs mx-auto mt-2">
                 <div
-                  className={`h-0.5 w-full bg-gradient-to-r from-emerald-400/50 via-green-400/80 to-emerald-400/50 ${
+                  className={`h-0.5 w-full bg-gradient-to-r from-green-600/30 via-green-600/80 to-green-600/30 ${
                     mounted ? 'animate-widthExpand' : 'w-0 opacity-0'
                   }`}
                   style={{ animationDelay: '600ms' }}
@@ -461,10 +403,10 @@ const Hero = () => {
 
             {/* Role title with typing effect */}
             <div className="h-16 mt-8 flex items-center justify-center">
-              <h2 className="text-xl md:text-3xl font-light text-emerald-50/90">
+              <h2 className="text-xl md:text-3xl font-light text-gray-700">
                 <span className="opacity-60">{`< `}</span>
                 {displayText}
-                <span className="animate-blink text-emerald-400">|</span>
+                <span className="animate-blink text-green-600">|</span>
                 <span className="opacity-60">{` />`}</span>
               </h2>
             </div>
@@ -522,8 +464,8 @@ const Hero = () => {
         }`}
         style={{ animationDelay: '1500ms' }}
       >
-        <div className="text-emerald-300 flex flex-col items-center animate-bounce">
-          <span className="text-sm font-light mb-2 text-emerald-200/80">Scroll Down</span>
+        <div className="text-gray-600 flex flex-col items-center animate-bounce">
+          <span className="text-sm font-light mb-2 text-gray-500">Scroll Down</span>
           <HiOutlineArrowNarrowDown size={18} />
         </div>
       </div>
@@ -536,8 +478,8 @@ const ActionButton = ({ href, icon, text, variant }) => {
   const baseClasses = "group px-6 py-3 rounded-full font-medium transition-all duration-300 flex items-center justify-center hover:scale-105 active:scale-95 shadow-lg relative overflow-hidden";
   
   const variantClasses = {
-    primary: "bg-emerald-600 text-white hover:bg-emerald-500 hover:shadow-emerald-500/30",
-    secondary: "bg-emerald-950 border border-emerald-600/30 text-emerald-50 hover:bg-emerald-900 hover:border-emerald-500/50 hover:shadow-emerald-600/20"
+    primary: "bg-green-600 text-white hover:bg-green-700 hover:shadow-green-600/30",
+    secondary: "bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 hover:border-green-600/50 hover:shadow-green-600/10"
   };
   
   return (
@@ -561,7 +503,7 @@ const SocialButton = ({ href, icon, label }) => {
       target="_blank"
       rel="noopener noreferrer"
       aria-label={label}
-      className="group flex items-center justify-center w-10 h-10 rounded-full bg-emerald-900/80 border border-emerald-600/30 text-emerald-400 hover:text-white hover:bg-emerald-700 hover:border-emerald-500/50 transition-all duration-300 hover:scale-110 active:scale-90"
+      className="group flex items-center justify-center w-10 h-10 rounded-full bg-white border border-gray-200 text-gray-600 hover:text-green-600 hover:bg-green-50 hover:border-green-600/30 transition-all duration-300 hover:scale-110 active:scale-90"
     >
       {icon}
     </a>

@@ -9,16 +9,15 @@ import {
   FaLinkedin,
   FaPaperPlane,
 } from "react-icons/fa";
-import emailjs from "@emailjs/browser";
 
 const Contact = () => {
   // References and state
   const formRef = useRef();
   const [formData, setFormData] = useState({
-    from_name: "", // Changed from "name" to match EmailJS template
-    user_email: "", // Changed from "email" to match EmailJS template
-    subject: "", // Keep this if your template uses it
-    user_feedback: "", // Changed from "message" to match EmailJS template
+    from_name: "",
+    user_email: "",
+    subject: "",
+    user_feedback: "",
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -66,23 +65,20 @@ const Contact = () => {
   const buttonVariants = {
     initial: { scale: 1 },
     hover: {
-      scale: 1.05,
-      boxShadow:
-        "0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
+      scale: 1.02,
       transition: {
         type: "spring",
         stiffness: 400,
         damping: 10,
       },
     },
-    tap: { scale: 0.95 },
+    tap: { scale: 0.98 },
   };
 
   const formFieldVariants = {
     idle: { scale: 1 },
     active: {
-      scale: 1.02,
-      boxShadow: "0 0 0 3px rgba(5, 150, 105, 0.2)",
+      scale: 1.01,
       transition: { type: "spring", stiffness: 300, damping: 10 },
     },
   };
@@ -136,49 +132,98 @@ const Contact = () => {
     setIsSubmitting(true);
     setSubmitError(null);
 
-    // Add recipient info (to_name) to the form data
-    // This aligns with your {{to_name}} template variable
-    formRef.current.to_name = "Khang Phan"; // You can change this to your name
-
-    // Replace these with your actual EmailJS service ID, template ID, and public key
-    const serviceId = "service_a5rttmj";
-    const templateId = "template_xxvslct";
-    const publicKey = "UHaRQ92hG5FMULzb5";
-
-    emailjs
-      .sendForm(serviceId, templateId, formRef.current, publicKey)
-      .then((result) => {
-        setIsSubmitting(false);
-        setSubmitSuccess(true);
-        setFormData({
-          from_name: "",
-          user_email: "",
-          subject: "",
-          user_feedback: "",
-        });
-
-        // Reset success message after 5 seconds
-        setTimeout(() => {
-          setSubmitSuccess(false);
-        }, 5000);
-      })
-      .catch((error) => {
-        setIsSubmitting(false);
-        setSubmitError("Failed to send message. Please try again later.");
-        console.error("EmailJS Error:", error);
+    // Simulate form submission
+    setTimeout(() => {
+      setIsSubmitting(false);
+      setSubmitSuccess(true);
+      setFormData({
+        from_name: "",
+        user_email: "",
+        subject: "",
+        user_feedback: "",
       });
+
+      // Reset success message after 5 seconds
+      setTimeout(() => {
+        setSubmitSuccess(false);
+      }, 5000);
+    }, 2000);
   };
 
   return (
     <section
       id="contact"
-      className="py-20 bg-gradient-to-b from-emerald-50 to-cyan-50 relative overflow-hidden"
+      className="py-20 bg-white relative overflow-hidden"
     >
-      {/* Background decorative elements */}
-      <div className="absolute top-0 left-0 w-full h-full overflow-hidden z-0">
-        <div className="absolute top-20 left-10 w-64 h-64 rounded-full bg-emerald-200 opacity-20 blur-3xl"></div>
-        <div className="absolute bottom-20 right-10 w-80 h-80 rounded-full bg-cyan-300 opacity-20 blur-3xl"></div>
-        <div className="absolute top-1/2 left-1/3 w-40 h-40 rounded-full bg-teal-400 opacity-10 blur-2xl"></div>
+      {/* Glassmorphism Background Elements */}
+      <div className="absolute inset-0 overflow-hidden">
+        {/* Floating glass orbs */}
+        <motion.div 
+          className="absolute top-20 left-10 w-80 h-80 rounded-full"
+          style={{
+            background: 'linear-gradient(135deg, rgba(22, 163, 74, 0.1), rgba(22, 163, 74, 0.05))',
+            backdropFilter: 'blur(40px)',
+            border: '1px solid rgba(255, 255, 255, 0.2)'
+          }}
+          animate={{
+            x: [0, 50, 0],
+            y: [0, -30, 0],
+          }}
+          transition={{
+            duration: 20,
+            repeat: Infinity,
+            ease: "linear"
+          }}
+        />
+        
+        <motion.div 
+          className="absolute bottom-20 right-10 w-96 h-96 rounded-full"
+          style={{
+            background: 'linear-gradient(135deg, rgba(22, 163, 74, 0.08), rgba(22, 163, 74, 0.03))',
+            backdropFilter: 'blur(60px)',
+            border: '1px solid rgba(255, 255, 255, 0.15)'
+          }}
+          animate={{
+            x: [0, -40, 0],
+            y: [0, 40, 0],
+          }}
+          transition={{
+            duration: 25,
+            repeat: Infinity,
+            ease: "linear"
+          }}
+        />
+        
+        <motion.div 
+          className="absolute top-1/2 left-1/2 w-60 h-60 rounded-full"
+          style={{
+            background: 'linear-gradient(135deg, rgba(22, 163, 74, 0.12), rgba(22, 163, 74, 0.04))',
+            backdropFilter: 'blur(30px)',
+            border: '1px solid rgba(255, 255, 255, 0.25)'
+          }}
+          animate={{
+            x: [0, 30, -20, 0],
+            y: [0, -40, 20, 0],
+            scale: [1, 1.1, 0.9, 1]
+          }}
+          transition={{
+            duration: 30,
+            repeat: Infinity,
+            ease: "linear"
+          }}
+        />
+
+        {/* Grid pattern overlay */}
+        <div 
+          className="absolute inset-0 opacity-5"
+          style={{
+            backgroundImage: `
+              linear-gradient(rgba(22, 163, 74, 0.1) 1px, transparent 1px),
+              linear-gradient(90deg, rgba(22, 163, 74, 0.1) 1px, transparent 1px)
+            `,
+            backgroundSize: '20px 20px'
+          }}
+        />
       </div>
 
       <div className="container mx-auto px-4 md:px-6 relative z-10">
@@ -188,46 +233,75 @@ const Contact = () => {
             animate={titleControls}
             variants={titleVariants}
           >
-            <h2 className="text-3xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-emerald-600 to-cyan-600 bg-clip-text text-transparent">
+            <h2 
+              className="text-4xl md:text-5xl font-bold mb-6"
+              style={{ color: '#16A34A' }}
+            >
               Get In Touch
             </h2>
-            <div className="w-20 h-1 bg-gradient-to-r from-emerald-500 to-cyan-500 mx-auto"></div>
-            <p className="mt-4 text-gray-600 max-w-2xl mx-auto">
-              Feel free to reach out with any questions or opportunities. I'd
-              love to hear from you!
+            <motion.div 
+              initial={{ width: 0 }}
+              animate={{ width: "4rem" }}
+              transition={{ duration: 0.8, delay: 0.3 }}
+              className="h-1 mx-auto mb-6"
+              style={{ backgroundColor: '#16A34A' }}
+            />
+            <p className="text-gray-600 text-lg max-w-2xl mx-auto leading-relaxed">
+              Feel free to reach out with any questions or opportunities. I'd love to hear from you!
             </p>
           </motion.div>
         </div>
 
         <motion.div
-          className="grid grid-cols-1 lg:grid-cols-2 gap-12 max-w-6xl mx-auto"
+          className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-6xl mx-auto"
           initial="hidden"
           animate={controls}
           variants={containerVariants}
         >
+          {/* Contact Information Card */}
           <motion.div
-            className="bg-white rounded-xl shadow-xl p-8 backdrop-blur-sm bg-opacity-80 border border-white border-opacity-20"
+            className="relative rounded-2xl p-8 shadow-xl border border-white/20"
+            style={{
+              background: 'rgba(255, 255, 255, 0.25)',
+              backdropFilter: 'blur(20px)',
+            }}
             variants={itemVariants}
+            whileHover={{ y: -5 }}
+            transition={{ type: "spring", stiffness: 300, damping: 20 }}
           >
-            <h3 className="text-2xl font-bold mb-8 text-emerald-700 relative">
+            <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-white/10 to-white/5 pointer-events-none" />
+            
+            <h3 
+              className="text-2xl font-bold mb-8 relative"
+              style={{ color: '#1F2937' }}
+            >
               Contact Information
-              <span className="absolute bottom-0 left-0 w-16 h-1 bg-gradient-to-r from-emerald-400 to-cyan-400 -mb-2"></span>
+              <span 
+                className="absolute bottom-0 left-0 w-16 h-1 -mb-2 rounded-full"
+                style={{ backgroundColor: '#16A34A' }}
+              />
             </h3>
 
             <div className="space-y-8">
               <motion.div
                 className="flex items-start group"
-                whileHover={{ x: 5 }}
+                whileHover={{ x: 8 }}
                 transition={{ type: "spring", stiffness: 400, damping: 10 }}
               >
-                <div className="w-12 h-12 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-full flex items-center justify-center mr-4 shadow-md group-hover:shadow-emerald-200 transition-shadow duration-300">
-                  <FaEnvelope className="text-white text-xl" />
+                <div 
+                  className="w-12 h-12 rounded-full flex items-center justify-center mr-4 shadow-lg relative overflow-hidden"
+                  style={{ backgroundColor: '#16A34A' }}
+                >
+                  <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent" />
+                  <FaEnvelope className="text-white text-lg relative z-2" />
                 </div>
                 <div>
-                  <h4 className="text-lg font-semibold text-gray-800">Email</h4>
+                  <h4 className="text-lg font-semibold mb-1" style={{ color: '#1F2937' }}>
+                    Email
+                  </h4>
                   <a
                     href="mailto:2006tuankhang@gmail.com"
-                    className="text-emerald-600 hover:text-emerald-700 transition-colors duration-300 relative inline-block group-hover:underline"
+                    className="text-gray-600 hover:text-green-600 transition-colors duration-300 group-hover:underline"
                   >
                     2006tuankhang@gmail.com
                   </a>
@@ -236,17 +310,23 @@ const Contact = () => {
 
               <motion.div
                 className="flex items-start group"
-                whileHover={{ x: 5 }}
+                whileHover={{ x: 8 }}
                 transition={{ type: "spring", stiffness: 400, damping: 10 }}
               >
-                <div className="w-12 h-12 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-full flex items-center justify-center mr-4 shadow-md group-hover:shadow-emerald-200 transition-shadow duration-300">
-                  <FaPhone className="text-white text-xl" />
+                <div 
+                  className="w-12 h-12 rounded-full flex items-center justify-center mr-4 shadow-lg relative overflow-hidden"
+                  style={{ backgroundColor: '#16A34A' }}
+                >
+                  <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent" />
+                  <FaPhone className="text-white text-lg relative z-2" />
                 </div>
                 <div>
-                  <h4 className="text-lg font-semibold text-gray-800">Phone</h4>
+                  <h4 className="text-lg font-semibold mb-1" style={{ color: '#1F2937' }}>
+                    Phone
+                  </h4>
                   <a
                     href="tel:8135704370"
-                    className="text-emerald-600 hover:text-emerald-700 transition-colors duration-300 group-hover:underline"
+                    className="text-gray-600 hover:text-green-600 transition-colors duration-300 group-hover:underline"
                   >
                     813-570-4370
                   </a>
@@ -255,21 +335,25 @@ const Contact = () => {
 
               <motion.div
                 className="flex items-start group"
-                whileHover={{ x: 5 }}
+                whileHover={{ x: 8 }}
                 transition={{ type: "spring", stiffness: 400, damping: 10 }}
               >
-                <div className="w-12 h-12 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-full flex items-center justify-center mr-4 shadow-md group-hover:shadow-emerald-200 transition-shadow duration-300">
-                  <FaGithub className="text-white text-xl" />
+                <div 
+                  className="w-12 h-12 rounded-full flex items-center justify-center mr-4 shadow-lg relative overflow-hidden"
+                  style={{ backgroundColor: '#16A34A' }}
+                >
+                  <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent" />
+                  <FaGithub className="text-white text-lg relative z-2" />
                 </div>
                 <div>
-                  <h4 className="text-lg font-semibold text-gray-800">
+                  <h4 className="text-lg font-semibold mb-1" style={{ color: '#1F2937' }}>
                     GitHub
                   </h4>
                   <a
                     href="https://github.com/khangpt2k6"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-emerald-600 hover:text-emerald-700 transition-colors duration-300 group-hover:underline"
+                    className="text-gray-600 hover:text-green-600 transition-colors duration-300 group-hover:underline"
                   >
                     github.com/khangpt2k6
                   </a>
@@ -278,21 +362,25 @@ const Contact = () => {
 
               <motion.div
                 className="flex items-start group"
-                whileHover={{ x: 5 }}
+                whileHover={{ x: 8 }}
                 transition={{ type: "spring", stiffness: 400, damping: 10 }}
               >
-                <div className="w-12 h-12 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-full flex items-center justify-center mr-4 shadow-md group-hover:shadow-emerald-200 transition-shadow duration-300">
-                  <FaLinkedin className="text-white text-xl" />
+                <div 
+                  className="w-12 h-12 rounded-full flex items-center justify-center mr-4 shadow-lg relative overflow-hidden"
+                  style={{ backgroundColor: '#16A34A' }}
+                >
+                  <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent" />
+                  <FaLinkedin className="text-white text-lg relative z-2" />
                 </div>
                 <div>
-                  <h4 className="text-lg font-semibold text-gray-800">
+                  <h4 className="text-lg font-semibold mb-1" style={{ color: '#1F2937' }}>
                     LinkedIn
                   </h4>
                   <a
                     href="https://linkedin.com/in/tuankhangphan"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-emerald-600 hover:text-emerald-700 transition-colors duration-300 group-hover:underline"
+                    className="text-gray-600 hover:text-green-600 transition-colors duration-300 group-hover:underline"
                   >
                     linkedin.com/in/tuankhangphan
                   </a>
@@ -301,23 +389,39 @@ const Contact = () => {
             </div>
           </motion.div>
 
+          {/* Contact Form Card */}
           <motion.div
-            className="bg-white rounded-xl shadow-xl p-8 backdrop-blur-sm bg-opacity-80 border border-white border-opacity-20"
+            className="relative rounded-2xl p-8 shadow-xl border border-white/20"
+            style={{
+              background: 'rgba(255, 255, 255, 0.25)',
+              backdropFilter: 'blur(20px)',
+            }}
             variants={itemVariants}
+            whileHover={{ y: -5 }}
+            transition={{ type: "spring", stiffness: 300, damping: 20 }}
           >
-            <h3 className="text-2xl font-bold mb-8 text-emerald-700 relative">
+            <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-white/10 to-white/5 pointer-events-none" />
+            
+            <h3 
+              className="text-2xl font-bold mb-8 relative"
+              style={{ color: '#1F2937' }}
+            >
               Send Me a Message
-              <span className="absolute bottom-0 left-0 w-16 h-1 bg-gradient-to-r from-emerald-400 to-cyan-400 -mb-2"></span>
+              <span 
+                className="absolute bottom-0 left-0 w-16 h-1 -mb-2 rounded-full"
+                style={{ backgroundColor: '#16A34A' }}
+              />
             </h3>
 
-            <form ref={formRef} onSubmit={handleSubmit} className="space-y-6">
+            <div className="space-y-6">
               <motion.div
                 variants={formFieldVariants}
                 animate={activeField === "from_name" ? "active" : "idle"}
               >
                 <label
                   htmlFor="from_name"
-                  className="block text-gray-700 font-medium mb-2"
+                  className="block font-medium mb-2"
+                  style={{ color: '#1F2937' }}
                 >
                   Name
                 </label>
@@ -330,7 +434,12 @@ const Contact = () => {
                   onFocus={() => handleFocus("from_name")}
                   onBlur={handleBlur}
                   required
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-300"
+                  className="w-full px-4 py-3 rounded-xl border border-white/30 transition-all duration-300 placeholder-gray-400"
+                  style={{
+                    background: 'rgba(255, 255, 255, 0.4)',
+                    backdropFilter: 'blur(10px)',
+                    color: '#1F2937'
+                  }}
                   placeholder="Your Name"
                 />
               </motion.div>
@@ -341,7 +450,8 @@ const Contact = () => {
               >
                 <label
                   htmlFor="user_email"
-                  className="block text-gray-700 font-medium mb-2"
+                  className="block font-medium mb-2"
+                  style={{ color: '#1F2937' }}
                 >
                   Email
                 </label>
@@ -354,7 +464,12 @@ const Contact = () => {
                   onFocus={() => handleFocus("user_email")}
                   onBlur={handleBlur}
                   required
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-300"
+                  className="w-full px-4 py-3 rounded-xl border border-white/30 transition-all duration-300 placeholder-gray-400"
+                  style={{
+                    background: 'rgba(255, 255, 255, 0.4)',
+                    backdropFilter: 'blur(10px)',
+                    color: '#1F2937'
+                  }}
                   placeholder="Your Email"
                 />
               </motion.div>
@@ -365,7 +480,8 @@ const Contact = () => {
               >
                 <label
                   htmlFor="subject"
-                  className="block text-gray-700 font-medium mb-2"
+                  className="block font-medium mb-2"
+                  style={{ color: '#1F2937' }}
                 >
                   Subject
                 </label>
@@ -378,7 +494,12 @@ const Contact = () => {
                   onFocus={() => handleFocus("subject")}
                   onBlur={handleBlur}
                   required
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-300"
+                  className="w-full px-4 py-3 rounded-xl border border-white/30 transition-all duration-300 placeholder-gray-400"
+                  style={{
+                    background: 'rgba(255, 255, 255, 0.4)',
+                    backdropFilter: 'blur(10px)',
+                    color: '#1F2937'
+                  }}
                   placeholder="Subject"
                 />
               </motion.div>
@@ -389,7 +510,8 @@ const Contact = () => {
               >
                 <label
                   htmlFor="user_feedback"
-                  className="block text-gray-700 font-medium mb-2"
+                  className="block font-medium mb-2"
+                  style={{ color: '#1F2937' }}
                 >
                   Message
                 </label>
@@ -402,25 +524,29 @@ const Contact = () => {
                   onBlur={handleBlur}
                   required
                   rows="5"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-300"
+                  className="w-full px-4 py-3 rounded-xl border border-white/30 transition-all duration-300 placeholder-gray-400 resize-none"
+                  style={{
+                    background: 'rgba(255, 255, 255, 0.4)',
+                    backdropFilter: 'blur(10px)',
+                    color: '#1F2937'
+                  }}
                   placeholder="Your Message"
                 ></textarea>
               </motion.div>
 
-              {/* Add hidden input for to_name */}
-              <input type="hidden" name="to_name" value="Khang Phan" />
-
               <motion.button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full bg-gradient-to-r from-emerald-500 to-cyan-500 text-white px-6 py-3 rounded-lg font-medium transition-all duration-300 shadow-lg hover:shadow-xl"
+                className="w-full px-6 py-4 rounded-xl font-semibold text-white transition-all duration-300 shadow-lg relative overflow-hidden"
+                style={{ backgroundColor: '#16A34A' }}
                 variants={buttonVariants}
                 initial="initial"
                 whileHover="hover"
                 whileTap="tap"
               >
+                <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-white/5" />
                 {isSubmitting ? (
-                  <span className="flex items-center justify-center">
+                  <span className="flex items-center justify-center relative z-2">
                     <svg
                       className="animate-spin -ml-1 mr-2 h-5 w-5 text-white"
                       xmlns="http://www.w3.org/2000/svg"
@@ -444,7 +570,7 @@ const Contact = () => {
                     Sending...
                   </span>
                 ) : (
-                  <span className="flex items-center justify-center">
+                  <span className="flex items-center justify-center relative z-2">
                     <FaPaperPlane className="mr-2" />
                     Send Message
                   </span>
@@ -454,13 +580,18 @@ const Contact = () => {
               <AnimatePresence>
                 {submitSuccess && (
                   <motion.div
-                    className="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 text-green-800 px-4 py-3 rounded-lg flex items-center"
+                    className="border border-green-200 text-green-700 px-4 py-3 rounded-xl flex items-center relative overflow-hidden"
+                    style={{
+                      background: 'rgba(220, 252, 231, 0.6)',
+                      backdropFilter: 'blur(10px)'
+                    }}
                     initial="hidden"
                     animate="visible"
                     exit="exit"
                     variants={successVariants}
                   >
-                    <div className="flex-shrink-0 mr-3">
+                    <div className="absolute inset-0 bg-gradient-to-r from-green-50/20 to-green-100/10" />
+                    <div className="flex-shrink-0 mr-3 relative z-2">
                       <svg
                         className="h-5 w-5 text-green-500"
                         fill="currentColor"
@@ -473,9 +604,8 @@ const Contact = () => {
                         />
                       </svg>
                     </div>
-                    <span>
-                      Your message has been sent successfully! I'll get back to
-                      you soon.
+                    <span className="relative z-2">
+                      Your message has been sent successfully! I'll get back to you soon.
                     </span>
                   </motion.div>
                 )}
@@ -484,13 +614,18 @@ const Contact = () => {
               <AnimatePresence>
                 {submitError && (
                   <motion.div
-                    className="bg-gradient-to-r from-red-50 to-red-100 border border-red-200 text-red-800 px-4 py-3 rounded-lg flex items-center"
+                    className="border border-red-200 text-red-700 px-4 py-3 rounded-xl flex items-center relative overflow-hidden"
+                    style={{
+                      background: 'rgba(254, 226, 226, 0.6)',
+                      backdropFilter: 'blur(10px)'
+                    }}
                     initial="hidden"
                     animate="visible"
                     exit="exit"
                     variants={successVariants}
                   >
-                    <div className="flex-shrink-0 mr-3">
+                    <div className="absolute inset-0 bg-gradient-to-r from-red-50/20 to-red-100/10" />
+                    <div className="flex-shrink-0 mr-3 relative z-2">
                       <svg
                         className="h-5 w-5 text-red-500"
                         fill="currentColor"
@@ -503,11 +638,11 @@ const Contact = () => {
                         />
                       </svg>
                     </div>
-                    <span>{submitError}</span>
+                    <span className="relative z-2">{submitError}</span>
                   </motion.div>
                 )}
               </AnimatePresence>
-            </form>
+            </div>
           </motion.div>
         </motion.div>
       </div>

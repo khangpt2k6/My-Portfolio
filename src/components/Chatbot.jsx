@@ -365,9 +365,6 @@ export default function Chatbot() {
         
         Provide a concise, helpful, friendly response as a chatbot assistant.
         Format your response using markdown for better readability.
-        When including links, make sure to use proper markdown format: [link text](url)
-        IMPORTANT: When providing links, especially to GitHub repositories, include the link only ONCE with proper markdown format.
-        DO NOT repeat the same link multiple times in different formats.
         Use bullet points, bold, italics, code blocks, and other markdown features when appropriate.
         Keep responses focused on answering the user's question.
       `;

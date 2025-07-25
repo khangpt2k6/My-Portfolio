@@ -10,11 +10,9 @@ import { RiAiGenerate } from "react-icons/ri";
 import { BsCodeSlash } from "react-icons/bs";
 
 const Projects = () => {
-  // State to track which project is currently selected for modal view
   const [activeProject, setActiveProject] = useState(null);
   const modalRef = useRef(null);
 
-  // Disable scrolling when modal is open
   useEffect(() => {
     if (activeProject) {
       document.body.style.overflow = "hidden";
@@ -27,149 +25,106 @@ const Projects = () => {
     };
   }, [activeProject]);
 
-  // Handle clicking outside the modal to close it
   const handleClickOutside = (e) => {
     if (modalRef.current && !modalRef.current.contains(e.target)) {
       setActiveProject(null);
     }
   };
 
-  // Animation variants for the title animations
   const titleAnimation = {
     hidden: { opacity: 0, y: -20 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.6 } },
   };
 
-  // Project data array
   const projects = [
+    {
+      id: 3,
+      title: "NaviCV",
+      technologies: "Python, FastAPI, FAISS (Vector Search), Transformers (NLP), RemoteOK API, Docker, React",
+      description: [
+        "An AI-powered resume optimization platform that intelligently matches candidates with relevant job opportunities using advanced vector search and NLP technologies."
+      ],
+      image: "/Navicv.png",
+      github: "https://github.com/khangpt2k6/NaviCV",
+      color: "#16A34A",
+      icon: <IoRocketSharp size={24} />,
+    },
+    {
+      id: 5,
+      title: "Algovis",
+      technologies: "Java, JavaFX",
+      description: [
+        "An interactive algorithm visualization tool that brings sorting algorithms to life through dynamic animations and real-time performance analysis."
+      ],
+      image: "/Algovis.png",
+      github: "https://github.com/khangpt2k6/Algovis",
+      color: "#16A34A",
+      icon: <BsCodeSlash size={24} />,
+    },
     {
       id: 1,
       title: "Hospify",
-      role: "Hospital Services Website",
       technologies:
-        "MongoDB, Material UI, React.js, Node.js, Express.js, Cloudinary, Gemini API, Google Maps API, GPT 3.5 Turbo API, Stripe, RazorPay",
+        "MongoDB, React.js, Redux, Node.js, Express.js, Cloudinary, Gemini API, Google Maps API, Stripe, Google Cloud",
       description: [
-        "Built a full-stack hospital services platform using the MERN stack, streamlining appointment booking, diagnosis assistance, and facility navigation.",
-        "Developed a responsive admin dashboard to manage appointments, doctors, patient records, and service schedules efficiently.",
-        "Integrated GPT-3.5 Turbo and Gemini API (Model 2-0 Flash) to power AI-driven symptom checking and personalized health recommendations, enhancing user self-assessment experiences.",
-        "Created a real-time medical facility locator using the Google Maps API, allowing patients to quickly find nearby hospitals and clinics with live availability updates.",
-        "Integrated secure payment gateways with Stripe and RazorPay, ensuring smooth transactions and transparent billing processes.",
-        "Implemented Cloudinary for optimized storage and management of medical reports, prescriptions, and facility images.",
-        "Developed a web scraping system to collect and update medical facility data and pharmacy product listings automatically.",
-        "Built a fully functional e-commerce platform for the pharmacy section, enabling users to order medicines and health products online with doorstep delivery options.",
-        "Ensured HIPAA compliance and implemented strong encryption protocols to protect patient data and payment information.",
-        "Designed a mobile-responsive UI/UX for seamless usage across devices, focusing on accessibility and intuitive navigation.",
+        "A comprehensive hospital booking platform that streamlines appointment scheduling, diagnosis assistance, and facility navigation with AI-powered health recommendations and real-time availability updates."
       ],
-      image: "/HOSPIFY.jpg",
-      github: "https://github.com/khangpt2k6/Deploy_Hospify",
-      demo: "https://github.com/khangpt2k6/Deploy_Hospify",
-      color: "#4ade80",
+      image: "/Hosplify.png",
+      github: "https://github.com/khangpt2k6/Hosplify",
+      color: "#16A34A",
       icon: <RiAiGenerate size={24} />,
     },
     {
       id: 2,
-      title: "SkinIntel — AI-powered Healthcare Platform",
-      role: "Hackathon",
-      period: "April 2025 – Present",
+      title: "SkinIntel",
       technologies:
         "React, Tailwind CSS, FastAPI, PyTorch, TensorFlow, OpenCV, Google Maps API",
       description: [
-        "Architected and developed a comprehensive healthcare platform that utilizes Convolutional Neural Networks (CNN) including ResNet-50 and Inception-v3 architectures for accurate skin lesion classification",
-        "Implemented U-Net segmentation models for precise lesion boundary detection, trained on multiple medical imaging datasets including HAM10000, ISIC, and NIH collections",
-        "Engineered a responsive and accessible user interface using Vite, React, and Tailwind CSS, focusing on intuitive user experience for both patients and healthcare providers",
-        "Built a high-performance FastAPI backend system that efficiently handles data processing pipelines and machine learning model inference",
-        "Integrated Google Maps API with custom implementation of Dijkstra's algorithm to connect users with the nearest qualified healthcare providers based on specialized needs",
-        "Established HIPAA-compliant data handling protocols to ensure patient information security and privacy throughout the application",
-        "Implemented comprehensive testing procedures including unit tests and end-to-end testing to ensure platform reliability",
+        "An advanced healthcare platform utilizing CNN architectures for accurate skin lesion classification and U-Net segmentation models for precise boundary detection."
       ],
       image: "/Skin.png",
       github: "https://github.com/XuanGiaHanNguyen/HackUSF",
       demo: "https://github.com/XuanGiaHanNguyen/HackUSF",
-      color: "#4ade80",
+      color: "#16A34A",
       icon: <RiAiGenerate size={24} />,
-    },
-    {
-      id: 3,
-      title: "Finova - Bank Management System",
-      role: "Backend Developer",
-      technologies: "Java, MySQL, Spring Boot, Hibernate",
-      description: [
-        "Developed a Java-based Bank Management System with full CRUD operations for customers and accounts, integrating MySQL for secure data storage and retrieval.",
-        "Implemented transaction management features including deposits, withdrawals, transfers, and account statements with date range filtering.",
-        "Designed and optimized relational database schemas to support multiple account types (Savings, Checking, Fixed Deposit) and transaction histories.",
-      ],
-      image: "/Tracklify.png",
-      github: "https://github.com/khangpt2k6/BankManagementSystem",
-      demo: "https://github.com/khangpt2k6/BankManagementSystem",
-      color: "#f97316",
-      icon: <IoRocketSharp size={24} />,
     },
     {
       id: 4,
       title: "GreenCart",
-      role: "Full-Stack Developer",
       technologies:
         "React.js, TailwindCSS, Next.js, MongoDB, Flask, Python, Google Gemini API, Chrome Extensions API",
       description: [
-        "Developed an AI-powered sustainability platform offering real-time product analysis, eco-friendly alternatives, and a dedicated marketplace to promote conscious consumerism.",
-        "Built a browser extension integrating with major e-commerce sites (Amazon, eBay) to display instant sustainability scores and recommend greener product choices.",
-        "Implemented a full-stack solution for intelligent product analysis and user-friendly UI/UX with 200+ active users.",
+        "An AI-powered sustainability platform with browser extension integration that provides real-time product analysis, eco-friendly alternatives, and sustainability scoring."
       ],
       image: "/GREENCART.png",
       github: "https://devpost.com/software/hackabullhkkt",
       demo: "https://devpost.com/software/hackabullhkkt",
-      color: "#06b6d4",
+      color: "#16A34A",
       icon: <RiAiGenerate size={24} />,
-    },
-    {
-      id: 5,
-      title: "GeoVista — Interactive Geographic Information System",
-      role: "Full-Stack Developer",
-      technologies: "Python, Django, Supabase, Boostrap, RESTs API, TypeScript",
-      description: [
-        "Developed a sophisticated web-based interactive map application that integrates real-time location data to provide users with an efficient navigation tool",
-        "Optimized map rendering and search functionality, reducing query response times by 0.482 seconds and creating a more responsive user experience",
-        "Designed and implemented a custom API system to fetch and process complex geospatial data, improving location-based feature accuracy by 23.2%",
-        "Created an intuitive user interface with responsive design principles to ensure functionality across desktop and mobile devices",
-        "Implemented efficient data caching strategies to reduce server load and improve application performance",
-        "Integrated third-party mapping services with custom overlay features to enhance user navigation experience",
-      ],
-      image: "/Map.jpg",
-      github: "https://github.com/khangpt2k6/GeoVista",
-      demo: "https://github.com/khangpt2k6/GeoVista",
-      color: "#3b82f6",
-      icon: <BsCodeSlash size={24} />,
     },
     {
       id: 6,
       title: "PathFinder X — Autonomous Navigation Robot",
-      role: "Embedded Systems Engineer",
       technologies:
         "Arduino, C++, Ultrasonic Sensors, IR Sensors, L298N H-Bridge",
       description: [
-        "Led a team of 5 engineers in the development of an Arduino-based autonomous robot designed for obstacle detection and avoidance in dynamic environments",
-        "Programmed embedded C++ software for seamless sensor integration and precise motor control using L298N H-Bridge components",
-        "Implemented PID (Proportional-Integral-Derivative) control algorithms to enhance maneuverability and increase motion smoothness by 40%",
-        "Designed and assembled the robot's physical structure, incorporating optimal sensor placement for maximum environmental awareness",
-        "Created comprehensive documentation including circuit diagrams, code documentation, and operating procedures",
-        "Conducted extensive testing in varied environments to validate the robot's performance and reliability",
+        "An Arduino-based autonomous robot designed for dynamic obstacle detection and avoidance, featuring PID control algorithms for enhanced maneuverability and motion precision."
       ],
       image: "/Arduino.jpg",
       github: "https://github.com/khangpt2k6/Arduino-based-Robot",
       demo: "https://github.com/khangpt2k6/Arduino-based-Robot",
-      color: "#d946ef",
+      color: "#16A34A",
       icon: <FaTools size={24} />,
     },
   ];
 
-  // Tilt settings for card hover effects
   const tiltOptions = {
     max: 5,
     scale: 1.02,
     speed: 1000,
     glareEnable: true,
-    glareMaxOpacity: 0.1,
-    glareColor: "#ffffff",
+    glareMaxOpacity: 0.05,
+    glareColor: "#16A34A",
     glarePosition: "all",
     glareBorderRadius: "12px",
   };
@@ -177,16 +132,25 @@ const Projects = () => {
   return (
     <section
       id="projects"
-      className="relative py-24 bg-emerald-100/70 backdrop-blur-sm rounded-full flex border border-emerald-200 shadow-lg"
+      className="relative py-24 bg-white overflow-hidden"
     >
-      {/* Background patterns */}
-      <div className="absolute inset-0 opacity-10">
-        <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(#3cba92_1px,transparent_1px)] [background-size:40px_40px]"></div>
+      {/* Floating Bubbles Animation */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {[...Array(8)].map((_, i) => (
+          <div
+            key={i}
+            className="absolute rounded-full bg-gradient-to-br from-green-100 to-green-200 opacity-30"
+            style={{
+              width: `${Math.random() * 100 + 50}px`,
+              height: `${Math.random() * 100 + 50}px`,
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+              animationDelay: `${Math.random() * 10}s`,
+              animation: `float ${10 + Math.random() * 10}s ease-in-out infinite alternate`,
+            }}
+          />
+        ))}
       </div>
-
-      {/* Background blobs */}
-      <div className="absolute top-20 left-1/4 w-96 h-96 bg-emerald-500 rounded-full mix-blend-multiply filter blur-xl opacity-5 animate-blob"></div>
-      <div className="absolute top-40 right-1/4 w-96 h-96 bg-teal-500 rounded-full mix-blend-multiply filter blur-xl opacity-5 animate-blob animation-delay-2000"></div>
 
       <div className="container relative mx-auto px-4 md:px-6 z-10">
         {/* Section title */}
@@ -197,11 +161,18 @@ const Projects = () => {
           viewport={{ once: true }}
         >
           <motion.h2
-            className="text-3xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-emerald-600 to-cyan-600 bg-clip-text text-transparent"
+            className="text-3xl md:text-5xl font-bold mb-4"
+style={{ color: "#16A34A" }}
             variants={titleAnimation}
           >
-            Project Showcase
+            Project
           </motion.h2>
+          <motion.p 
+            className="text-gray-600 text-lg max-w-2xl mx-auto"
+            variants={titleAnimation}
+          >
+            Explore my latest work in web development, AI, and embedded systems
+          </motion.p>
         </motion.div>
 
         {/* Project cards grid */}
@@ -215,66 +186,56 @@ const Projects = () => {
               viewport={{ once: true, margin: "-50px" }}
             >
               <Tilt options={tiltOptions} className="h-full">
-                <div className="relative h-full bg-gray-800 bg-opacity-80 backdrop-blur-sm rounded-xl overflow-hidden border border-gray-700 shadow-lg hover:shadow-emerald-500/20 transition-all duration-300">
-                  {/* Color accent background */}
-                  <div
-                    className="absolute inset-0 opacity-10 transition-opacity duration-300 group-hover:opacity-20"
-                    style={{
-                      background: `radial-gradient(circle at 50% 0%, ${project.color}, transparent 70%)`,
-                    }}
-                  ></div>
-
+                <div className="relative h-full bg-gray-50 rounded-xl overflow-hidden border border-gray-200 shadow-sm hover:shadow-lg transition-all duration-300 group">
                   {/* Project image */}
-                  <div className="relative h-56 overflow-hidden">
+                  <div className="relative h-56 overflow-hidden bg-gray-100">
                     <img
                       src={project.image || "/placeholder.svg"}
                       alt={project.title}
-                      className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-transparent to-transparent opacity-80"></div>
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent"></div>
 
                     {/* Role badge */}
-                    <div className="absolute top-4 left-4 bg-gray-900 bg-opacity-80 backdrop-blur-sm px-3 py-1 rounded-full border border-gray-700 flex items-center">
-                      <div
-                        className="w-2 h-2 rounded-full mr-2"
-                        style={{ backgroundColor: project.color }}
-                      ></div>
-                      <span className="text-xs font-medium text-white">
-                        {project.role}
-                      </span>
-                    </div>
+                    {project.role && (
+                      <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full border border-gray-200 flex items-center">
+                        <div className="w-2 h-2 rounded-full mr-2 bg-green-500"></div>
+                        <span className="text-xs font-medium text-gray-700">
+                          {project.role}
+                        </span>
+                      </div>
+                    )}
 
                     {/* Quick action buttons */}
-                    <div className="absolute bottom-4 right-4 flex space-x-2">
+                    <div className="absolute bottom-4 right-4 flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                       <a
                         href={project.github}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="bg-gray-800 bg-opacity-90 text-white p-2 rounded-full hover:bg-emerald-600 transition-all duration-300 transform hover:scale-110"
+                        className="bg-white/90 text-gray-700 p-2 rounded-full hover:bg-green-500 hover:text-white transition-all duration-300 transform hover:scale-110 shadow-sm"
                         aria-label="GitHub"
                       >
                         <FaGithub size={18} />
                       </a>
-                      <a
-                        href={project.demo}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="bg-gray-800 bg-opacity-90 text-white p-2 rounded-full hover:bg-emerald-600 transition-all duration-300 transform hover:scale-110"
-                        aria-label="Live Demo"
-                      >
-                        <FaExternalLinkAlt size={16} />
-                      </a>
+                      {project.demo && (
+                        <a
+                          href={project.demo}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="bg-white/90 text-gray-700 p-2 rounded-full hover:bg-green-500 hover:text-white transition-all duration-300 transform hover:scale-110 shadow-sm"
+                          aria-label="Live Demo"
+                        >
+                          <FaExternalLinkAlt size={16} />
+                        </a>
+                      )}
                     </div>
                   </div>
 
                   {/* Project content */}
                   <div className="p-6 relative z-10">
-                    <h3 className="text-xl font-bold text-white mb-2 line-clamp-2">
+                    <h3 className="text-xl font-bold text-gray-800 mb-2 line-clamp-2">
                       {project.title}
                     </h3>
-                    <p className="text-emerald-400 mb-3 text-sm font-medium">
-                      {project.period}
-                    </p>
 
                     {/* Tech tags */}
                     <div className="mb-4 flex flex-wrap gap-2">
@@ -284,31 +245,29 @@ const Projects = () => {
                         .map((tech, i) => (
                           <span
                             key={i}
-                            className="text-xs px-2 py-1 rounded-full bg-gray-700 bg-opacity-60 text-gray-300"
+                            className="text-xs px-2 py-1 rounded-full bg-gray-200 text-gray-600"
                           >
                             {tech}
                           </span>
                         ))}
                       {project.technologies.split(", ").length > 3 && (
-                        <span className="text-xs px-2 py-1 rounded-full bg-gray-700 bg-opacity-60 text-gray-300">
+                        <span className="text-xs px-2 py-1 rounded-full bg-gray-200 text-gray-600">
                           +{project.technologies.split(", ").length - 3}
                         </span>
                       )}
                     </div>
 
                     {/* Description preview */}
-                    <p className="text-gray-300 mb-4 line-clamp-3 text-sm">
+                    <p className="text-gray-600 mb-4 line-clamp-3 text-sm">
                       {project.description[0]}
                     </p>
 
                     {/* Explore button */}
                     <button
                       onClick={() => setActiveProject(project)}
-                      className="group flex items-center text-emerald-400 hover:text-emerald-300 transition-colors duration-300"
+                      className="group flex items-center text-green-600 hover:text-green-700 transition-colors duration-300 font-medium"
                     >
-                      <span className="font-medium text-sm">
-                        Explore Project
-                      </span>
+                      <span className="text-sm">Explore Project</span>
                       <svg
                         className="w-4 h-4 ml-1 transform transition-transform duration-300 group-hover:translate-x-1"
                         fill="none"
@@ -339,7 +298,7 @@ const Projects = () => {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.3 }}
-              className="fixed inset-0 bg-black bg-opacity-80 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-hidden"
+              className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-hidden"
               onClick={handleClickOutside}
             >
               <motion.div
@@ -348,17 +307,17 @@ const Projects = () => {
                 animate={{ scale: 1, opacity: 1 }}
                 exit={{ scale: 0.95, opacity: 0 }}
                 transition={{ duration: 0.3 }}
-                className="bg-gray-900 border border-gray-700 rounded-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-xl"
+                className="bg-white rounded-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-xl border border-gray-200"
               >
                 {/* Modal header with image */}
                 <div className="relative">
-                  <div className="h-64 overflow-hidden">
+                  <div className="h-64 overflow-hidden bg-gray-100">
                     <img
                       src={activeProject.image || "/placeholder.svg"}
                       alt={activeProject.title}
                       className="w-full h-full object-cover"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-gray-900"></div>
+                    <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-white/20"></div>
                   </div>
 
                   {/* Close button */}
@@ -367,46 +326,38 @@ const Projects = () => {
                       e.stopPropagation();
                       setActiveProject(null);
                     }}
-                    className="absolute top-4 right-4 bg-gray-800 bg-opacity-80 p-2 rounded-full text-gray-400 hover:text-white transition-colors duration-300 hover:bg-gray-700"
+                    className="absolute top-4 right-4 bg-white/90 p-2 rounded-full text-gray-600 hover:text-gray-800 hover:bg-white transition-all duration-300 shadow-sm"
                     aria-label="Close modal"
                   >
                     <HiX size={20} />
                   </button>
 
                   {/* Role badge */}
-                  <div className="absolute bottom-4 left-4">
-                    <div
-                      className="px-3 py-1 rounded-full text-sm font-medium inline-flex items-center gap-2"
-                      style={{
-                        backgroundColor: `${activeProject.color}20`,
-                        color: activeProject.color,
-                        borderLeft: `3px solid ${activeProject.color}`,
-                      }}
-                    >
-                      <span>{activeProject.role}</span>
+                  {activeProject.role && (
+                    <div className="absolute bottom-4 left-4">
+                      <div className="px-4 py-2 rounded-full text-sm font-medium bg-green-500 text-white shadow-sm">
+                        {activeProject.role}
+                      </div>
                     </div>
-                  </div>
+                  )}
                 </div>
 
                 {/* Modal content */}
                 <div className="p-8 pt-4">
-                  <h3 className="text-3xl font-bold text-white mb-2">
+                  <h3 className="text-3xl font-bold text-gray-800 mb-2">
                     {activeProject.title}
                   </h3>
-                  <p className="text-emerald-400 font-medium mb-6">
-                    {activeProject.period}
-                  </p>
 
                   {/* Technologies section */}
                   <div className="mb-8">
-                    <h4 className="text-lg font-semibold text-white mb-3 flex items-center">
-                      <FaTools className="text-emerald-500 mr-2" /> Technologies
+                    <h4 className="text-lg font-semibold text-gray-800 mb-3 flex items-center">
+                      <FaTools className="text-green-500 mr-2" /> Technologies
                     </h4>
                     <div className="flex flex-wrap gap-2">
                       {activeProject.technologies.split(", ").map((tech, i) => (
                         <span
                           key={i}
-                          className="text-sm px-3 py-1 rounded-full bg-gray-800 text-gray-300 border border-gray-700"
+                          className="text-sm px-3 py-1 rounded-full bg-gray-100 text-gray-700 border border-gray-200"
                         >
                           {tech}
                         </span>
@@ -414,11 +365,10 @@ const Projects = () => {
                     </div>
                   </div>
 
-                  {/* Accomplishments section */}
+                  {/* Description section */}
                   <div className="mb-8">
-                    <h4 className="text-lg font-semibold text-white mb-3 flex items-center">
-                      <FaCode className="text-emerald-500 mr-2" /> Key
-                      Accomplishments
+                    <h4 className="text-lg font-semibold text-gray-800 mb-3 flex items-center">
+                      <FaCode className="text-green-500 mr-2" /> Project Overview
                     </h4>
                     <div className="space-y-4">
                       {activeProject.description.map((item, i) => (
@@ -429,18 +379,10 @@ const Projects = () => {
                           transition={{ duration: 0.2, delay: i * 0.05 }}
                           className="flex items-start"
                         >
-                          <div
-                            className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center mt-1 mr-3"
-                            style={{
-                              backgroundColor: `${activeProject.color}20`,
-                            }}
-                          >
-                            <div
-                              className="w-2 h-2 rounded-full"
-                              style={{ backgroundColor: activeProject.color }}
-                            ></div>
+                          <div className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center mt-1 mr-3 bg-green-100">
+                            <div className="w-2 h-2 rounded-full bg-green-500"></div>
                           </div>
-                          <p className="text-gray-300">{item}</p>
+                          <p className="text-gray-600">{item}</p>
                         </motion.div>
                       ))}
                     </div>
@@ -452,18 +394,20 @@ const Projects = () => {
                       href={activeProject.github}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="bg-gray-800 hover:bg-gray-700 text-white px-6 py-3 rounded-xl font-medium transition-all duration-300 flex items-center gap-2 border border-gray-700"
+                      className="bg-gray-100 hover:bg-gray-200 text-gray-800 px-6 py-3 rounded-xl font-medium transition-all duration-300 flex items-center gap-2 border border-gray-200"
                     >
                       <FaGithub size={20} /> View Code
                     </a>
-                    <a
-                      href={activeProject.demo}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-3 rounded-xl font-medium transition-all duration-300 flex items-center gap-2 shadow-md"
-                    >
-                      <FaExternalLinkAlt size={18} /> Live Demo
-                    </a>
+                    {activeProject.demo && (
+                      <a
+                        href={activeProject.demo}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-xl font-medium transition-all duration-300 flex items-center gap-2 shadow-sm"
+                      >
+                        <FaExternalLinkAlt size={18} /> Live Demo
+                      </a>
+                    )}
                   </div>
                 </div>
               </motion.div>
@@ -474,27 +418,30 @@ const Projects = () => {
 
       {/* Animation styles */}
       <style jsx global>{`
-        @keyframes blob {
+        @keyframes float {
           0% {
-            transform: translate(0px, 0px) scale(1);
+            transform: translateY(0px) rotate(0deg);
           }
-          33% {
-            transform: translate(30px, -50px) scale(1.1);
-          }
-          66% {
-            transform: translate(-20px, 20px) scale(0.9);
+          50% {
+            transform: translateY(-20px) rotate(180deg);
           }
           100% {
-            transform: translate(0px, 0px) scale(1);
+            transform: translateY(0px) rotate(360deg);
           }
         }
 
-        .animate-blob {
-          animation: blob 20s infinite alternate;
+        .line-clamp-2 {
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
         }
 
-        .animation-delay-2000 {
-          animation-delay: 2s;
+        .line-clamp-3 {
+          display: -webkit-box;
+          -webkit-line-clamp: 3;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
         }
       `}</style>
     </section>

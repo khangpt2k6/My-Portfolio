@@ -1,10 +1,45 @@
 import { useState, useEffect } from 'react';
-import { FaGithub, FaLinkedin, FaEnvelope, FaArrowUp } from "react-icons/fa";
+import { FaGithub, FaLinkedin, FaEnvelope, FaArrowUp, FaMapMarkerAlt, FaPhone } from "react-icons/fa";
 import { Link } from "react-scroll";
 
 const Footer = () => {
   const [isVisible, setIsVisible] = useState(false);
+  const [particles, setParticles] = useState([]);
   const currentYear = new Date().getFullYear();
+
+  // Generate particles
+  useEffect(() => {
+    const generateParticles = () => {
+      const newParticles = [];
+      for (let i = 0; i < 25; i++) {
+        newParticles.push({
+          id: i,
+          x: Math.random() * 100,
+          y: Math.random() * 100,
+          size: Math.random() * 2 + 1,
+          speedX: (Math.random() - 0.5) * 0.5,
+          speedY: (Math.random() - 0.5) * 0.5,
+          opacity: Math.random() * 0.3 + 0.1,
+        });
+      }
+      setParticles(newParticles);
+    };
+
+    generateParticles();
+  }, []);
+
+  // Animate particles
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setParticles(prev => prev.map(particle => ({
+        ...particle,
+        x: (particle.x + particle.speedX + 100) % 100,
+        y: (particle.y + particle.speedY + 100) % 100,
+      })));
+    }, 50);
+
+    return () => clearInterval(interval);
+  }, []);
 
   // Controls scroll button visibility
   useEffect(() => {
@@ -23,65 +58,147 @@ const Footer = () => {
   }, []);
 
   return (
-    <footer className="bg-gradient-to-r from-emerald-900 via-emerald-800 to-emerald-900 text-white py-12">
-      {/* Semi-transparent divider */}
-      <div className="w-full max-w-6xl mx-auto px-4">
-        <div className="h-px bg-gradient-to-r from-transparent via-white/20 to-transparent mb-10"></div>
+    <footer className="relative bg-white text-gray-800 py-16 overflow-hidden">
+      {/* Animated Particles */}
+      <div className="absolute inset-0 pointer-events-none">
+        {particles.map(particle => (
+          <div
+            key={particle.id}
+            className="absolute w-1 h-1 bg-green-600 rounded-full"
+            style={{
+              left: `${particle.x}%`,
+              top: `${particle.y}%`,
+              opacity: particle.opacity,
+              transform: `scale(${particle.size})`,
+              transition: 'all 0.05s linear',
+            }}
+          />
+        ))}
       </div>
 
-      <div className="max-w-6xl mx-auto px-4 sm:px-6">
-        <div className="flex flex-col md:flex-row justify-between items-center">
-          {/* Left section */}
-          <div className="mb-8 md:mb-0 text-center md:text-left">
-            <h2 className="text-3xl font-bold mb-4 tracking-tight">Tuan Khang Phan</h2>
-            <p className="text-emerald-200 mb-6">
-              Computer Science Student
-            </p>
-            <div className="flex space-x-5 justify-center md:justify-start">
+      <div className="relative max-w-7xl mx-auto px-6 lg:px-8">
+        {/* Main Content Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 mb-12">
+          
+          {/* Personal Branding Section */}
+          <div className="lg:col-span-1 space-y-6">
+            <div>
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                Tuan Khang Phan
+              </h2>
+              <div className="w-12 h-1 bg-green-600 mb-4"></div>
+            </div>
+            
+            {/* Social Links */}
+            <div className="flex space-x-4">
               <a
                 href="https://github.com/khangpt2k6"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="transform transition-transform hover:-translate-y-1 duration-300"
+                className="group relative"
                 aria-label="GitHub Profile"
               >
-                <div className="bg-white/10 hover:bg-white/20 p-3 rounded-full transition-colors duration-300">
-                  <FaGithub size={20} />
+                <div className="w-12 h-12 bg-white border border-gray-200 rounded-lg flex items-center justify-center transition-all duration-300 group-hover:border-green-600 group-hover:shadow-lg group-hover:-translate-y-1">
+                  <FaGithub className="text-gray-700 group-hover:text-green-600 transition-colors duration-300" size={18} />
                 </div>
               </a>
               <a
                 href="https://linkedin.com/in/tuankhangphan"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="transform transition-transform hover:-translate-y-1 duration-300"
+                className="group relative"
                 aria-label="LinkedIn Profile"
               >
-                <div className="bg-white/10 hover:bg-white/20 p-3 rounded-full transition-colors duration-300">
-                  <FaLinkedin size={20} />
+                <div className="w-12 h-12 bg-white border border-gray-200 rounded-lg flex items-center justify-center transition-all duration-300 group-hover:border-green-600 group-hover:shadow-lg group-hover:-translate-y-1">
+                  <FaLinkedin className="text-gray-700 group-hover:text-green-600 transition-colors duration-300" size={18} />
                 </div>
               </a>
               <a
                 href="mailto:khang18@usf.edu"
-                className="transform transition-transform hover:-translate-y-1 duration-300"
+                className="group relative"
                 aria-label="Email Contact"
               >
-                <div className="bg-white/10 hover:bg-white/20 p-3 rounded-full transition-colors duration-300">
-                  <FaEnvelope size={20} />
+                <div className="w-12 h-12 bg-white border border-gray-200 rounded-lg flex items-center justify-center transition-all duration-300 group-hover:border-green-600 group-hover:shadow-lg group-hover:-translate-y-1">
+                  <FaEnvelope className="text-gray-700 group-hover:text-green-600 transition-colors duration-300" size={18} />
                 </div>
               </a>
             </div>
           </div>
 
-          {/* Right section */}
-          <div className="text-center md:text-right">
-            <div className="mb-4">
-              <p className="mb-2 text-emerald-100">Contact Information</p>
-              <p className="text-sm text-emerald-200">Phone: 813-570-4370</p>
-              <p className="text-sm text-emerald-200">Email: khang18@usf.edu</p>
+          {/* Contact Information */}
+          <div className="lg:col-span-1 space-y-6">
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                Get In Touch
+              </h3>
+              <div className="space-y-3">
+                <div className="flex items-center space-x-3 text-gray-600">
+                  <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
+                    <FaEnvelope className="text-green-600" size={14} />
+                  </div>
+                  <span className="text-sm">khang18@usf.edu</span>
+                </div>
+                <div className="flex items-center space-x-3 text-gray-600">
+                  <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
+                    <FaPhone className="text-green-600" size={14} />
+                  </div>
+                  <span className="text-sm">813-570-4370</span>
+                </div>
+                <div className="flex items-center space-x-3 text-gray-600">
+                  <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
+                    <FaMapMarkerAlt className="text-green-600" size={14} />
+                  </div>
+                  <span className="text-sm">Tampa, Florida</span>
+                </div>
+              </div>
             </div>
-            
+          </div>
+
+          {/* Quick Actions */}
+          <div className="lg:col-span-1 space-y-6">
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                Quick Links
+              </h3>
+              <div className="space-y-2">
+                <Link
+                  to="about"
+                  smooth={true}
+                  duration={500}
+                  className="block text-gray-600 hover:text-green-600 transition-colors duration-300 cursor-pointer text-sm py-1"
+                >
+                  About Me
+                </Link>
+                <Link
+                  to="projects"
+                  smooth={true}
+                  duration={500}
+                  className="block text-gray-600 hover:text-green-600 transition-colors duration-300 cursor-pointer text-sm py-1"
+                >
+                  Projects
+                </Link>
+                <Link
+                  to="skills"
+                  smooth={true}
+                  duration={500}
+                  className="block text-gray-600 hover:text-green-600 transition-colors duration-300 cursor-pointer text-sm py-1"
+                >
+                  Skills
+                </Link>
+                <Link
+                  to="contact"
+                  smooth={true}
+                  duration={500}
+                  className="block text-gray-600 hover:text-green-600 transition-colors duration-300 cursor-pointer text-sm py-1"
+                >
+                  Contact
+                </Link>
+              </div>
+            </div>
+
+            {/* Back to Top Button */}
             <div 
-              className={`flex justify-center md:justify-end transition-opacity duration-300 ${
+              className={`transition-opacity duration-300 ${
                 isVisible ? 'opacity-100' : 'opacity-0'
               }`}
             >
@@ -91,18 +208,26 @@ const Footer = () => {
                 duration={500}
                 className="cursor-pointer inline-flex"
               >
-                <div className="flex items-center gap-2 text-sm text-emerald-300 hover:text-white transition-colors duration-300">
-                  <span>Back to top</span>
-                  <FaArrowUp size={14} />
+                <div className="flex items-center space-x-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5">
+                  <FaArrowUp size={12} />
+                  <span className="text-sm font-medium">Back to Top</span>
                 </div>
               </Link>
             </div>
           </div>
         </div>
 
-        {/* Bottom copyright */}
-        <div className="mt-12 pt-6 border-t border-white/10 text-center text-sm text-emerald-200/70">
-          <p>&copy; {currentYear} Tuan Khang Phan. All rights reserved.</p>
+        {/* Bottom Section */}
+        <div className="pt-8 border-t border-gray-300">
+          <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+            <div className="text-sm text-gray-500">
+              &copy; {currentYear} Tuan Khang Phan. All rights reserved.
+            </div>
+            <div className="flex items-center space-x-6 text-sm text-gray-500">
+              <span>Built with passion & dedication</span>
+              <div className="w-2 h-2 bg-green-600 rounded-full animate-pulse"></div>
+            </div>
+          </div>
         </div>
       </div>
     </footer>
