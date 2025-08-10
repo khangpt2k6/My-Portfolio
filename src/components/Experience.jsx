@@ -1,7 +1,6 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { motion } from "framer-motion"
 import { FaBriefcase, FaCalendarAlt, FaMapMarkerAlt, FaCode, FaLaptopCode, FaUserTie, FaHandsHelping } from "react-icons/fa"
 import { HiChevronRight } from "react-icons/hi"
 
@@ -41,9 +40,9 @@ const Experience = () => {
         image: "/vnpt.png",
         icon: <FaCode />,
         description: [
-          "Developed **secure user authentication flows** with token-based access and seamless frontend-backend integration, improving login reliability for **5,000+ daily users**.",
-          "Collaborated on **RESTful API designs** and optimized **SQL queries**, reducing API latency from **500ms to 350ms** under high-load scenarios.",
-          "Engineered **responsive web interfaces** using React, boosting usability and accessibility scores by **25%**."
+          "Architected scalable REST APIs on Supabase to support real-time data tracking for over 2,000 active users, achieving latency below 200ms.",
+          "Developed dynamic dashboards using React.js and Redux with WebSocket integration, boosting data visibility and accelerating decision-making by 40%.",
+          "Enhanced performance by optimizing SQL queries, indexing strategies, and API endpoints, cutting server response times by 60% during peak load."
         ],
         tags: ["React", "Node.js", "SQL", "REST API", "Authentication"]
       },
@@ -55,8 +54,8 @@ const Experience = () => {
         image: "/ACM.jpg",
         icon: <FaCode />,
         description: [
-          "Organized **2 technical workshops** on Docker and AI/ML, attracting **50+ student participants** and delivering hands-on demonstrations with real-world applications.",
-          "Maintained and scaled a **collaborative project hub**, providing technical guidance to **15 active members** and resolving live coding issues during events."
+          "Organized 2 practical workshops on Docker and React.js, training 75 participants through real-world coding exercises.",
+          "Providing technical mentorship to 15 developers and troubleshot live coding issues in a collaborative project environment"
         ],
         tags: ["Python", "JavaScript", "Full-Stack", "Docker", "AI/ML", "Leadership"]
       },
@@ -68,11 +67,10 @@ const Experience = () => {
         image: "/RL.jpg",
         icon: <FaLaptopCode />,
         description: [
-          "Developed **C++ algorithms** for autonomous robot navigation, improving simulation speed by **40%**, enabling faster experimental iterations.",
-          "Authored **technical reports and research papers** in LaTeX, contributing to successful grant proposals and publications.",
-          "Deployed **ROS environments** via Docker, reducing setup time for robot testing by **50%**."
+          "Engineered C++ algorithms using OpenCV and Eigen for real-time data processing, sensor fusion, and path optimization, increasing system accuracy and boosting simulation performance by 40%.",
+          "Developed and containerized ROS-based environment services with Docker, reducing deployment and environment setup time by 50%."
         ],
-        tags: ["ROS", "C++", "Python", "Docker", "Ubuntu", "Research", "Robotics", "LaTeX"]
+        tags: ["ROS", "C++", "Python", "Docker", "Robotics", "Linux", "Gazebo"]
       },
     ],
     partTime: [
@@ -88,7 +86,6 @@ const Experience = () => {
           "Enhanced event efficiency through **optimized workflows** and streamlined processes, reducing setup times by **30%** and improving overall operations for seamless event experiences.",
           "Provided direct support to **500+ guests** during events, ensuring prompt and professional assistance with directions, event information, and issue resolution."
         ],
-        tags: ["Event Planning", "Logistics", "Customer Service", "Team Coordination"]
       },
     ],
     volunteering: [
@@ -117,24 +114,11 @@ const Experience = () => {
           "Assisted in building prototypes and preparing competition projects using **Python and Arduino**, helping teams achieve top 3 placements in regional competitions."
         ],
         tags: ["Mentoring", "STEM Education", "Python", "Arduino", "Robotics"]
-      },
-      {
-        title: "Volunteer",
-        company: "BlissKidz",
-        location: "Da Nang, Vietnam",
-        period: "November 2022 - August 2023",
-        image: "/blisskidz.jpg",
-        icon: <FaHandsHelping />,
-        description: [
-          "Spearheaded **large-scale charity initiatives** benefiting **300+ underprivileged children** in Da Nang, including organizing projects at the SOS Children's Center, Da Nang Maternity Hospital, and remote mountainous areas.",
-          "Successfully raised **over $3,000** through comprehensive online and offline fundraising strategies, while coordinating collection of essential supplies including clothes, toys, and educational materials."
-        ],
-        tags: ["Fundraising", "Charity", "Event Planning", "Community Outreach"]
-      },
+      }
     ],
   }
 
-  // Animation variants
+  // Animation variants (simplified for compatibility)
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -178,11 +162,9 @@ const Experience = () => {
   }
 
   const renderExperienceCard = (exp, index) => (
-    <motion.div
+    <div
       key={index}
-      variants={cardVariants}
-      whileHover="hover"
-      className="bg-white/90 backdrop-blur-sm rounded-xl p-6 shadow-lg border mb-8 relative overflow-hidden"
+      className="bg-white/90 backdrop-blur-sm rounded-xl p-6 shadow-lg border mb-8 relative overflow-hidden hover:scale-105 transition-all duration-300"
       style={{ borderColor: 'rgba(22, 163, 74, 0.2)' }}
     >
       {/* Accent line */}
@@ -191,13 +173,9 @@ const Experience = () => {
       <div className="flex flex-col md:flex-row md:items-start">
         <div className="flex-shrink-0 mb-4 md:mb-0 md:mr-6">
           {exp.image ? (
-            <motion.div 
+            <div 
               className="w-16 h-16 rounded-full overflow-hidden border-2 shadow-md relative"
               style={{ borderColor: '#16A34A' }}
-              initial={{ scale: 0.8, opacity: 1 }}
-              whileInView={{ scale: 1, opacity: 1 }}
-              transition={{ type: "spring", stiffness: 300, damping: 15, delay: index * 0.1 }}
-              viewport={{ once: true }}
             >
               <img
                 src={exp.image}
@@ -205,66 +183,41 @@ const Experience = () => {
                 className="w-full h-full object-cover"
               />
               <div className="absolute inset-0 bg-gradient-to-r"></div>
-            </motion.div>
+            </div>
           ) : (
-            <motion.div 
+            <div 
               className="w-16 h-16 rounded-full flex items-center justify-center shadow-md"
               style={{ background: 'linear-gradient(to right, rgba(22, 163, 74, 0.1), rgba(22, 163, 74, 0.1))' }}
-              initial={{ scale: 0.8, opacity: 0 }}
-              whileInView={{ scale: 1, opacity: 1 }}
-              transition={{ type: "spring", stiffness: 300, damping: 15, delay: index * 0.1 }}
-              viewport={{ once: true }}
             >
               <div className="text-2xl" style={{ color: '#16A34A' }}>
                 {exp.icon || <FaBriefcase />}
               </div>
-            </motion.div>
+            </div>
           )}
         </div>
         <div className="flex-grow">
-          <motion.h3 
+          <h3 
             className="text-xl font-bold flex items-center"
             style={{ color: '#1F2937' }}
-            initial={{ opacity: 0, y: 10 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: index * 0.1 + 0.1 }}
-            viewport={{ once: true }}
           >
             {exp.title}
-            <motion.span 
-              className="ml-2 opacity-0"
+            <span 
+              className="ml-2"
               style={{ color: '#16A34A' }}
-              animate={{ 
-                opacity: [0, 1, 0],
-                x: [0, 4, 0], 
-              }}
-              transition={{ 
-                duration: 1.5, 
-                repeat: Infinity,
-                repeatDelay: 2
-              }}
             >
               <HiChevronRight />
-            </motion.span>
-          </motion.h3>
-          <motion.h4 
+            </span>
+          </h3>
+          <h4 
             className="text-lg mb-2"
             style={{ color: '#16A34A' }}
-            initial={{ opacity: 0, y: 10 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: index * 0.1 + 0.2 }}
-            viewport={{ once: true }}
           >
             {exp.company}
-          </motion.h4>
+          </h4>
 
-          <motion.div 
+          <div 
             className="flex flex-wrap mb-4"
             style={{ color: '#1F2937' }}
-            initial={{ opacity: 0, y: 10 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: index * 0.1 + 0.3 }}
-            viewport={{ once: true }}
           >
             <div className="flex items-center mr-6 mb-2">
               <FaMapMarkerAlt className="mr-1" style={{ color: '#16A34A' }} />
@@ -274,19 +227,13 @@ const Experience = () => {
               <FaCalendarAlt className="mr-1" style={{ color: '#16A34A' }} />
               <span>{exp.period}</span>
             </div>
-          </motion.div>
+          </div>
 
           {/* Tags */}
           {exp.tags && (
-            <motion.div 
-              className="flex flex-wrap gap-2 mb-4"
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              transition={{ duration: 0.4, delay: index * 0.1 + 0.4 }}
-              viewport={{ once: true }}
-            >
+            <div className="flex flex-wrap gap-2 mb-4">
               {exp.tags.map((tag, i) => (
-                <motion.span 
+                <span 
                   key={i}
                   className="px-2 py-1 text-xs rounded-full border"
                   style={{ 
@@ -294,52 +241,35 @@ const Experience = () => {
                     color: '#16A34A',
                     borderColor: 'rgba(22, 163, 74, 0.2)'
                   }}
-                  initial={{ scale: 0.8, opacity: 0 }}
-                  whileInView={{ scale: 1, opacity: 1 }}
-                  transition={{ duration: 0.3, delay: 0.1 * i + index * 0.05 }}
-                  viewport={{ once: true }}
                 >
                   {tag}
-                </motion.span>
+                </span>
               ))}
-            </motion.div>
+            </div>
           )}
 
-          <motion.ul 
-            className="space-y-2 ml-2"
-            variants={containerVariants}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-          >
+          <ul className="space-y-2 ml-2">
             {exp.description.map((item, i) => (
-              <motion.li 
+              <li 
                 key={i}
                 className="flex items-start"
                 style={{ color: '#1F2937' }}
-                variants={listItemVariants}
-                custom={i}
               >
                 <span className="mr-2 mt-1 flex-shrink-0" style={{ color: '#16A34A' }}>•</span>
                 <span dangerouslySetInnerHTML={{ __html: item.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') }}></span>
-              </motion.li>
+              </li>
             ))}
-          </motion.ul>
+          </ul>
         </div>
       </div>
-    </motion.div>
+    </div>
   )
 
   return (
     <section id="experience" className="py-20" style={{ backgroundColor: '#ffffff' }}>
       <div className="container mx-auto px-4 md:px-6">
-        <motion.div 
-          className="text-center mb-16"
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-        >
-          <motion.h2 
+        <div className="text-center mb-16">
+          <h2 
             className="text-3xl md:text-5xl font-bold mb-4"
             style={{ 
               background: `linear-gradient(to right, #16A34A, #16A34A)`,
@@ -347,47 +277,32 @@ const Experience = () => {
               WebkitTextFillColor: 'transparent',
               backgroundClip: 'text'
             }}
-            variants={titleVariants}
           >
             Experience
-          </motion.h2>
-          <motion.div 
-            initial={{ width: 0 }}
-            whileInView={{ width: "12rem" }}
-            transition={{ duration: 0.8, delay: 0.3 }}
-            viewport={{ once: true }}
-            className="h-1 mx-auto"
+          </h2>
+          <div 
+            className="h-1 mx-auto w-48"
             style={{ background: 'linear-gradient(to right, #16A34A, #16A34A)' }}
-          ></motion.div>
-          <motion.p 
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-            viewport={{ once: true }}
+          ></div>
+          <p 
             className="mt-4 max-w-2xl mx-auto"
             style={{ color: '#1F2937' }}
           >
             My commitment and journey
-          </motion.p>
-        </motion.div>
+          </p>
+        </div>
 
-        <motion.div 
-          className="mb-12 flex justify-center"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.1 }}
-          viewport={{ once: true }}
-        >
+        <div className="mb-12 flex justify-center">
           <div className="p-1 backdrop-blur-sm rounded-full flex border shadow-lg" style={{ backgroundColor: 'rgba(22, 163, 74, 0.1)', borderColor: 'rgba(22, 163, 74, 0.2)' }}>
             {[
               { id: "professional", label: "Professional", icon: <FaBriefcase className="mr-2" /> },
               { id: "partTime", label: "Part-Time", icon: <FaUserTie className="mr-2" /> },
               { id: "volunteering", label: "Volunteering", icon: <FaHandsHelping className="mr-2" /> }
             ].map((tab) => (
-              <motion.button
+              <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`px-6 py-2 rounded-full font-medium flex items-center justify-center min-w-32 transition-all duration-300 ${
+                className={`px-6 py-2 rounded-full font-medium flex items-center justify-center min-w-32 transition-all duration-300 hover:scale-105 ${
                   activeTab === tab.id 
                     ? "text-white shadow-md" 
                     : "bg-transparent hover:bg-opacity-70"
@@ -396,27 +311,17 @@ const Experience = () => {
                   ? { background: 'linear-gradient(to right, #16A34A, #16A34A)' }
                   : { color: '#16A34A', backgroundColor: 'transparent' }
                 }
-                whileHover={{
-                  scale: 1.05,
-                  transition: { type: "spring", stiffness: 400, damping: 10 }
-                }}
-                whileTap={{ scale: 0.95 }}
               >
                 {tab.icon}
                 {tab.label}
-              </motion.button>
+              </button>
             ))}
           </div>
-        </motion.div>
+        </div>
 
-        <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-100px" }}
-        >
+        <div>
           {experiences[activeTab].map((exp, index) => renderExperienceCard(exp, index))}
-        </motion.div>
+        </div>
       </div>
     </section>
   )

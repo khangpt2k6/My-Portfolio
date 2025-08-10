@@ -57,13 +57,11 @@ function App() {
               <Experience />
               <Projects />
               <Skills />
-              <Contact />
               <Footer />
             </>
           }
         />
       </Routes>
-      <Chatbot />
     </div>
   </Router>
   )

@@ -1,12 +1,13 @@
+"use client"
+
 import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import {
-  FaCode, 
-  FaDatabase, 
-  FaTools, 
-  FaLaptopCode, 
-  FaServer, 
-  FaDesktop,
+  FaCode,
+  FaDatabase,
+  FaTools,
+  FaLaptopCode,
+  FaServer,
   FaCertificate,
   FaPython,
   FaJs,
@@ -40,11 +41,9 @@ import {
   FaTimes,
   FaDownload,
   FaExternalLinkAlt,
-  FaSearch,
-  FaChevronRight,
-  FaExpand
+  FaExpand,
 } from "react-icons/fa"
-import { SiTypescript, SiMongodb, SiSupabase } from "react-icons/si"
+import { SiTypescript, SiMongodb, SiSupabase, SiFirebase } from "react-icons/si"
 import { FaGolang } from "react-icons/fa6"
 
 const Skills = () => {
@@ -53,46 +52,57 @@ const Skills = () => {
 
   const getSkillIcon = (skillName) => {
     const iconMap = {
-      "Python": <FaPython />,
+      Python: <FaPython />,
       "C/C++": <FaCode />,
-      "JavaScript": <FaJs />,
-      "TypeScript": <SiTypescript />,
-      "Arduino": <FaArduino />,
-      "Golang": <FaGolang />,
-      "LaTeX": <FaLatex />,
+      JavaScript: <FaJs />,
+      TypeScript: <SiTypescript />,
+      Arduino: <FaArduino />,
+      Golang: <FaGolang />,
+      LaTeX: <FaLatex />,
       "HTML/CSS": <FaHtml5 />,
       "React.js": <FaReact />,
       "Next.js": <FaReact />,
       "Tailwind CSS": <FaTailwind />,
       "Framer Motion": <FaFramer />,
-      "FastAPI": <FaFastAPI />,
+      FastAPI: <FaFastAPI />,
       "Node.js": <FaNodeJs />,
       "Express.js": <FaNodeJs />,
-      "PyTorch": <FaPyTorch />,
-      "TensorFlow": <FaTensorFlow />,
-      "OpenCV": <FaOpenCV />,
+      PyTorch: <FaPyTorch />,
+      TensorFlow: <FaTensorFlow />,
+      OpenCV: <FaOpenCV />,
       "Leaflet.js": <FaLeaflet />,
-      "ROS": <FaROS />,
-      "Git": <FaGit />,
-      "GitHub": <FaGithub />,
-      "Docker": <FaDocker />,
-      "Ubuntu": <FaUbuntu />,
-      "Windows": <FaWindows />,
-      "Vite": <FaVite />,
-      "npm": <FaNpm />,
-      "yarn": <FaYarn />,
-      "MongoDB": <SiMongodb />,
-      "AWS": <FaAws />,
-      "Supabase": <SiSupabase />,
-      "PostgreSQL": <FaPostgres />,
+      ROS: <FaROS />,
+      Git: <FaGit />,
+      GitHub: <FaGithub />,
+      Docker: <FaDocker />,
+      Ubuntu: <FaUbuntu />,
+      Windows: <FaWindows />,
+      Vite: <FaVite />,
+      npm: <FaNpm />,
+      yarn: <FaYarn />,
+      MongoDB: <SiMongodb />,
+      AWS: <FaAws />,
+      Supabase: <SiSupabase />,
+      PostgreSQL: <FaPostgres />,
       "Microsoft Office Suite": <FaMicrosoft />,
-      "Markdown": <FaMarkdown />,
-      "Trello": <FaTrello />,
-      "Asana": <FaAsana />,
-    };
-    
-    return iconMap[skillName] || <FaCode />;
-  };
+      Markdown: <FaMarkdown />,
+      Trello: <FaTrello />,
+      Asana: <FaAsana />,
+      Java: <FaCode />,
+      NestJS: <FaNodeJs />,
+      Redis: <FaDatabase />,
+      Django: <FaCode />,
+      "React Native": <FaReact />,
+      Redux: <FaReact />,
+      ".NET": <FaCode />,
+      Flask: <FaCode />,
+      Kubernetes: <FaDocker />,
+      RabbitMQ: <FaServer />,
+      Firebase: <SiFirebase />,
+    }
+
+    return iconMap[skillName] || <FaCode />
+  }
 
   const skillCategories = [
     {
@@ -106,7 +116,7 @@ const Skills = () => {
         { name: "TypeScript" },
         { name: "Golang" },
         { name: "Arduino" },
-        { name: "LaTeX" },
+        { name: "Java" },
         { name: "HTML/CSS" },
       ],
     },
@@ -122,11 +132,17 @@ const Skills = () => {
         { name: "FastAPI" },
         { name: "Node.js" },
         { name: "Express.js" },
-        { name: "PyTorch" },
+        { name: "NestJS" },
         { name: "TensorFlow" },
         { name: "OpenCV" },
         { name: "Leaflet.js" },
         { name: "ROS" },
+        { name: "Redis" },
+        { name: "Django" },
+        { name: "React Native" },
+        { name: "Redux" },
+        { name: ".NET" },
+        { name: "Flask" },
       ],
     },
     {
@@ -140,6 +156,8 @@ const Skills = () => {
         { name: "Ubuntu" },
         { name: "Windows" },
         { name: "Vite" },
+        { name: "Kubernetes" },
+        { name: "RabbitMQ" },
       ],
     },
     {
@@ -151,18 +169,7 @@ const Skills = () => {
         { name: "AWS" },
         { name: "Supabase" },
         { name: "PostgreSQL" },
-      ],
-    },
-    {
-      title: "Productivity Tools",
-      icon: <FaDesktop />,
-      color: "#16A34A",
-      skills: [
-        { name: "Microsoft Office Suite" },
-        { name: "Markdown" },
-        { name: "LaTeX" },
-        { name: "Trello" },
-        { name: "Asana" },
+        { name: "Firebase" },
       ],
     },
   ]
@@ -172,66 +179,72 @@ const Skills = () => {
       title: "The Fundamentals of Digital Marketing",
       provider: "Google",
       image: "/digitalmarketing.jpeg",
-      description: "Comprehensive certification covering digital marketing fundamentals including SEO, social media marketing, and analytics.",
+      description:
+        "Comprehensive certification covering digital marketing fundamentals including SEO, social media marketing, and analytics.",
       date: "June 2023",
-      skills: ["Digital Marketing", "SEO", "Analytics"]
+      skills: ["Digital Marketing", "SEO", "Analytics"],
     },
     {
       title: "Microsoft Office Specialist: PowerPoint 2016",
       provider: "Microsoft",
       image: "/microsoft powerpoint 2016.jpg",
-      description: "Official Microsoft certification demonstrating expertise in creating and managing professional PowerPoint presentations.",
+      description:
+        "Official Microsoft certification demonstrating expertise in creating and managing professional PowerPoint presentations.",
       date: "August 2022",
-      skills: ["Presentation Design", "Visual Communication", "Microsoft Office"]
+      skills: ["Presentation Design", "Visual Communication", "Microsoft Office"],
     },
     {
       title: "Microsoft Office Specialist: Word 2016",
       provider: "Microsoft",
       image: "/word 2016.jpg",
-      description: "Official Microsoft certification validating proficiency in document creation, formatting, and management using Microsoft Word.",
+      description:
+        "Official Microsoft certification validating proficiency in document creation, formatting, and management using Microsoft Word.",
       date: "July 2022",
-      skills: ["Document Processing", "Technical Documentation", "Microsoft Office"]
+      skills: ["Document Processing", "Technical Documentation", "Microsoft Office"],
     },
     {
       title: "Technical Writing: Quick Start Guides",
       provider: "LinkedIn",
       image: "/certificateofcompletion_technical writing quick start guides.pdf-1-1.jpeg",
-      description: "Specialized training in crafting clear, concise technical documentation and quick start guides for software and hardware products.",
+      description:
+        "Specialized training in crafting clear, concise technical documentation and quick start guides for software and hardware products.",
       date: "March 2023",
-      skills: ["Technical Writing", "Documentation", "User Guides"]
+      skills: ["Technical Writing", "Documentation", "User Guides"],
     },
     {
       title: "Electronics Foundations: Fundamentals",
       provider: "LinkedIn",
       image: "/certificateofcompletion_electronics foundations fundamentals.pdf-1-2.jpeg",
-      description: "Foundational training in electronics principles, circuit design, and component functionality for hardware projects.",
+      description:
+        "Foundational training in electronics principles, circuit design, and component functionality for hardware projects.",
       date: "January 2023",
-      skills: ["Circuit Design", "Electronics", "Hardware"]
+      skills: ["Circuit Design", "Electronics", "Hardware"],
     },
     {
       title: "Introduction to Data Analytics",
       provider: "Meta",
       image: "/data analysis.pdf-1-3.jpeg",
-      description: "Meta-certified program covering data analytics principles, tools, and methodologies for extracting insights from data.",
+      description:
+        "Meta-certified program covering data analytics principles, tools, and methodologies for extracting insights from data.",
       date: "April 2023",
-      skills: ["Data Analysis", "Visualization", "Statistics"]
-    }
-  ];
+      skills: ["Data Analysis", "Visualization", "Statistics"],
+    },
+  ]
 
   // Certificate modal
   const CertificateModal = ({ certificate, onClose }) => {
-    if (!certificate) return null;
-    
+    if (!certificate) return null
+
     return (
       <AnimatePresence>
-        <motion.div 
+        <motion.div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70 p-4"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           onClick={onClose}
         >
-          <motion.div 
+          <motion.div
             className="bg-white rounded-2xl max-w-4xl w-full overflow-hidden shadow-2xl"
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
@@ -251,20 +264,17 @@ const Skills = () => {
                       <span>{certificate.date}</span>
                     </div>
                   </div>
-                  <button 
-                    onClick={onClose}
-                    className="text-white hover:text-gray-300 transition-colors p-2"
-                  >
+                  <button onClick={onClose} className="text-white hover:text-gray-300 transition-colors p-2">
                     <FaTimes size={20} />
                   </button>
                 </div>
               </div>
-              
+
               <div className="p-8">
                 <div className="flex flex-col lg:flex-row gap-8">
                   <div className="lg:w-1/2 bg-gray-50 p-6 rounded-xl flex items-center justify-center">
-                    <motion.img 
-                      src={certificate.image} 
+                    <motion.img
+                      src={certificate.image}
                       alt={certificate.title}
                       className="max-h-80 object-contain"
                       initial={{ opacity: 0 }}
@@ -272,20 +282,23 @@ const Skills = () => {
                       transition={{ delay: 0.2 }}
                     />
                   </div>
-                  
+
                   <div className="lg:w-1/2">
                     <h4 className="text-xl font-semibold text-gray-900 mb-4">Description</h4>
                     <p className="text-gray-600 mb-6 leading-relaxed">{certificate.description}</p>
-                    
+
                     <h4 className="text-xl font-semibold text-gray-900 mb-3">Skills Acquired</h4>
                     <div className="flex flex-wrap gap-2 mb-8">
                       {certificate.skills.map((skill, index) => (
-                        <span key={index} className="bg-green-50 text-green-700 px-4 py-2 rounded-full text-sm font-medium border border-green-200">
+                        <span
+                          key={index}
+                          className="bg-green-50 text-green-700 px-4 py-2 rounded-full text-sm font-medium border border-green-200"
+                        >
                           {skill}
                         </span>
                       ))}
                     </div>
-                    
+
                     <div className="flex gap-4">
                       <button className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white py-3 px-6 rounded-xl transition-colors font-medium">
                         <FaDownload /> Download
@@ -301,29 +314,29 @@ const Skills = () => {
           </motion.div>
         </motion.div>
       </AnimatePresence>
-    );
-  };
+    )
+  }
 
   // Background Animation Components
   const FloatingElement = ({ children, delay = 0, duration = 20, initialX = 0, initialY = 0 }) => (
     <motion.div
       className="absolute opacity-20 text-gray-400"
       initial={{ x: initialX, y: initialY, rotate: 0 }}
-      animate={{ 
+      animate={{
         x: [initialX, initialX + 100, initialX - 50, initialX],
         y: [initialY, initialY - 80, initialY + 120, initialY],
-        rotate: [0, 180, 360]
+        rotate: [0, 180, 360],
       }}
       transition={{
         duration: duration,
         delay: delay,
-        repeat: Infinity,
-        ease: "linear"
+        repeat: Number.POSITIVE_INFINITY,
+        ease: "linear",
       }}
     >
       {children}
     </motion.div>
-  );
+  )
 
   return (
     <section id="skills" className="py-20 bg-white relative overflow-hidden">
@@ -353,7 +366,7 @@ const Skills = () => {
         <FloatingElement delay={21} duration={33} initialX={400} initialY={450}>
           <FaNodeJs size={42} />
         </FloatingElement>
-        
+
         {/* Additional floating elements for more density */}
         <FloatingElement delay={2} duration={24} initialX={150} initialY={50}>
           <FaJs size={38} />
@@ -372,31 +385,32 @@ const Skills = () => {
       <div className="container mx-auto px-4 md:px-6 max-w-7xl relative z-10">
         {/* Header */}
         <div className="text-center mb-20">
-          <motion.h2 
+          <motion.h2
             initial={{ opacity: 0, y: -20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
             viewport={{ once: true }}
             className="text-4xl md:text-5xl font-bold mb-6"
-            style={{ color: '#16A34A' }}
+            style={{ color: "#16A34A" }}
           >
             Technical Skills
           </motion.h2>
-          <motion.div 
+          <motion.div
             initial={{ width: 0 }}
             whileInView={{ width: "4rem" }}
             transition={{ duration: 0.8, delay: 0.3 }}
             viewport={{ once: true }}
             className="h-1 bg-green-600 mx-auto mb-6"
           ></motion.div>
-          <motion.p 
+          <motion.p
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             transition={{ duration: 0.6, delay: 0.4 }}
             viewport={{ once: true }}
             className="text-gray-600 text-lg max-w-3xl mx-auto leading-relaxed"
           >
-            A comprehensive overview of my technical expertise across various domains of software development and technology.
+            A comprehensive overview of my technical expertise across various domains of software development and
+            technology.
           </motion.p>
         </div>
 
@@ -413,8 +427,8 @@ const Skills = () => {
                 onClick={() => setSelectedCategory(index)}
                 className={`flex items-center gap-2 px-6 py-3 rounded-full font-medium transition-all duration-300 ${
                   selectedCategory === index
-                    ? 'bg-green-600 text-white shadow-lg'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    ? "bg-green-600 text-white shadow-lg"
+                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                 }`}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
@@ -435,7 +449,7 @@ const Skills = () => {
               transition={{ duration: 0.4 }}
               className="bg-gray-50 rounded-2xl p-8"
             >
-              <h3 className="text-2xl font-bold mb-8 flex items-center gap-3" style={{ color: '#16A34A' }}>
+              <h3 className="text-2xl font-bold mb-8 flex items-center gap-3" style={{ color: "#16A34A" }}>
                 <div className="w-10 h-10 bg-green-600 rounded-full flex items-center justify-center text-white">
                   {skillCategories[selectedCategory].icon}
                 </div>
@@ -477,7 +491,7 @@ const Skills = () => {
           className="mt-20"
         >
           <div className="text-center mb-12">
-            <h3 className="text-3xl font-bold mb-4 flex items-center justify-center gap-3" style={{ color: '#16A34A' }}>
+            <h3 className="text-3xl font-bold mb-4 flex items-center justify-center gap-3" style={{ color: "#16A34A" }}>
               <div className="w-10 h-10 bg-green-600 rounded-full flex items-center justify-center text-white">
                 <FaCertificate />
               </div>
@@ -501,8 +515,8 @@ const Skills = () => {
               >
                 <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300 h-full">
                   <div className="relative overflow-hidden bg-gray-50">
-                    <img 
-                      src={cert.image} 
+                    <img
+                      src={cert.image || "/placeholder.svg"}
                       alt={cert.title}
                       className="w-full h-48 object-contain p-4 group-hover:scale-105 transition-transform duration-300"
                     />
@@ -516,16 +530,14 @@ const Skills = () => {
                       </motion.button>
                     </div>
                   </div>
-                  
+
                   <div className="p-6">
-                    <h4 className="font-bold text-gray-900 mb-2 text-lg leading-tight">
-                      {cert.title}
-                    </h4>
+                    <h4 className="font-bold text-gray-900 mb-2 text-lg leading-tight">{cert.title}</h4>
                     <p className="text-green-600 font-medium mb-3 flex items-center gap-2">
                       <FaCertificate size={14} />
                       {cert.provider} • {cert.date}
                     </p>
-                    
+
                     <div className="flex flex-wrap gap-2">
                       {cert.skills.slice(0, 3).map((skill, idx) => (
                         <span key={idx} className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm">
@@ -547,10 +559,7 @@ const Skills = () => {
 
         {/* Certificate Modal */}
         {selectedCertificate && (
-          <CertificateModal 
-            certificate={selectedCertificate} 
-            onClose={() => setSelectedCertificate(null)} 
-          />
+          <CertificateModal certificate={selectedCertificate} onClose={() => setSelectedCertificate(null)} />
         )}
       </div>
     </section>
