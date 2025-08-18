@@ -40,12 +40,24 @@ const Projects = () => {
     {
       id: 3,
       title: "NaviCV",
-      technologies: "Python, FastAPI, FAISS (Vector Search), Transformers (NLP), RemoteOK API, Docker, React",
+      technologies: "Python, FastAPI, Vector Search, Transformers (NLP), Docker, Firebase, Github Actions",
       description: [
         "An AI-powered resume optimization platform that intelligently matches candidates with relevant job opportunities using advanced vector search and NLP technologies."
       ],
       image: "/Navicv.png",
       github: "https://github.com/khangpt2k6/NaviCV",
+      color: "#16A34A",
+      icon: <IoRocketSharp size={24} />,
+    },
+    {
+      id: 3,
+      title: "Zelo",
+      technologies: "TypeScript, Next.js, RabbitMQ, Cloudinary, Node.js, Socket.IO, MongoDB, Docker, Amazon Web Services",
+      description: [
+        "A microservice-based real-time social campus chat application"
+      ],
+      image: "/zelo.png",
+      github: "https://github.com/khangpt2k6/Zelo",
       color: "#16A34A",
       icon: <IoRocketSharp size={24} />,
     },
@@ -62,17 +74,16 @@ const Projects = () => {
       icon: <BsCodeSlash size={24} />,
     },
     {
-      id: 1,
-      title: "Hospify",
-      technologies:
-        "MongoDB, React.js, Redux, Node.js, Express.js, Cloudinary, Gemini API, Google Maps API, Stripe, Google Cloud",
+      id: 5,
+      title: "Clario",
+      technologies: "Go, Supabase, PostgreSQL, Docker, Render, React, Vite, Tailwind CSS",
       description: [
-        "A comprehensive hospital booking platform that streamlines appointment scheduling, diagnosis assistance, and facility navigation with AI-powered health recommendations and real-time availability updates."
+        "A to do list with CRUD operations with REST API/..... (claude tailor content)"
       ],
-      image: "/Hosplify.png",
-      github: "https://github.com/khangpt2k6/Hosplify",
+      image: "/clario.png",
+      github: "https://github.com/khangpt2k6/Clario",
       color: "#16A34A",
-      icon: <RiAiGenerate size={24} />,
+      icon: <BsCodeSlash size={24} />,
     },
     {
       id: 2,
@@ -82,9 +93,8 @@ const Projects = () => {
       description: [
         "An advanced healthcare platform utilizing CNN architectures for accurate skin lesion classification and U-Net segmentation models for precise boundary detection."
       ],
-      image: "/Skin.png",
+      image: "/intel.jpg",
       github: "https://github.com/XuanGiaHanNguyen/HackUSF",
-      demo: "https://github.com/XuanGiaHanNguyen/HackUSF",
       color: "#16A34A",
       icon: <RiAiGenerate size={24} />,
     },
@@ -92,30 +102,17 @@ const Projects = () => {
       id: 4,
       title: "GreenCart",
       technologies:
-        "React.js, TailwindCSS, Next.js, MongoDB, Flask, Python, Google Gemini API, Chrome Extensions API",
+        "React.js, Next.js, Flask, Python, Google Gemini API, Chrome Extensions API",
       description: [
         "An AI-powered sustainability platform with browser extension integration that provides real-time product analysis, eco-friendly alternatives, and sustainability scoring."
       ],
-      image: "/GREENCART.png",
+      image: "/green.jpg",
       github: "https://devpost.com/software/hackabullhkkt",
       demo: "https://devpost.com/software/hackabullhkkt",
       color: "#16A34A",
       icon: <RiAiGenerate size={24} />,
     },
-    {
-      id: 6,
-      title: "PathFinder X — Autonomous Navigation Robot",
-      technologies:
-        "Arduino, C++, Ultrasonic Sensors, IR Sensors, L298N H-Bridge",
-      description: [
-        "An Arduino-based autonomous robot designed for dynamic obstacle detection and avoidance, featuring PID control algorithms for enhanced maneuverability and motion precision."
-      ],
-      image: "/Arduino.jpg",
-      github: "https://github.com/khangpt2k6/Arduino-based-Robot",
-      demo: "https://github.com/khangpt2k6/Arduino-based-Robot",
-      color: "#16A34A",
-      icon: <FaTools size={24} />,
-    },
+    
   ];
 
   const tiltOptions = {

@@ -37,7 +37,6 @@ const Navbar = () => {
         "experience",
         "projects",
         "skills",
-        "contact",
       ];
 
       for (const section of sections.reverse()) {
@@ -67,7 +66,6 @@ const Navbar = () => {
     { name: "Experience", to: "experience", icon: <FaBriefcase /> },
     { name: "Projects", to: "projects", icon: <FaCode /> },
     { name: "Skills", to: "skills", icon: <FaTools /> },
-    { name: "Contact", to: "contact", icon: <FaEnvelope /> },
   ];
 
   // Animation variants
