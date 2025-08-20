@@ -38,23 +38,27 @@ const Projects = () => {
 
   const projects = [
     {
-      id: 3,
+      id: 1,
       title: "NaviCV",
-      technologies: "Python, FastAPI, Vector Search, Transformers (NLP), Docker, Firebase, Github Actions",
+      technologies: "Python, FastAPI, Vector Search, Transformers, Docker, Firebase, GitHub Actions",
       description: [
-        "An AI-powered resume optimization platform that intelligently matches candidates with relevant job opportunities using advanced vector search and NLP technologies."
+        "AI-powered resume optimization platform using vector search and NLP to match candidates with relevant job opportunities.",
+        "Implements advanced transformer models for intelligent content analysis and recommendation scoring.",
+        "Features automated deployment pipeline with Docker containerization and CI/CD integration."
       ],
       image: "/Navicv.png",
       github: "https://github.com/khangpt2k6/NaviCV",
       color: "#16A34A",
-      icon: <IoRocketSharp size={24} />,
+      icon: <RiAiGenerate size={24} />,
     },
     {
-      id: 3,
+      id: 2,
       title: "Zelo",
-      technologies: "TypeScript, Next.js, RabbitMQ, Cloudinary, Node.js, Socket.IO, MongoDB, Docker, Amazon Web Services",
+      technologies: "TypeScript, Next.js, RabbitMQ, Cloudinary, Socket.IO, MongoDB, Docker, AWS",
       description: [
-        "A microservice-based real-time social campus chat application"
+        "Real-time social campus chat application built with microservice architecture for scalability.",
+        "Implements message queuing with RabbitMQ and WebSocket connections for instant communication.",
+        "Features media sharing via Cloudinary integration and cloud deployment on AWS infrastructure."
       ],
       image: "/zelo.png",
       github: "https://github.com/khangpt2k6/Zelo",
@@ -62,11 +66,13 @@ const Projects = () => {
       icon: <IoRocketSharp size={24} />,
     },
     {
-      id: 5,
+      id: 3,
       title: "Algovis",
       technologies: "Java, JavaFX",
       description: [
-        "An interactive algorithm visualization tool that brings sorting algorithms to life through dynamic animations and real-time performance analysis."
+        "Interactive algorithm visualization tool with dynamic animations for sorting algorithms.",
+        "Real-time performance analysis and comparison between different sorting techniques.",
+        "Educational interface designed to enhance understanding of algorithm complexity and behavior."
       ],
       image: "/Algovis.png",
       github: "https://github.com/khangpt2k6/Algovis",
@@ -74,11 +80,13 @@ const Projects = () => {
       icon: <BsCodeSlash size={24} />,
     },
     {
-      id: 5,
+      id: 4,
       title: "Clario",
       technologies: "Go, Supabase, PostgreSQL, Docker, Render, React, Vite, Tailwind CSS",
       description: [
-        "A to do list with CRUD operations with REST API/..... (claude tailor content)"
+        "Full-stack task management application with comprehensive CRUD operations and REST API.",
+        "Backend built with Go for high performance and PostgreSQL for robust data persistence.",
+        "Modern React frontend with responsive design and seamless user experience."
       ],
       image: "/clario.png",
       github: "https://github.com/khangpt2k6/Clario",
@@ -86,12 +94,13 @@ const Projects = () => {
       icon: <BsCodeSlash size={24} />,
     },
     {
-      id: 2,
+      id: 5,
       title: "SkinIntel",
-      technologies:
-        "React, Tailwind CSS, FastAPI, PyTorch, TensorFlow, OpenCV, Google Maps API",
+      technologies: "React, Tailwind CSS, FastAPI, PyTorch, TensorFlow, OpenCV, Google Maps API",
       description: [
-        "An advanced healthcare platform utilizing CNN architectures for accurate skin lesion classification and U-Net segmentation models for precise boundary detection."
+        "Healthcare platform utilizing CNN architectures for accurate skin lesion classification.",
+        "Advanced U-Net segmentation models for precise boundary detection and analysis.",
+        "Integrated location services for healthcare provider recommendations and appointment scheduling."
       ],
       image: "/intel.jpg",
       github: "https://github.com/XuanGiaHanNguyen/HackUSF",
@@ -99,12 +108,13 @@ const Projects = () => {
       icon: <RiAiGenerate size={24} />,
     },
     {
-      id: 4,
+      id: 6,
       title: "GreenCart",
-      technologies:
-        "React.js, Next.js, Flask, Python, Google Gemini API, Chrome Extensions API",
+      technologies: "React.js, Next.js, Flask, Python, Google Gemini API, Chrome Extensions API",
       description: [
-        "An AI-powered sustainability platform with browser extension integration that provides real-time product analysis, eco-friendly alternatives, and sustainability scoring."
+        "AI-powered sustainability platform with browser extension for real-time product analysis.",
+        "Provides eco-friendly alternatives and sustainability scoring using Google Gemini API.",
+        "Seamless integration with e-commerce sites for informed purchasing decisions."
       ],
       image: "/green.jpg",
       github: "https://devpost.com/software/hackabullhkkt",
@@ -112,7 +122,6 @@ const Projects = () => {
       color: "#16A34A",
       icon: <RiAiGenerate size={24} />,
     },
-    
   ];
 
   const tiltOptions = {
@@ -159,16 +168,16 @@ const Projects = () => {
         >
           <motion.h2
             className="text-3xl md:text-5xl font-bold mb-4"
-style={{ color: "#16A34A" }}
+            style={{ color: "#16A34A" }}
             variants={titleAnimation}
           >
-            Project
+            Projects
           </motion.h2>
           <motion.p 
             className="text-gray-600 text-lg max-w-2xl mx-auto"
             variants={titleAnimation}
           >
-            Explore my latest work in web development, AI, and embedded systems
+            Innovative solutions spanning AI, web development, and system architecture
           </motion.p>
         </motion.div>
 
