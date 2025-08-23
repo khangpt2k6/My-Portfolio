@@ -258,7 +258,7 @@ const Navbar = () => {
 
               {/* Resume button with clean design */}
               <motion.a
-                href="https://drive.google.com/file/d/1MHXQAMywqMBuJxNzHK5LSmtFZjVww536/view?usp=sharing"
+                href="https://drive.google.com/file/d/1Ax0xTZZWU5yERAvgdhjSf3U0ZubDPrEM/view?usp=sharing"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="hidden lg:flex items-center space-x-1 px-4 py-1.5 rounded-full font-medium text-sm
