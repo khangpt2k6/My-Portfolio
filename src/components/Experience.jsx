@@ -1,54 +1,24 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import {
-  FaBriefcase,
-  FaCalendarAlt,
-  FaMapMarkerAlt,
-  FaCode,
-  FaLaptopCode,
-  FaUserTie,
-  FaHandsHelping,
-} from "react-icons/fa";
-import { HiChevronRight } from "react-icons/hi";
+import { useState } from "react";
+import { Briefcase, Code, Laptop, Users, Award, ChevronRight, MapPin, Calendar } from "lucide-react";
 
 const Experience = () => {
   const [activeTab, setActiveTab] = useState("professional");
-  const [isInView, setIsInView] = useState(false);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsInView(true);
-        }
-      },
-      { threshold: 0.1 }
-    );
-
-    const section = document.getElementById("experience");
-    if (section) {
-      observer.observe(section);
-    }
-
-    return () => {
-      if (section) {
-        observer.unobserve(section);
-      }
-    };
-  }, []);
+  const [hoveredIndex, setHoveredIndex] = useState(null);
 
   const experiences = {
-     professional: [
+    professional: [
       {
         title: "Software Engineer",
         company: "HighEndFree",
         location: "Remote",
         period: "Incoming Oct 2025",
+        year: "2025",
         image: "/highendfree.jpg",
-        icon: <FaCode />,
+        icon: <Code className="w-6 h-6" />,
         description: [
-          "Upcoming role focusing on full-stack development and software engineering solutions"
+          "Integrated an LLM-based AI assistant with LangChain, optimized PostgreSQL queries, and built a responsive Vue.js/TailwindCSS UI, improving performance and user engagement."
         ]
       },
       {
@@ -56,11 +26,11 @@ const Experience = () => {
         company: "Moffitt Cancer Center",
         location: "Tampa, FL",
         period: "Aug 2025 - Present",
+        year: "2025",
         image: "/moffitt.jpg",
-        icon: <FaCode />,
+        icon: <Code className="w-6 h-6" />,
         description: [
-          "Created interactive **cancer genomics visualizations** (mutation plots, heatmaps, Kaplan–Meier curves) across **38 patient samples** and **33,000 mutations**, enabling doctors to identify actionable insights using **React** and **Plotly/D3**",
-          "Developed a **Django dashboard** integrating Galaxy VCFs with **ClinVar** and **CIViC** to highlight pathogenic variants, providing doctors at Moffitt with actionable clinical insights"
+          "Developed cancer genomics visualizations and a Django dashboard for clinical insights, and trained a U-NET model for lung cancer analysis."
         ]
       },
       {
@@ -68,23 +38,11 @@ const Experience = () => {
         company: "VNPT IT",
         location: "Da Nang City, Viet Nam",
         period: "Jun 2025 - Aug 2025",
+        year: "2025",
         image: "/vnpt.png",
-        icon: <FaCode />,
+        icon: <Code className="w-6 h-6" />,
         description: [
-          "Implemented and tested **HTTP-based services in Go**, handling **500+ daily requests** and ensuring reliable data exchange between internal systems",
-          "Debugged and maintained services, resolving nearly **10 runtime issues** and collaborating with a team of **5 engineers** to improve system reliability",
-          "Optimized API performance by refactoring Go code, achieving a **65% reduction** in average response time"
-        ]
-      },
-      {
-        title: "Technical Lead",
-        company: "Association for Computing Machinery (ACM) at USF",
-        location: "Tampa, FL",
-        period: "Apr 2025 – Present",
-        image: "/ACM.jpg",
-        icon: <FaCode />,
-        description: [
-          "Organized **Docker workshops** that attracted **100+ students**, empowering participants to containerize, deploy, and manage real-world applications efficiently, and received **89% positive feedback** overall"
+          "Developed RESTful APIs with Gin/GORM, refactored endpoints, added unit tests, and automated CI/CD, enhancing system performance and stability."
         ]
       },
       {
@@ -92,288 +50,247 @@ const Experience = () => {
         company: "RARE (Reality, Autonomy, and Robot Experience) Lab",
         location: "Tampa, FL",
         period: "Feb 2025 – May 2025",
+        year: "2025",
         image: "/RL.jpg",
-        icon: <FaLaptopCode />,
+        icon: <Laptop className="w-6 h-6" />,
         description: [
-          "Worked with **4 student researchers** to develop **C++ algorithms** for robotic sensor data processing, building **ROS packages** with CMake and validating them over **30+ iterations** for stability",
-          "Automated **Linux workflows** for builds and simulations, streamlining GitHub collaboration and reducing manual setup time by **50-60%** for a team of 5"
+          "Boosted robotics software performance and team efficiency through optimized C++ ROS nodes, automated workflows, and Docker-based setups."
         ]
-      },
-    ],
-    partTime: [
-      {
-        title: "Event Crew",
-        company: "University of South Florida Marshall Student Center",
-        location: "Tampa, FL",
-        period: "Jan 2025 - Present",
-        image: "/MSC.jpg",
-        icon: <FaBriefcase />,
-      },
+      }
     ],
     volunteering: [
+      {
+        title: "Technical Lead",
+        company: "Association for Computing Machinery (ACM) at USF",
+        location: "Tampa, FL",
+        period: "Apr 2025 – Present",
+        year: "2025",
+        image: "/ACM.jpg",
+        icon: <Users className="w-6 h-6" />,
+        description: [
+          "Organized Docker and CI/CD workshops, led project hubs, and guided hackathon projects, helping students deploy applications and gain hands-on experience with GitHub Actions and AI tools."
+        ]
+      },
       {
         title: "Technical Volunteer",
         company: "USF Engineering Expo",
         location: "Tampa, FL",
         period: "Feb 2025",
+        year: "2025",
         image: "/expo.png",
-        icon: <FaHandsHelping />,
+        icon: <Award className="w-6 h-6" />,
+        description: []
       },
       {
         title: "Software Volunteer",
         company: "Bulls Science Olympiad",
         location: "Tampa, FL",
         period: "Jan 2025",
+        year: "2025",
         image: "/BSO.png",
-        icon: <FaHandsHelping />,
-      },
-    ],
+        icon: <Award className="w-6 h-6" />,
+        description: []
+      }
+    ]
   };
 
-  // Animation variants (simplified for compatibility)
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.2,
-      },
-    },
-  };
-
-  const cardVariants = {
-    hidden: { opacity: 0, y: 30 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.6, ease: "easeOut" },
-    },
-    hover: {
-      scale: 1.02,
-      boxShadow:
-        "0 20px 25px -5px rgba(22, 163, 74, 0.2), 0 10px 10px -5px rgba(22, 163, 74, 0.1)",
-      transition: { type: "spring", stiffness: 300, damping: 20 },
-    },
-  };
-
-  const listItemVariants = {
-    hidden: { opacity: 0, x: -20 },
-    visible: {
-      opacity: 1,
-      x: 0,
-      transition: { duration: 0.4 },
-    },
-  };
-
-  const titleVariants = {
-    hidden: { opacity: 0, y: -20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.6, ease: "easeOut" },
-    },
-  };
-
-  const renderExperienceCard = (exp, index) => (
-    <div
-      key={index}
-      className="bg-white/90 backdrop-blur-sm rounded-xl p-6 shadow-lg border mb-8 relative overflow-hidden hover:scale-105 transition-all duration-300"
-      style={{ borderColor: "rgba(22, 163, 74, 0.2)" }}
-    >
-      {/* Accent line */}
-      <div
-        className="absolute top-0 left-0 w-full h-1"
-        style={{ background: "linear-gradient(to right, #16A34A, #16A34A)" }}
-      ></div>
-
-      <div className="flex flex-col md:flex-row md:items-start">
-        <div className="flex-shrink-0 mb-4 md:mb-0 md:mr-6">
-          {exp.image ? (
-            <div
-              className="w-16 h-16 rounded-full overflow-hidden border-2 shadow-md relative"
-              style={{ borderColor: "#16A34A" }}
-            >
-              <img
-                src={exp.image}
-                alt={exp.company}
-                className="w-full h-full object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-r"></div>
-            </div>
-          ) : (
-            <div
-              className="w-16 h-16 rounded-full flex items-center justify-center shadow-md"
-              style={{
-                background:
-                  "linear-gradient(to right, rgba(22, 163, 74, 0.1), rgba(22, 163, 74, 0.1))",
-              }}
-            >
-              <div className="text-2xl" style={{ color: "#16A34A" }}>
-                {exp.icon || <FaBriefcase />}
-              </div>
-            </div>
-          )}
-        </div>
-        <div className="flex-grow">
-          <h3
-            className="text-xl font-bold flex items-center"
-            style={{ color: "#1F2937" }}
-          >
-            {exp.title}
-            <span className="ml-2" style={{ color: "#16A34A" }}>
-              <HiChevronRight />
-            </span>
-          </h3>
-          <h4 className="text-lg mb-2" style={{ color: "#16A34A" }}>
-            {exp.company}
-          </h4>
-
-          <div className="flex flex-wrap mb-4" style={{ color: "#1F2937" }}>
-            <div className="flex items-center mr-6 mb-2">
-              <FaMapMarkerAlt className="mr-1" style={{ color: "#16A34A" }} />
-              <span>{exp.location}</span>
-            </div>
-            <div className="flex items-center mb-2">
-              <FaCalendarAlt className="mr-1" style={{ color: "#16A34A" }} />
-              <span>{exp.period}</span>
-            </div>
-          </div>
-
-          {/* Tags */}
-          {exp.tags && (
-            <div className="flex flex-wrap gap-2 mb-4">
-              {exp.tags.map((tag, i) => (
-                <span
-                  key={i}
-                  className="px-2 py-1 text-xs rounded-full border"
-                  style={{
-                    background:
-                      "linear-gradient(to right, rgba(22, 163, 74, 0.05), rgba(22, 163, 74, 0.05))",
-                    color: "#16A34A",
-                    borderColor: "rgba(22, 163, 74, 0.2)",
-                  }}
-                >
-                  {tag}
-                </span>
-              ))}
-            </div>
-          )}
-
-          <ul className="space-y-2 ml-2">
-            {exp.description &&
-              exp.description.map((item, i) => (
-                <li
-                  key={i}
-                  className="flex items-start"
-                  style={{ color: "#1F2937" }}
-                >
-                  <span
-                    className="mr-2 mt-1 flex-shrink-0"
-                    style={{ color: "#16A34A" }}
-                  >
-                    •
-                  </span>
-                  <span
-                    dangerouslySetInnerHTML={{
-                      __html: item.replace(
-                        /\*\*(.*?)\*\*/g,
-                        "<strong>$1</strong>"
-                      ),
-                    }}
-                  ></span>
-                </li>
-              ))}
-          </ul>
-        </div>
-      </div>
-    </div>
-  );
+  const currentExperiences = experiences[activeTab];
 
   return (
-    <section
-      id="experience"
-      className="py-20"
-      style={{ backgroundColor: "#ffffff" }}
-    >
-      <div className="container mx-auto px-4 md:px-6">
+    <section id="experience" className="min-h-screen bg-white py-20 px-4 relative overflow-hidden">
+      
+      {/* Subtle background pattern */}
+      <div className="absolute inset-0 opacity-[0.03]" style={{
+        backgroundImage: `radial-gradient(circle at 1px 1px, rgb(22 163 74) 1px, transparent 0)`,
+        backgroundSize: '40px 40px'
+      }}></div>
+
+      <div className="max-w-7xl mx-auto relative z-10">
+        
+        {/* Header Section */}
         <div className="text-center mb-16">
-          <h2
-            className="text-3xl md:text-5xl font-bold mb-4"
-            style={{
-              background: `linear-gradient(to right, #16A34A, #16A34A)`,
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-              backgroundClip: "text",
-            }}
-          >
+          <div className="inline-flex items-center gap-2 mb-4 px-4 py-2 bg-green-50 rounded-full">
+            <Briefcase className="w-4 h-4 text-green-600" />
+            <span className="text-sm font-semibold text-green-600 tracking-wider uppercase">My Journey</span>
+          </div>
+          
+          <h1 className="text-5xl md:text-6xl font-bold mb-4 text-neutral-900">
             Experience
-          </h2>
-          <div
-            className="h-1 mx-auto w-48"
-            style={{
-              background: "linear-gradient(to right, #16A34A, #16A34A)",
-            }}
-          ></div>
-          <p className="mt-4 max-w-2xl mx-auto" style={{ color: "#1F2937" }}>
-            My commitment and journey
+          </h1>
+          
+          <p className="text-lg text-neutral-600 max-w-2xl mx-auto mb-8">
+            A timeline of my professional growth and contributions to the tech community
           </p>
+
+          {/* Tab Switcher */}
+          <div className="inline-flex gap-2 p-2 bg-neutral-100 rounded-full">
+            <button
+              onClick={() => setActiveTab("professional")}
+              className={`px-8 py-3 rounded-full transition-all duration-300 font-semibold ${
+                activeTab === "professional"
+                  ? "bg-white text-green-600 shadow-lg"
+                  : "text-neutral-600 hover:text-neutral-900"
+              }`}
+            >
+              Professional
+            </button>
+            <button
+              onClick={() => setActiveTab("volunteering")}
+              className={`px-8 py-3 rounded-full transition-all duration-300 font-semibold ${
+                activeTab === "volunteering"
+                  ? "bg-white text-green-600 shadow-lg"
+                  : "text-neutral-600 hover:text-neutral-900"
+              }`}
+            >
+              Volunteering
+            </button>
+          </div>
         </div>
 
-        <div className="mb-12 flex justify-center">
-          <div
-            className="p-1 backdrop-blur-sm rounded-full flex border shadow-lg"
-            style={{
-              backgroundColor: "rgba(22, 163, 74, 0.1)",
-              borderColor: "rgba(22, 163, 74, 0.2)",
-            }}
-          >
-            {[
-              {
-                id: "professional",
-                label: "Professional",
-                icon: <FaBriefcase className="mr-2" />,
-              },
-              {
-                id: "partTime",
-                label: "Part-Time",
-                icon: <FaUserTie className="mr-2" />,
-              },
-              {
-                id: "volunteering",
-                label: "Volunteering",
-                icon: <FaHandsHelping className="mr-2" />,
-              },
-            ].map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`px-6 py-2 rounded-full font-medium flex items-center justify-center min-w-32 transition-all duration-300 hover:scale-105 ${
-                  activeTab === tab.id
-                    ? "text-white shadow-md"
-                    : "bg-transparent hover:bg-opacity-70"
+        {/* Timeline */}
+        <div className="relative max-w-5xl mx-auto">
+          
+          {/* Vertical Timeline Line */}
+          <div className="absolute left-8 md:left-1/2 transform md:-translate-x-1/2 top-0 bottom-0 w-0.5 bg-gradient-to-b from-transparent via-green-200 to-transparent"></div>
+
+          {/* Experience Cards */}
+          <div className="space-y-12">
+            {currentExperiences.map((exp, index) => (
+              <div
+                key={index}
+                className={`relative flex flex-col md:flex-row gap-8 ${
+                  index % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'
                 }`}
-                style={
-                  activeTab === tab.id
-                    ? {
-                        background:
-                          "linear-gradient(to right, #16A34A, #16A34A)",
-                      }
-                    : { color: "#16A34A", backgroundColor: "transparent" }
-                }
+                onMouseEnter={() => setHoveredIndex(index)}
+                onMouseLeave={() => setHoveredIndex(null)}
               >
-                {tab.icon}
-                {tab.label}
-              </button>
+                
+                {/* Timeline Dot */}
+                <div className="absolute left-8 md:left-1/2 transform -translate-x-1/2 z-20">
+                  <div className="relative">
+                    <div className={`w-16 h-16 rounded-full flex items-center justify-center transition-all duration-300 ${
+                      hoveredIndex === index
+                        ? 'bg-gradient-to-br from-green-500 to-emerald-600 shadow-xl shadow-green-500/50 scale-110'
+                        : 'bg-gradient-to-br from-green-600 to-emerald-700 shadow-lg shadow-green-600/30'
+                    }`}>
+                      <div className="text-white">
+                        {exp.icon}
+                      </div>
+                    </div>
+                    {hoveredIndex === index && (
+                      <div className="absolute inset-0 bg-green-500 rounded-full blur-xl opacity-40 animate-pulse"></div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Content Card */}
+                <div className={`flex-1 ${index % 2 === 0 ? 'md:pr-16' : 'md:pl-16'} pl-20 md:pl-0`}>
+                  <div className={`group relative bg-white rounded-2xl border-2 transition-all duration-500 ${
+                    hoveredIndex === index
+                      ? 'border-green-500 shadow-2xl shadow-green-500/20 -translate-y-2'
+                      : 'border-neutral-200 shadow-lg hover:shadow-xl'
+                  }`}>
+                    
+                    {/* Gradient overlay on hover */}
+                    <div className={`absolute inset-0 bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl opacity-0 transition-opacity duration-500 ${
+                      hoveredIndex === index ? 'opacity-100' : ''
+                    }`}></div>
+
+                    <div className="relative p-8">
+                      
+                      {/* Company Logo & Title */}
+                      <div className="flex items-start gap-4 mb-4">
+                        {exp.image && (
+                          <div className="relative">
+                            <div className={`w-14 h-14 rounded-xl overflow-hidden border-2 transition-all duration-300 ${
+                              hoveredIndex === index ? 'border-green-500 shadow-lg' : 'border-neutral-200'
+                            }`}>
+                              <img 
+                                src={exp.image} 
+                                alt={exp.company}
+                                className="w-full h-full object-cover"
+                              />
+                            </div>
+                          </div>
+                        )}
+                        
+                        <div className="flex-1">
+                          <h3 className="text-2xl font-bold text-neutral-900 mb-1 group-hover:text-green-600 transition-colors">
+                            {exp.title}
+                          </h3>
+                          <p className="text-lg font-semibold text-neutral-700">
+                            {exp.company}
+                          </p>
+                        </div>
+
+                        {/* Year Badge */}
+                        <div className="hidden md:block">
+                          <span className="inline-flex px-4 py-2 bg-green-100 text-green-700 rounded-full text-sm font-bold">
+                            {exp.year}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Location & Period */}
+                      <div className="flex flex-wrap gap-4 mb-6 text-sm">
+                        <div className="flex items-center gap-2 text-neutral-600">
+                          <MapPin className="w-4 h-4 text-green-600" />
+                          <span>{exp.location}</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-neutral-600">
+                          <Calendar className="w-4 h-4 text-green-600" />
+                          <span>{exp.period}</span>
+                        </div>
+                      </div>
+
+                      {/* Description */}
+                      {exp.description && exp.description.length > 0 && (
+                        <div className="space-y-3">
+                          {exp.description.map((item, i) => (
+                            <div key={i} className="flex gap-3 items-start group/item">
+                              <ChevronRight className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0 group-hover/item:translate-x-1 transition-transform" />
+                              <p className="text-neutral-700 leading-relaxed">
+                                {item}
+                              </p>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
+                      {/* Mobile Year Badge */}
+                      <div className="md:hidden mt-4">
+                        <span className="inline-flex px-4 py-2 bg-green-100 text-green-700 rounded-full text-sm font-bold">
+                          {exp.year}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Decorative corner accent */}
+                    <div className={`absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-green-500 to-emerald-600 opacity-0 transition-opacity duration-500 ${
+                      hoveredIndex === index ? 'opacity-10' : ''
+                    }`} style={{ clipPath: 'polygon(100% 0, 100% 100%, 0 0)' }}></div>
+                  </div>
+                </div>
+
+                {/* Spacer for alternating layout */}
+                <div className="hidden md:block flex-1"></div>
+              </div>
             ))}
           </div>
         </div>
 
-        <div>
-          {experiences[activeTab].map((exp, index) =>
-            renderExperienceCard(exp, index)
-          )}
+        {/* Bottom CTA */}
+        <div className="text-center mt-20">
+          <div className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-full font-semibold shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 cursor-pointer">
+            <span>Want to work together?</span>
+            <ChevronRight className="w-5 h-5" />
+          </div>
         </div>
       </div>
+
+      {/* Decorative gradient orbs */}
+      <div className="absolute top-40 -right-40 w-80 h-80 bg-green-200 rounded-full blur-3xl opacity-20 pointer-events-none"></div>
+      <div className="absolute bottom-40 -left-40 w-80 h-80 bg-emerald-200 rounded-full blur-3xl opacity-20 pointer-events-none"></div>
     </section>
   );
 };

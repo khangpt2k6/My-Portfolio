@@ -58,7 +58,7 @@ const Footer = () => {
   }, []);
 
   return (
-    <footer className="relative bg-white text-gray-800 py-16 overflow-hidden">
+    <footer className="relative bg-white dark:bg-neutral-900 text-gray-800 dark:text-neutral-200 py-16 overflow-hidden transition-colors">
       {/* Animated Particles */}
       <div className="absolute inset-0 pointer-events-none">
         {particles.map(particle => (
@@ -162,10 +162,10 @@ const Footer = () => {
               </h3>
               <div className="space-y-2">
                 <Link
-                  to="about"
+                  to="hero"
                   smooth={true}
                   duration={500}
-                  className="block text-gray-600 hover:text-green-600 transition-colors duration-300 cursor-pointer text-sm py-1"
+                  className="block text-neutral-600 dark:text-neutral-300 hover:text-green-600 transition-colors duration-300 cursor-pointer text-sm py-1"
                 >
                   About Me
                 </Link>
@@ -173,7 +173,7 @@ const Footer = () => {
                   to="projects"
                   smooth={true}
                   duration={500}
-                  className="block text-gray-600 hover:text-green-600 transition-colors duration-300 cursor-pointer text-sm py-1"
+                  className="block text-neutral-600 dark:text-neutral-300 hover:text-green-600 transition-colors duration-300 cursor-pointer text-sm py-1"
                 >
                   Projects
                 </Link>
@@ -181,15 +181,15 @@ const Footer = () => {
                   to="skills"
                   smooth={true}
                   duration={500}
-                  className="block text-gray-600 hover:text-green-600 transition-colors duration-300 cursor-pointer text-sm py-1"
+                  className="block text-neutral-600 dark:text-neutral-300 hover:text-green-600 transition-colors duration-300 cursor-pointer text-sm py-1"
                 >
                   Skills
                 </Link>
                 <Link
-                  to="contact"
+                  to="hero"
                   smooth={true}
                   duration={500}
-                  className="block text-gray-600 hover:text-green-600 transition-colors duration-300 cursor-pointer text-sm py-1"
+                  className="block text-neutral-600 dark:text-neutral-300 hover:text-green-600 transition-colors duration-300 cursor-pointer text-sm py-1"
                 >
                   Contact
                 </Link>
@@ -218,12 +218,12 @@ const Footer = () => {
         </div>
 
         {/* Bottom Section */}
-        <div className="pt-8 border-t border-gray-300">
+        <div className="pt-8 border-t border-neutral-200 dark:border-neutral-800 transition-colors">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-            <div className="text-sm text-gray-500">
+            <div className="text-sm text-neutral-500 dark:text-neutral-400">
               &copy; {currentYear} Tuan Khang Phan. All rights reserved.
             </div>
-            <div className="flex items-center space-x-6 text-sm text-gray-500">
+            <div className="flex items-center space-x-6 text-sm text-neutral-500 dark:text-neutral-400">
               <span>Built with passion & dedication</span>
               <div className="w-2 h-2 bg-green-600 rounded-full animate-pulse"></div>
             </div>
