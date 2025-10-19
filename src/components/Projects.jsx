@@ -4,7 +4,9 @@ import { Github, ExternalLink, Code, Sparkles, Zap, X, ChevronRight } from "luci
 const Projects = () => {
   const [activeProject, setActiveProject] = useState(null);
   const [hoveredCard, setHoveredCard] = useState(null);
+  const [hasAnimated, setHasAnimated] = useState(false);
   const modalRef = useRef(null);
+  const sectionRef = useRef(null);
 
   useEffect(() => {
     if (activeProject) {
@@ -16,6 +18,29 @@ const Projects = () => {
       document.body.style.overflow = "auto";
     };
   }, [activeProject]);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting && !hasAnimated) {
+            setHasAnimated(true);
+          }
+        });
+      },
+      { threshold: 0.1 }
+    );
+
+    if (sectionRef.current) {
+      observer.observe(sectionRef.current);
+    }
+
+    return () => {
+      if (sectionRef.current) {
+        observer.unobserve(sectionRef.current);
+      }
+    };
+  }, [hasAnimated]);
 
   const handleClickOutside = (e) => {
     if (modalRef.current && !modalRef.current.contains(e.target)) {
@@ -69,7 +94,11 @@ const Projects = () => {
   ];
 
   return (
-    <section id="projects" className="relative py-24 bg-white overflow-hidden">
+    <section 
+      ref={sectionRef}
+      id="projects" 
+      className="relative py-24 bg-white overflow-hidden"
+    >
       
       {/* Subtle background decoration */}
       <div className="absolute inset-0 opacity-[0.02]" style={{
@@ -77,16 +106,15 @@ const Projects = () => {
         backgroundSize: '50px 50px'
       }}></div>
 
-      <div className="container relative mx-auto px-4 md:px-6 z-10 max-w-7xl">
+      <div className={`container relative mx-auto px-4 md:px-6 z-10 max-w-7xl transition-all duration-1000 ease-out ${
+        hasAnimated ? 'scale-100 opacity-100' : 'scale-150 opacity-0'
+      }`}>
         
         {/* Header Section */}
         <div className="text-center mb-20">
-    
-          
           <h2 className="text-5xl md:text-6xl font-bold mb-6 text-neutral-900">
             Portfolio
           </h2>
-          
         </div>
 
         {/* Projects Grid */}
@@ -198,118 +226,118 @@ const Projects = () => {
             </div>
           ))}
         </div>
+      </div>
 
-        {/* Project Detail Modal */}
-        {activeProject && (
+      {/* Project Detail Modal - Outside the animated container */}
+      {activeProject && (
+        <div
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fadeIn"
+          onClick={handleClickOutside}
+        >
           <div
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fadeIn"
-            onClick={handleClickOutside}
+            ref={modalRef}
+            className="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl animate-slideUp"
           >
-            <div
-              ref={modalRef}
-              className="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl animate-slideUp"
-            >
-              {/* Modal Header with Image */}
-              <div className="relative">
-                <div className="h-72 overflow-hidden bg-neutral-100">
-                  <img
-                    src={activeProject.image}
-                    alt={activeProject.title}
-                    className="w-full h-full object-cover"
-                  />
-                  <div className={`absolute inset-0 bg-gradient-to-br ${activeProject.color} opacity-20`}></div>
+            {/* Modal Header with Image */}
+            <div className="relative">
+              <div className="h-72 overflow-hidden bg-neutral-100">
+                <img
+                  src={activeProject.image}
+                  alt={activeProject.title}
+                  className="w-full h-full object-cover"
+                />
+                <div className={`absolute inset-0 bg-gradient-to-br ${activeProject.color} opacity-20`}></div>
+              </div>
+
+              {/* Close Button */}
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setActiveProject(null);
+                }}
+                className="absolute top-4 right-4 p-2 bg-white/95 backdrop-blur-sm rounded-full text-neutral-700 hover:text-white hover:bg-red-500 transition-all duration-300 shadow-lg"
+              >
+                <X className="w-5 h-5" />
+              </button>
+
+              {/* Category Badge */}
+              <div className="absolute bottom-4 left-6">
+                <span className="inline-flex items-center gap-2 px-4 py-2 bg-white/95 backdrop-blur-sm rounded-full font-semibold text-neutral-800 shadow-lg border border-neutral-200">
+                  <Zap className="w-4 h-4 text-green-600" />
+                  {activeProject.category}
+                </span>
+              </div>
+            </div>
+
+            {/* Modal Content */}
+            <div className="p-8">
+              <h3 className="text-4xl font-bold text-neutral-900 mb-6">
+                {activeProject.title}
+              </h3>
+
+              {/* Technologies */}
+              <div className="mb-8">
+                <div className="flex items-center gap-2 mb-4">
+                  <Code className="w-5 h-5 text-green-600" />
+                  <h4 className="text-xl font-bold text-neutral-900">Tech Stack</h4>
                 </div>
-
-                {/* Close Button */}
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setActiveProject(null);
-                  }}
-                  className="absolute top-4 right-4 p-2 bg-white/95 backdrop-blur-sm rounded-full text-neutral-700 hover:text-white hover:bg-red-500 transition-all duration-300 shadow-lg"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-
-                {/* Category Badge */}
-                <div className="absolute bottom-4 left-6">
-                  <span className="inline-flex items-center gap-2 px-4 py-2 bg-white/95 backdrop-blur-sm rounded-full font-semibold text-neutral-800 shadow-lg border border-neutral-200">
-                    <Zap className="w-4 h-4 text-green-600" />
-                    {activeProject.category}
-                  </span>
+                <div className="flex flex-wrap gap-2">
+                  {activeProject.technologies.split(", ").map((tech, i) => (
+                    <span
+                      key={i}
+                      className="px-4 py-2 rounded-lg bg-neutral-100 text-neutral-700 font-medium border border-neutral-200 hover:border-green-500 hover:bg-green-50 transition-colors"
+                    >
+                      {tech}
+                    </span>
+                  ))}
                 </div>
               </div>
 
-              {/* Modal Content */}
-              <div className="p-8">
-                <h3 className="text-4xl font-bold text-neutral-900 mb-6">
-                  {activeProject.title}
-                </h3>
-
-                {/* Technologies */}
-                <div className="mb-8">
-                  <div className="flex items-center gap-2 mb-4">
-                    <Code className="w-5 h-5 text-green-600" />
-                    <h4 className="text-xl font-bold text-neutral-900">Tech Stack</h4>
-                  </div>
-                  <div className="flex flex-wrap gap-2">
-                    {activeProject.technologies.split(", ").map((tech, i) => (
-                      <span
-                        key={i}
-                        className="px-4 py-2 rounded-lg bg-neutral-100 text-neutral-700 font-medium border border-neutral-200 hover:border-green-500 hover:bg-green-50 transition-colors"
-                      >
-                        {tech}
-                      </span>
-                    ))}
-                  </div>
+              {/* Description */}
+              <div className="mb-8">
+                <div className="flex items-center gap-2 mb-4">
+                  <Sparkles className="w-5 h-5 text-green-600" />
+                  <h4 className="text-xl font-bold text-neutral-900">Project Overview</h4>
                 </div>
-
-                {/* Description */}
-                <div className="mb-8">
-                  <div className="flex items-center gap-2 mb-4">
-                    <Sparkles className="w-5 h-5 text-green-600" />
-                    <h4 className="text-xl font-bold text-neutral-900">Project Overview</h4>
-                  </div>
-                  <div className="space-y-4">
-                    {activeProject.description.map((item, i) => (
-                      <div key={i} className="flex items-start gap-3">
-                        <div className="flex-shrink-0 w-6 h-6 rounded-full bg-green-100 flex items-center justify-center mt-1">
-                          <div className="w-2 h-2 rounded-full bg-green-600"></div>
-                        </div>
-                        <p className="text-neutral-700 leading-relaxed">{item}</p>
+                <div className="space-y-4">
+                  {activeProject.description.map((item, i) => (
+                    <div key={i} className="flex items-start gap-3">
+                      <div className="flex-shrink-0 w-6 h-6 rounded-full bg-green-100 flex items-center justify-center mt-1">
+                        <div className="w-2 h-2 rounded-full bg-green-600"></div>
                       </div>
-                    ))}
-                  </div>
+                      <p className="text-neutral-700 leading-relaxed">{item}</p>
+                    </div>
+                  ))}
                 </div>
+              </div>
 
-                {/* Action Buttons */}
-                <div className="flex flex-wrap gap-4">
+              {/* Action Buttons */}
+              <div className="flex flex-wrap gap-4">
+                <a
+                  href={activeProject.github}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-6 py-3 bg-neutral-900 text-white rounded-xl font-semibold hover:bg-neutral-800 transition-all duration-300 shadow-lg hover:shadow-xl"
+                >
+                  <Github className="w-5 h-5" />
+                  View Code
+                </a>
+                {activeProject.demo && (
                   <a
-                    href={activeProject.github}
+                    href={activeProject.demo}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-6 py-3 bg-neutral-900 text-white rounded-xl font-semibold hover:bg-neutral-800 transition-all duration-300 shadow-lg hover:shadow-xl"
+                    className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl font-semibold hover:shadow-xl transition-all duration-300 shadow-lg"
                   >
-                    <Github className="w-5 h-5" />
-                    View Code
+                    <ExternalLink className="w-5 h-5" />
+                    Live Demo
                   </a>
-                  {activeProject.demo && (
-                    <a
-                      href={activeProject.demo}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl font-semibold hover:shadow-xl transition-all duration-300 shadow-lg"
-                    >
-                      <ExternalLink className="w-5 h-5" />
-                      Live Demo
-                    </a>
-                  )}
-                </div>
+                )}
               </div>
             </div>
           </div>
-        )}
-      </div>
+        </div>
+      )}
 
       {/* Decorative Elements */}
       <div className="absolute top-1/4 -right-40 w-80 h-80 bg-green-200 rounded-full blur-3xl opacity-20 pointer-events-none"></div>
