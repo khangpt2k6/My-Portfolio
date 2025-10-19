@@ -81,25 +81,12 @@ const Projects = () => {
         
         {/* Header Section */}
         <div className="text-center mb-20">
-          <div className="inline-flex items-center gap-2 mb-4 px-4 py-2 bg-green-50 rounded-full">
-            <Sparkles className="w-4 h-4 text-green-600" />
-            <span className="text-sm font-semibold text-green-600 tracking-wider uppercase">Portfolio</span>
-          </div>
+    
           
           <h2 className="text-5xl md:text-6xl font-bold mb-6 text-neutral-900">
-            Featured Projects
+            Portfolio
           </h2>
           
-          <p className="text-lg text-neutral-600 max-w-2xl mx-auto leading-relaxed">
-            Innovative solutions spanning AI, web development, and system architecture
-          </p>
-          
-          {/* Decorative line */}
-          <div className="flex items-center justify-center gap-4 mt-8">
-            <div className="h-0.5 w-20 bg-gradient-to-r from-transparent to-green-600"></div>
-            <div className="w-2 h-2 rounded-full bg-green-600"></div>
-            <div className="h-0.5 w-20 bg-gradient-to-l from-transparent to-green-600"></div>
-          </div>
         </div>
 
         {/* Projects Grid */}

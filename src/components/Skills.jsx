@@ -23,22 +23,15 @@ const Skills = () => {
       ],
     },
     {
-      title: "Frontend",
-      icon: <Laptop className="w-5 h-5" />,
-      description: "Modern frameworks and tools for beautiful user interfaces",
+      title: "Frameworks",
+      icon: <Wrench className="w-5 h-5" />,
+      description: "Modern frameworks and tools for building applications",
       skills: [
         { name: "React", icon: "react" },
         { name: "Next.js", icon: "nextjs" },
         { name: "Redux", icon: "redux" },
         { name: "Tailwind CSS", icon: "tailwind" },
         { name: "Vite", icon: "vite" },
-      ],
-    },
-    {
-      title: "Backend",
-      icon: <Database className="w-5 h-5" />,
-      description: "Server-side technologies for scalable applications",
-      skills: [
         { name: "Node.js", icon: "nodejs" },
         { name: "Express", icon: "express" },
         { name: "Django", icon: "django" },
@@ -89,25 +82,11 @@ const Skills = () => {
         
         {/* Header */}
         <div className="text-center mb-20">
-          <div className="inline-flex items-center gap-2 mb-4 px-4 py-2 bg-green-50 rounded-full">
-            <Award className="w-4 h-4 text-green-600" />
-            <span className="text-sm font-semibold text-green-600 tracking-wider uppercase">Expertise</span>
-          </div>
           
           <h2 className="text-5xl md:text-6xl font-bold mb-6 text-neutral-900">
             Technical Skills
           </h2>
           
-          <p className="text-lg text-neutral-600 max-w-2xl mx-auto leading-relaxed">
-            A comprehensive overview of my technical expertise across various domains of software development
-          </p>
-
-          {/* Decorative line */}
-          <div className="flex items-center justify-center gap-4 mt-8">
-            <div className="h-0.5 w-20 bg-gradient-to-r from-transparent to-green-600"></div>
-            <Sparkles className="w-4 h-4 text-green-600" />
-            <div className="h-0.5 w-20 bg-gradient-to-l from-transparent to-green-600"></div>
-          </div>
         </div>
 
         {/* Category Navigation */}
@@ -116,19 +95,12 @@ const Skills = () => {
             <button
               key={index}
               onClick={() => setSelectedCategory(index)}
-              className={`group flex items-center gap-3 px-6 py-4 rounded-2xl font-semibold transition-all duration-300 ${
+              className={`group px-6 py-4 rounded-2xl font-semibold transition-all duration-300 ${
                 selectedCategory === index
                   ? "bg-gradient-to-r from-green-600 to-emerald-600 text-white shadow-lg shadow-green-600/30 scale-105"
                   : "bg-neutral-100 text-neutral-700 hover:bg-neutral-200 hover:scale-105"
               }`}
             >
-              <div className={`p-2 rounded-xl transition-colors ${
-                selectedCategory === index ? "bg-white/20" : "bg-white"
-              }`}>
-                <div className={selectedCategory === index ? "text-white" : "text-green-600"}>
-                  {category.icon}
-                </div>
-              </div>
               <span>{category.title}</span>
             </button>
           ))}
@@ -136,67 +108,80 @@ const Skills = () => {
 
         {/* Skills Display */}
         <div className="max-w-6xl mx-auto">
-          <div className="bg-white rounded-3xl p-8 md:p-10 border-2 border-neutral-200 shadow-xl">
-            
-            {/* Category Header */}
-            <div className="mb-10 text-center">
-              <div className="inline-flex items-center gap-3 mb-3">
-                <div className="p-3 bg-gradient-to-br from-green-600 to-emerald-600 rounded-2xl text-white shadow-lg">
-                  {currentCategory.icon}
-                </div>
-                <h3 className="text-3xl font-bold text-neutral-900">
-                  {currentCategory.title}
-                </h3>
-              </div>
-              <p className="text-neutral-600 max-w-xl mx-auto">
-                {currentCategory.description}
-              </p>
-            </div>
+          
+          {/* Category Header */}
+          <div className="mb-12 text-center">
+            <h3 className="text-4xl font-bold text-neutral-900 mb-2">
+              {currentCategory.title}
+            </h3>
+            <div className="h-1 w-24 bg-gradient-to-r from-green-600 to-emerald-600 mx-auto rounded-full"></div>
+          </div>
 
-            {/* Skills Grid */}
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
-              {currentCategory.skills.map((skill, index) => (
-                <div
-                  key={index}
-                  className="group relative"
-                  onMouseEnter={() => setHoveredSkill(index)}
-                  onMouseLeave={() => setHoveredSkill(null)}
-                >
-                  <div className={`flex flex-col items-center justify-center p-6 rounded-2xl transition-all duration-300 ${
-                    hoveredSkill === index
-                      ? "bg-gradient-to-br from-green-50 to-emerald-50 border-2 border-green-500 shadow-lg shadow-green-500/20 -translate-y-2 scale-105"
-                      : "bg-neutral-50 border-2 border-neutral-200 hover:border-neutral-300"
+          {/* Skills Grid */}
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-8">
+            {currentCategory.skills.map((skill, index) => (
+              <div
+                key={index}
+                className="group relative"
+                onMouseEnter={() => setHoveredSkill(index)}
+                onMouseLeave={() => setHoveredSkill(null)}
+                style={{
+                  animation: `fadeInUp 0.6s ease-out ${index * 0.05}s both`
+                }}
+              >
+                <div className={`relative flex flex-col items-center justify-center p-8 rounded-3xl transition-all duration-500 cursor-pointer ${
+                  hoveredSkill === index
+                    ? "bg-gradient-to-br from-green-500 to-emerald-600 shadow-2xl shadow-green-500/40 -translate-y-3 scale-110"
+                    : "bg-white/60 backdrop-blur-sm shadow-lg hover:shadow-xl"
+                }`}>
+                  
+                  {/* Animated background glow */}
+                  {hoveredSkill === index && (
+                    <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-green-400 to-emerald-500 blur-xl opacity-60 animate-pulse"></div>
+                  )}
+
+                  {/* Skill Icon */}
+                  <div className={`relative mb-4 transform transition-all duration-500 ${
+                    hoveredSkill === index ? "scale-125 rotate-6" : "scale-100"
                   }`}>
-                    
-                    {/* Skill Icon */}
-                    <div className="mb-3 transform transition-transform duration-300 group-hover:scale-110">
-                      <img 
-                        src={`https://skillicons.dev/icons?i=${skill.icon}&theme=light`}
-                        alt={skill.name}
-                        className="w-16 h-16"
-                      />
-                    </div>
-
-                    {/* Skill Name */}
-                    <span className={`font-semibold text-center transition-colors text-sm ${
-                      hoveredSkill === index ? "text-green-700" : "text-neutral-800"
-                    }`}>
-                      {skill.name}
-                    </span>
-
-                    {/* Hover indicator arrow */}
-                    {hoveredSkill === index && (
-                      <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2">
-                        <ChevronRight className="w-5 h-5 text-green-600 rotate-90 animate-bounce" />
-                      </div>
-                    )}
+                    <img 
+                      src={`https://skillicons.dev/icons?i=${skill.icon}&theme=light`}
+                      alt={skill.name}
+                      className="w-16 h-16 drop-shadow-lg"
+                    />
                   </div>
+
+                  {/* Skill Name */}
+                  <span className={`relative font-bold text-center transition-all duration-300 text-sm ${
+                    hoveredSkill === index ? "text-white scale-110" : "text-neutral-800"
+                  }`}>
+                    {skill.name}
+                  </span>
+
+                  {/* Particle effect on hover */}
+                  {hoveredSkill === index && (
+                    <>
+                      <div className="absolute top-2 right-2 w-2 h-2 bg-white rounded-full animate-ping"></div>
+                      <div className="absolute bottom-2 left-2 w-2 h-2 bg-white rounded-full animate-ping" style={{ animationDelay: "0.3s" }}></div>
+                    </>
+                  )}
                 </div>
-              ))}
-            </div>
 
-            
-
+                {/* Floating animation keyframes injected via style tag */}
+                <style>{`
+                  @keyframes fadeInUp {
+                    from {
+                      opacity: 0;
+                      transform: translateY(30px);
+                    }
+                    to {
+                      opacity: 1;
+                      transform: translateY(0);
+                    }
+                  }
+                `}</style>
+              </div>
+            ))}
           </div>
         </div>
 

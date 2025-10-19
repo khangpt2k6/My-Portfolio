@@ -61,7 +61,6 @@ const Hero = () => {
             {/* Name with stylish design */}
             <div className="text-center lg:text-left mb-6">
               <div className="flex items-center gap-2 mb-2">
-                <Sparkles className="w-5 h-5 text-green-600" />
                 <span className="text-sm font-semibold text-green-600 tracking-wider uppercase">Hello, I'm</span>
               </div>
               <h1 className="text-5xl lg:text-6xl font-bold text-neutral-900 mb-2 tracking-tight">

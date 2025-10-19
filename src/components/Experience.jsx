@@ -118,9 +118,7 @@ const Experience = () => {
             Experience
           </h1>
           
-          <p className="text-lg text-neutral-600 max-w-2xl mx-auto mb-8">
-            A timeline of my professional growth and contributions to the tech community
-          </p>
+        
 
           {/* Tab Switcher */}
           <div className="inline-flex gap-2 p-2 bg-neutral-100 rounded-full">

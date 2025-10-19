@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { FaGithub, FaLinkedin, FaEnvelope, FaArrowUp, FaMapMarkerAlt, FaPhone } from "react-icons/fa";
 import { Link } from "react-scroll";
+import Experience from './Experience';
 
 const Footer = () => {
   const [isVisible, setIsVisible] = useState(false);
@@ -84,7 +85,7 @@ const Footer = () => {
           <div className="lg:col-span-1 space-y-6">
             <div>
               <h2 className="text-2xl font-bold text-gray-900 mb-2">
-                Tuan Khang Phan
+                Khang Phan
               </h2>
               <div className="w-12 h-1 bg-green-600 mb-4"></div>
             </div>
@@ -148,7 +149,7 @@ const Footer = () => {
                   <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
                     <FaMapMarkerAlt className="text-green-600" size={14} />
                   </div>
-                  <span className="text-sm">Tampa, Florida</span>
+                  <span className="text-sm">Tampa, Florida, United States</span>
                 </div>
               </div>
             </div>
@@ -158,7 +159,7 @@ const Footer = () => {
           <div className="lg:col-span-1 space-y-6">
             <div>
               <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                Quick Links
+                Overview
               </h3>
               <div className="space-y-2">
                 <Link
@@ -168,6 +169,14 @@ const Footer = () => {
                   className="block text-neutral-600 dark:text-neutral-300 hover:text-green-600 transition-colors duration-300 cursor-pointer text-sm py-1"
                 >
                   About Me
+                </Link>
+                <Link
+                  to="experience"
+                  smooth={true}
+                  duration={500}
+                  className="block text-neutral-600 dark:text-neutral-300 hover:text-green-600 transition-colors duration-300 cursor-pointer text-sm py-1"
+                >
+                  Experience
                 </Link>
                 <Link
                   to="projects"
@@ -185,14 +194,7 @@ const Footer = () => {
                 >
                   Skills
                 </Link>
-                <Link
-                  to="hero"
-                  smooth={true}
-                  duration={500}
-                  className="block text-neutral-600 dark:text-neutral-300 hover:text-green-600 transition-colors duration-300 cursor-pointer text-sm py-1"
-                >
-                  Contact
-                </Link>
+                
               </div>
             </div>
 
