@@ -37,9 +37,7 @@ const MiniPlayer = () => {
     if (!a) return;
     const onTime = () => setCurrentTime(a.currentTime);
     const onMeta = () => { setDuration(a.duration); setCurrentTime(0); };
-    const onEnd = () => {
-      setCurrentIndex((p) => (p + 1) % tracks.length);
-    };
+    const onEnd = () => { setCurrentIndex((p) => (p + 1) % tracks.length); };
     const onErr = () => { setError(true); setIsPlaying(false); };
 
     a.addEventListener("timeupdate", onTime);
@@ -123,13 +121,13 @@ const MiniPlayer = () => {
     <>
       <audio ref={audioRef} preload="metadata" />
 
-      {/* ── Floating music button ── */}
+      {/* ── Floating music button — bottom-right, above chat button ── */}
       <motion.button
         ref={btnRef}
         onClick={() => setIsOpen((p) => !p)}
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
-        className="fixed bottom-6 left-6 z-50 w-10 h-10 rounded-full flex items-center justify-center text-white shadow-lg transition-shadow duration-300"
+        className="fixed bottom-20 right-6 z-50 w-11 h-11 rounded-full flex items-center justify-center text-white shadow-lg transition-shadow duration-300"
         style={{
           background: "linear-gradient(135deg, rgb(var(--color-primary-rgb)), rgb(var(--color-secondary-rgb)))",
           boxShadow: isPlaying
@@ -139,7 +137,6 @@ const MiniPlayer = () => {
         aria-label="Music player"
       >
         <Music size={18} />
-        {/* Pulse when playing */}
         {isPlaying && !isOpen && (
           <span
             className="absolute inset-0 rounded-full opacity-40"
@@ -160,8 +157,8 @@ const MiniPlayer = () => {
             animate={{ y: 0, opacity: 1, scale: 1 }}
             exit={{ y: 20, opacity: 0, scale: 0.95 }}
             transition={{ type: "spring", stiffness: 400, damping: 30 }}
-            className="fixed bottom-20 left-6 z-50 w-[300px] glass-card backdrop-blur-2xl rounded-2xl overflow-hidden"
-            style={{ boxShadow: "0 8px 40px rgba(0,0,0,0.2)" }}
+            className="fixed bottom-[8.5rem] right-6 z-50 w-[300px] glass-card backdrop-blur-2xl rounded-2xl overflow-hidden"
+            style={{ boxShadow: "0 8px 40px rgba(0,0,0,0.25)" }}
           >
             {/* ── Now playing header ── */}
             <div className="relative h-16 flex items-center gap-3 px-4" style={{ background: track.gradient }}>
@@ -266,7 +263,6 @@ const MiniPlayer = () => {
               })}
             </div>
 
-            {/* Error message */}
             {error && (
               <div className="px-4 py-2 text-[10px] text-center text-red-400 border-t border-[var(--color-border)]">
                 Add .mp3 files to /public/music/

@@ -1,13 +1,16 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { MessageCircle, X, Send, CheckCircle } from "lucide-react";
+import { MessageCircle, X, Send, CheckCircle, AlertCircle, Loader2 } from "lucide-react";
+
+// Web3Forms access key — get yours free at https://web3forms.com
+const WEB3FORMS_KEY = "YOUR_ACCESS_KEY_HERE";
 
 const ContactChat = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
-  const [sent, setSent] = useState(false);
+  const [status, setStatus] = useState("idle"); // idle | sending | success | error
 
   const panelRef = useRef(null);
   const btnRef = useRef(null);
@@ -27,28 +30,45 @@ const ContactChat = () => {
     return () => document.removeEventListener("mousedown", handler);
   }, [isOpen]);
 
-  /* ── Send via mailto ── */
-  const handleSend = (e) => {
+  /* ── Send via Web3Forms API ── */
+  const handleSend = async (e) => {
     e.preventDefault();
-    if (!message.trim()) return;
+    if (!message.trim() || status === "sending") return;
 
-    const subject = encodeURIComponent(
-      `Portfolio Message${name ? ` from ${name}` : ""}`
-    );
-    const body = encodeURIComponent(
-      [name && `Name: ${name}`, email && `Email: ${email}`, "", message]
-        .filter(Boolean)
-        .join("\n")
-    );
-    window.open(`mailto:khang18@usf.edu?subject=${subject}&body=${body}`, "_self");
+    setStatus("sending");
 
-    setSent(true);
-    setTimeout(() => {
-      setSent(false);
-      setName("");
-      setEmail("");
-      setMessage("");
-    }, 3000);
+    try {
+      const res = await fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          access_key: WEB3FORMS_KEY,
+          name: name || "Anonymous",
+          email: email || "no-reply@portfolio.com",
+          message,
+          subject: `Portfolio Message from ${name || "a visitor"}`,
+          from_name: "Portfolio Contact Form",
+        }),
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        setStatus("success");
+        setTimeout(() => {
+          setStatus("idle");
+          setName("");
+          setEmail("");
+          setMessage("");
+        }, 3000);
+      } else {
+        setStatus("error");
+        setTimeout(() => setStatus("idle"), 3000);
+      }
+    } catch {
+      setStatus("error");
+      setTimeout(() => setStatus("idle"), 3000);
+    }
   };
 
   const inputClass =
@@ -56,13 +76,13 @@ const ContactChat = () => {
 
   return (
     <>
-      {/* ── Floating contact button ── */}
+      {/* ── Floating contact button — bottom-right, below music button ── */}
       <motion.button
         ref={btnRef}
         onClick={() => setIsOpen((p) => !p)}
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
-        className="fixed bottom-6 right-20 z-50 w-12 h-12 rounded-full flex items-center justify-center text-white shadow-lg transition-shadow duration-300"
+        className="fixed bottom-6 right-6 z-50 w-11 h-11 rounded-full flex items-center justify-center text-white shadow-lg transition-shadow duration-300"
         style={{
           background:
             "linear-gradient(135deg, rgb(var(--color-primary-rgb)), rgb(var(--color-secondary-rgb)))",
@@ -82,7 +102,7 @@ const ContactChat = () => {
               transition={{ duration: 0.15 }}
               className="flex items-center justify-center"
             >
-              <X size={20} />
+              <X size={18} />
             </motion.span>
           ) : (
             <motion.span
@@ -93,7 +113,7 @@ const ContactChat = () => {
               transition={{ duration: 0.15 }}
               className="flex items-center justify-center"
             >
-              <MessageCircle size={20} />
+              <MessageCircle size={18} />
             </motion.span>
           )}
         </AnimatePresence>
@@ -108,8 +128,8 @@ const ContactChat = () => {
             animate={{ y: 0, opacity: 1, scale: 1 }}
             exit={{ y: 20, opacity: 0, scale: 0.95 }}
             transition={{ type: "spring", stiffness: 400, damping: 30 }}
-            className="fixed bottom-24 right-20 z-50 w-[340px] glass-card backdrop-blur-2xl rounded-2xl overflow-hidden"
-            style={{ boxShadow: "0 8px 40px rgba(0,0,0,0.2)" }}
+            className="fixed bottom-20 right-6 z-50 w-[320px] glass-card backdrop-blur-2xl rounded-2xl overflow-hidden"
+            style={{ boxShadow: "0 8px 40px rgba(0,0,0,0.25)" }}
           >
             {/* ── Header ── */}
             <div
@@ -130,9 +150,9 @@ const ContactChat = () => {
               </div>
             </div>
 
-            {/* ── Form / Success ── */}
+            {/* ── Form / Success / Error ── */}
             <AnimatePresence mode="wait">
-              {sent ? (
+              {status === "success" ? (
                 <motion.div
                   key="success"
                   initial={{ opacity: 0, scale: 0.9 }}
@@ -142,10 +162,26 @@ const ContactChat = () => {
                 >
                   <CheckCircle className="w-10 h-10 text-emerald-500" />
                   <p className="text-sm font-semibold text-[var(--color-text)]">
-                    Opening your email client...
+                    Message sent!
                   </p>
                   <p className="text-xs text-[var(--color-text-muted)]">
-                    Complete sending from there!
+                    I'll get back to you soon.
+                  </p>
+                </motion.div>
+              ) : status === "error" ? (
+                <motion.div
+                  key="error"
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                  className="px-5 py-10 flex flex-col items-center gap-2 text-center"
+                >
+                  <AlertCircle className="w-10 h-10 text-red-500" />
+                  <p className="text-sm font-semibold text-[var(--color-text)]">
+                    Failed to send
+                  </p>
+                  <p className="text-xs text-[var(--color-text-muted)]">
+                    Please try again or email me directly.
                   </p>
                 </motion.div>
               ) : (
@@ -181,21 +217,24 @@ const ContactChat = () => {
                   />
                   <button
                     type="submit"
-                    disabled={!message.trim()}
-                    className="w-full py-2.5 rounded-lg text-sm font-semibold text-white flex items-center justify-center gap-2 transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed"
+                    disabled={!message.trim() || status === "sending"}
+                    className="w-full py-2.5 rounded-lg text-sm font-semibold text-white flex items-center justify-center gap-2 transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed hover:brightness-110"
                     style={{
                       background:
                         "linear-gradient(135deg, rgb(var(--color-primary-rgb)), rgb(var(--color-secondary-rgb)))",
                     }}
-                    onMouseEnter={(e) => {
-                      if (message.trim()) e.currentTarget.style.opacity = "0.9";
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.opacity = "1";
-                    }}
                   >
-                    <Send size={14} />
-                    Send Message
+                    {status === "sending" ? (
+                      <>
+                        <Loader2 size={14} className="animate-spin" />
+                        Sending...
+                      </>
+                    ) : (
+                      <>
+                        <Send size={14} />
+                        Send Message
+                      </>
+                    )}
                   </button>
                 </motion.form>
               )}

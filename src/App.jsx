@@ -6,7 +6,6 @@ import { motion, useMotionValue, useSpring, AnimatePresence } from "framer-motio
 import StarfieldBg from "./components/StarfieldBg"
 import Navbar from "./components/Navbar"
 import Footer from "./components/Footer"
-import SettingsPanel from "./components/SettingsPanel"
 import ScrollProgress from "./components/ScrollProgress"
 import MiniPlayer from "./components/MiniPlayer"
 import ContactChat from "./components/ContactChat"
@@ -177,7 +176,6 @@ function App() {
         <Navbar />
         <AnimatedRoutes />
         <Footer />
-        <SettingsPanel />
         <MiniPlayer />
         <ContactChat />
       </div>

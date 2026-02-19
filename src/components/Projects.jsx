@@ -1,494 +1,274 @@
 import { useState, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import Tilt from "react-parallax-tilt";
 import {
   Github,
   ExternalLink,
   X,
-  ChevronRight,
-  Zap,
+  ArrowUpRight,
   Code,
   Sparkles,
 } from "lucide-react";
 import projects from "../data/projects";
-import FadeInView from "./FadeInView";
 import AnimatedHeading from "./AnimatedHeading";
 import MergeSortViz from "./MergeSortViz";
 import ChatViz from "./ChatViz";
 import NaviCVViz from "./NaviCVViz";
 
-const isTouchDevice =
-  typeof window !== "undefined" && "ontouchstart" in window;
+/* ── Live preview ──────────────────────────────────────────────────────────── */
+const LivePreview = ({ type, image, title, className = "" }) => {
+  const bg = "bg-gradient-to-br from-gray-900 to-gray-800";
+  if (type === "merge-sort")
+    return <div className={`w-full h-full ${bg} ${className}`}><MergeSortViz /></div>;
+  if (type === "chat")
+    return <div className={`w-full h-full ${bg} ${className}`}><ChatViz /></div>;
+  if (type === "job-search")
+    return <div className={`w-full h-full ${bg} ${className}`}><NaviCVViz /></div>;
+  return <img src={image} alt={title} className={`w-full h-full object-cover ${className}`} />;
+};
 
-const renderLivePreview = (livePreview, image, title, extraClass = "") => {
-  if (livePreview === "merge-sort") {
-    return (
-      <div className={`w-full h-full bg-black/80 ${extraClass}`}>
-        <MergeSortViz />
-      </div>
-    );
-  }
-  if (livePreview === "chat") {
-    return (
-      <div className={`w-full h-full ${extraClass}`}>
-        <ChatViz />
-      </div>
-    );
-  }
-  if (livePreview === "job-search") {
-    return (
-      <div className={`w-full h-full ${extraClass}`}>
-        <NaviCVViz />
-      </div>
-    );
-  }
+/* ── Per-category accent ───────────────────────────────────────────────────── */
+const accents = {
+  "AI/ML":      { gradient: "from-indigo-600 to-cyan-500", badge: "bg-indigo-500/20 text-indigo-300 border-indigo-400/30" },
+  "Full-Stack": { gradient: "from-blue-600 to-violet-500", badge: "bg-blue-500/20 text-blue-300 border-blue-400/30" },
+  Education:    { gradient: "from-purple-600 to-pink-500", badge: "bg-purple-500/20 text-purple-300 border-purple-400/30" },
+};
+
+/* ── Project Card ──────────────────────────────────────────────────────────── */
+const ProjectCard = ({ project, index, onOpen, featured = false }) => {
+  const accent = accents[project.category] || accents["Full-Stack"];
+
   return (
-    <img
-      src={image}
-      alt={title}
-      className={`w-full h-full object-cover ${extraClass}`}
-    />
+    <motion.article
+      initial={{ opacity: 0, y: 40 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-40px" }}
+      transition={{ duration: 0.5, delay: index * 0.12, ease: [0.22, 1, 0.36, 1] }}
+      className={`group relative ${featured ? "md:col-span-2" : ""}`}
+    >
+      <div
+        onClick={() => onOpen(project)}
+        className="relative h-full rounded-2xl overflow-hidden cursor-pointer
+          bg-[var(--color-surface)] border border-[var(--color-border)]
+          transition-all duration-500
+          hover:-translate-y-2
+          hover:shadow-[0_24px_64px_-12px_rgba(0,0,0,0.25)]"
+      >
+        <div className={`relative overflow-hidden ${featured ? "h-52 sm:h-60 lg:h-72" : "h-44 sm:h-52"}`}>
+          <LivePreview
+            type={project.livePreview}
+            image={project.image}
+            title={project.title}
+            className="transition-transform duration-700 ease-out group-hover:scale-105"
+          />
+          <div className={`absolute top-0 inset-x-0 h-1 bg-gradient-to-r ${accent.gradient}`} />
+          <div className="absolute bottom-0 inset-x-0 h-20 bg-gradient-to-t from-[var(--color-surface)] to-transparent pointer-events-none" />
+          <span className={`absolute top-4 left-4 inline-flex items-center px-3 py-1 rounded-full text-xs font-bold backdrop-blur-md border ${accent.badge}`}>
+            {project.category}
+          </span>
+          <div className="absolute bottom-4 right-4 flex gap-2 opacity-0 translate-y-3 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 delay-75">
+            <a href={project.github} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()}
+              className="p-2 bg-black/60 backdrop-blur-md rounded-lg text-white/80 hover:text-white hover:bg-black/80 transition-all">
+              <Github className="w-4 h-4" />
+            </a>
+            {project.demo && (
+              <a href={project.demo} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()}
+                className="p-2 bg-black/60 backdrop-blur-md rounded-lg text-white/80 hover:text-white hover:bg-black/80 transition-all">
+                <ExternalLink className="w-4 h-4" />
+              </a>
+            )}
+          </div>
+        </div>
+
+        <div className="p-5 sm:p-6">
+          <div className="flex items-center justify-between gap-3 mb-2">
+            <h3 className="text-lg sm:text-xl font-bold text-[var(--color-text)] transition-colors duration-300">
+              {project.title}
+            </h3>
+            <ArrowUpRight className="w-5 h-5 flex-shrink-0 text-[var(--color-text-muted)] opacity-0 group-hover:opacity-70 transition-all duration-300" />
+          </div>
+          <p className="text-sm text-[var(--color-text-muted)] leading-relaxed mb-4 line-clamp-2">
+            {project.description[0]}
+          </p>
+          <div className="flex flex-wrap gap-1.5">
+            {project.technologies.split(", ").slice(0, featured ? 6 : 4).map((tech) => (
+              <span key={tech} className="text-[11px] px-2 py-0.5 rounded-md font-medium bg-[var(--color-bg)] text-[var(--color-text-muted)] border border-[var(--color-border)]">
+                {tech}
+              </span>
+            ))}
+            {project.technologies.split(", ").length > (featured ? 6 : 4) && (
+              <span className="text-[11px] px-2 py-0.5 rounded-md font-semibold bg-[var(--color-primary)]/10 text-[var(--color-primary)]">
+                +{project.technologies.split(", ").length - (featured ? 6 : 4)}
+              </span>
+            )}
+          </div>
+        </div>
+      </div>
+    </motion.article>
   );
 };
 
-const Projects = () => {
-  const [activeProject, setActiveProject] = useState(null);
-  const [hoveredCard, setHoveredCard] = useState(null);
+/* ── Project Detail Modal (portaled to body) ───────────────────────────────── */
+const ProjectModal = ({ project, onClose }) => {
   const modalRef = useRef(null);
+  const accent = accents[project.category] || accents["Full-Stack"];
 
   useEffect(() => {
-    if (activeProject) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "auto";
-    }
+    document.body.style.overflow = "hidden";
+    const onKey = (e) => { if (e.key === "Escape") onClose(); };
+    window.addEventListener("keydown", onKey);
     return () => {
       document.body.style.overflow = "auto";
+      window.removeEventListener("keydown", onKey);
     };
-  }, [activeProject]);
+  }, [onClose]);
 
-  const handleClickOutside = (e) => {
-    if (modalRef.current && !modalRef.current.contains(e.target)) {
-      setActiveProject(null);
-    }
-  };
+  return createPortal(
+    <motion.div
+      className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-8"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      onClick={(e) => {
+        if (modalRef.current && !modalRef.current.contains(e.target)) onClose();
+      }}
+    >
+      {/* Backdrop */}
+      <div className="absolute inset-0 bg-black/80 backdrop-blur-md" />
 
-  const heroProject = projects[0];
-  const regularProjects = projects.slice(1);
+      {/* Modal card */}
+      <motion.div
+        ref={modalRef}
+        initial={{ opacity: 0, scale: 0.95, y: 20 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.95, y: 20 }}
+        transition={{ type: "spring", stiffness: 400, damping: 30 }}
+        className="relative z-10 w-full max-w-2xl max-h-[80vh] overflow-y-auto rounded-2xl
+          bg-[var(--color-surface)] border border-[var(--color-border)]
+          shadow-[0_32px_80px_-12px_rgba(0,0,0,0.5)]"
+      >
+        {/* ── Preview ── */}
+        <div className="relative h-48 sm:h-60 overflow-hidden">
+          <LivePreview type={project.livePreview} image={project.image} title={project.title} />
+          <div className={`absolute top-0 inset-x-0 h-1 bg-gradient-to-r ${accent.gradient}`} />
+          <div className="absolute bottom-0 inset-x-0 h-16 bg-gradient-to-t from-[var(--color-surface)] to-transparent pointer-events-none" />
+
+          <button
+            onClick={onClose}
+            className="absolute top-3 right-3 p-2 bg-black/50 backdrop-blur-md rounded-xl text-white/80 hover:text-white hover:bg-red-500/80 transition-all"
+          >
+            <X className="w-4 h-4" />
+          </button>
+
+          <span className={`absolute top-3 left-4 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold backdrop-blur-md border ${accent.badge}`}>
+            {project.category}
+          </span>
+        </div>
+
+        {/* ── Content ── */}
+        <div className="px-6 sm:px-8 pb-6 -mt-2">
+          <h3 className="text-xl sm:text-2xl font-bold text-[var(--color-text)] mb-5">
+            {project.title}
+          </h3>
+
+          {/* Tech stack */}
+          <div className="mb-5">
+            <div className="flex items-center gap-2 mb-2">
+              <Code className="w-3.5 h-3.5 text-[var(--color-primary)]" />
+              <h4 className="text-[10px] font-bold uppercase tracking-widest text-[var(--color-text-muted)]">Tech Stack</h4>
+            </div>
+            <div className="flex flex-wrap gap-1.5">
+              {project.technologies.split(", ").map((tech) => (
+                <span key={tech} className="px-2.5 py-1 rounded-md text-xs font-medium bg-[var(--color-bg)] text-[var(--color-text-muted)] border border-[var(--color-border)]">
+                  {tech}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          {/* Overview */}
+          <div className="mb-6">
+            <div className="flex items-center gap-2 mb-2">
+              <Sparkles className="w-3.5 h-3.5 text-[var(--color-primary)]" />
+              <h4 className="text-[10px] font-bold uppercase tracking-widest text-[var(--color-text-muted)]">Overview</h4>
+            </div>
+            <div className="space-y-2">
+              {project.description.map((item, i) => (
+                <div key={i} className="flex items-start gap-2.5">
+                  <div className="mt-[7px] w-1.5 h-1.5 rounded-full bg-[var(--color-primary)] flex-shrink-0" />
+                  <p className="text-[var(--color-text-muted)] leading-relaxed text-sm">{item}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Actions */}
+          <div className="flex flex-wrap gap-3">
+            <a href={project.github} target="_blank" rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-[var(--color-bg)] border border-[var(--color-border)] text-[var(--color-text)] rounded-xl text-sm font-semibold hover:border-[var(--color-primary)] transition-all">
+              <Github className="w-4 h-4" /> Source Code
+            </a>
+            {project.demo && (
+              <a href={project.demo} target="_blank" rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-4 py-2 text-white rounded-xl text-sm font-semibold transition-all shadow-lg hover:shadow-xl hover:brightness-110"
+                style={{ background: "linear-gradient(135deg, rgb(var(--color-primary-rgb)), rgb(var(--color-secondary-rgb)))" }}>
+                <ExternalLink className="w-4 h-4" /> Live Demo
+              </a>
+            )}
+          </div>
+        </div>
+      </motion.div>
+    </motion.div>,
+    document.body
+  );
+};
+
+/* ── Projects Page ─────────────────────────────────────────────────────────── */
+const Projects = () => {
+  const [activeProject, setActiveProject] = useState(null);
 
   return (
-    <section
-      id="projects"
-      className="relative min-h-screen pt-24 pb-28 bg-[var(--color-bg)] dark:bg-transparent"
-    >
-      <div className="relative mx-auto max-w-6xl px-4 md:px-6">
-        {/* Section Header */}
-        <div className="text-center mb-16">
-          <AnimatedHeading>Portfolio</AnimatedHeading>
-        </div>
-
-        {/* Bento Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {/* Hero Card - NaviCV (full width) */}
-          <FadeInView delay={0} className="md:col-span-2">
-            <Tilt
-              tiltMaxAngleX={isTouchDevice ? 0 : 5}
-              tiltMaxAngleY={isTouchDevice ? 0 : 5}
-              glareEnable={!isTouchDevice}
-              glareMaxOpacity={0.08}
-              glareColor="var(--color-primary)"
-              perspective={1200}
+    <>
+      <section className="relative min-h-screen pt-24 pb-28 bg-[var(--color-bg)] dark:bg-transparent">
+        <div className="relative mx-auto max-w-6xl px-4 sm:px-6">
+          <div className="text-center mb-14">
+            <AnimatedHeading>Portfolio</AnimatedHeading>
+            <motion.p
+              initial={{ opacity: 0, y: 12 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.3, duration: 0.5 }}
+              className="text-[var(--color-text-muted)] mt-3 text-sm sm:text-base max-w-md mx-auto"
             >
-              <div
-                className="group relative"
-                onMouseEnter={() => setHoveredCard("hero")}
-                onMouseLeave={() => setHoveredCard(null)}
-              >
-                <div
-                  className={`relative glass-card glow-border backdrop-blur-xl rounded-2xl overflow-hidden transition-all duration-500 cursor-pointer ${
-                    hoveredCard === "hero"
-                      ? "-translate-y-1 shadow-card-hover"
-                      : ""
-                  }`}
-                  onClick={() => setActiveProject(heroProject)}
-                >
-                  {/* Hero layout: split on desktop, stacked on mobile */}
-                  <div className="flex flex-col lg:flex-row h-80 md:h-96">
-                    {/* Left - Live Preview */}
-                    <div className="relative w-full lg:w-1/2 h-48 lg:h-full overflow-hidden">
-                      {renderLivePreview(
-                        heroProject.livePreview,
-                        heroProject.image,
-                        heroProject.title,
-                        hoveredCard === "hero"
-                          ? "transition-transform duration-700 scale-105"
-                          : "transition-transform duration-700 scale-100"
-                      )}
+              A selection of projects I've built — from AI systems to real-time apps.
+            </motion.p>
+          </div>
 
-                      {/* Gradient Overlay */}
-                      <div className="absolute inset-0 bg-gradient-to-t lg:bg-gradient-to-r from-black/40 to-transparent" />
-
-                      {/* Category Badge */}
-                      <div className="absolute top-3 left-3">
-                        <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-[var(--color-surface)]/90 backdrop-blur-sm rounded-full text-xs font-semibold text-[var(--color-text)]">
-                          <Zap className="w-3 h-3 text-indigo-500" />
-                          {heroProject.category}
-                        </span>
-                      </div>
-
-                      {/* Quick Action Icons */}
-                      <div
-                        className={`absolute bottom-3 right-3 flex gap-2 transition-all duration-300 ${
-                          hoveredCard === "hero"
-                            ? "opacity-100 translate-y-0"
-                            : "opacity-0 translate-y-3"
-                        }`}
-                      >
-                        <a
-                          href={heroProject.github}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="p-2 bg-[var(--color-surface)]/90 backdrop-blur-sm rounded-full text-[var(--color-text)] hover:text-white hover:bg-indigo-600 transition-all duration-300 shadow-lg"
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          <Github className="w-4 h-4" />
-                        </a>
-                        {heroProject.demo && (
-                          <a
-                            href={heroProject.demo}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="p-2 bg-[var(--color-surface)]/90 backdrop-blur-sm rounded-full text-[var(--color-text)] hover:text-white hover:bg-indigo-600 transition-all duration-300 shadow-lg"
-                            onClick={(e) => e.stopPropagation()}
-                          >
-                            <ExternalLink className="w-4 h-4" />
-                          </a>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Right - Content */}
-                    <div className="flex flex-col justify-center w-full lg:w-1/2 p-6 lg:p-8">
-                      <h3 className="text-2xl lg:text-3xl font-bold text-[var(--color-text)] mb-4 group-hover:text-indigo-500 transition-colors">
-                        {heroProject.title}
-                      </h3>
-
-                      {/* Tech Tags */}
-                      <div className="flex flex-wrap gap-1.5 mb-4">
-                        {heroProject.technologies
-                          .split(", ")
-                          .slice(0, 5)
-                          .map((tech, i) => (
-                            <span
-                              key={i}
-                              className="text-xs px-2.5 py-1 rounded-full bg-[var(--color-bg)] text-[var(--color-muted)] font-medium border border-[var(--color-border)] backdrop-blur-sm"
-                            >
-                              {tech}
-                            </span>
-                          ))}
-                        {heroProject.technologies.split(", ").length > 5 && (
-                          <span className="text-xs px-2.5 py-1 rounded-full bg-indigo-500/10 text-indigo-400 font-semibold">
-                            +{heroProject.technologies.split(", ").length - 5}
-                          </span>
-                        )}
-                      </div>
-
-                      {/* Description - show more for hero */}
-                      <p className="text-[var(--color-muted)] text-sm mb-2 leading-relaxed line-clamp-2">
-                        {heroProject.description[0]}
-                      </p>
-                      <p className="text-[var(--color-muted)] text-sm mb-5 leading-relaxed line-clamp-1 hidden lg:block">
-                        {heroProject.description[1]}
-                      </p>
-
-                      {/* View Details */}
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setActiveProject(heroProject);
-                        }}
-                        className="group/btn inline-flex items-center gap-1.5 text-sm text-indigo-500 hover:text-indigo-400 font-semibold transition-colors w-fit"
-                      >
-                        <span>View Details</span>
-                        <ChevronRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </Tilt>
-          </FadeInView>
-
-          {/* Regular Cards */}
-          {regularProjects.map((project, index) => (
-            <FadeInView key={project.id} delay={(index + 1) * 0.1}>
-              <Tilt
-                tiltMaxAngleX={isTouchDevice ? 0 : 8}
-                tiltMaxAngleY={isTouchDevice ? 0 : 8}
-                glareEnable={!isTouchDevice}
-                glareMaxOpacity={0.1}
-                glareColor="var(--color-primary)"
-                perspective={1000}
-              >
-                <div
-                  className="group relative h-full"
-                  onMouseEnter={() => setHoveredCard(project.id)}
-                  onMouseLeave={() => setHoveredCard(null)}
-                >
-                  <div
-                    className={`relative h-full glass-card glow-border backdrop-blur-xl rounded-2xl overflow-hidden transition-all duration-500 cursor-pointer ${
-                      hoveredCard === project.id
-                        ? "-translate-y-1 shadow-card-hover"
-                        : ""
-                    }`}
-                    onClick={() => setActiveProject(project)}
-                  >
-                    {/* Image Area */}
-                    <div className="relative h-52 overflow-hidden">
-                      {renderLivePreview(
-                        project.livePreview,
-                        project.image,
-                        project.title,
-                        hoveredCard === project.id
-                          ? "transition-transform duration-700 scale-105"
-                          : "transition-transform duration-700 scale-100"
-                      )}
-
-                      {/* Gradient Overlay */}
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
-
-                      {/* Category Badge */}
-                      <div className="absolute top-3 left-3">
-                        <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-[var(--color-surface)]/90 backdrop-blur-sm rounded-full text-xs font-semibold text-[var(--color-text)]">
-                          <Zap className="w-3 h-3 text-indigo-500" />
-                          {project.category}
-                        </span>
-                      </div>
-
-                      {/* Quick Action Icons */}
-                      <div
-                        className={`absolute bottom-3 right-3 flex gap-2 transition-all duration-300 ${
-                          hoveredCard === project.id
-                            ? "opacity-100 translate-y-0"
-                            : "opacity-0 translate-y-3"
-                        }`}
-                      >
-                        <a
-                          href={project.github}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="p-2 bg-[var(--color-surface)]/90 backdrop-blur-sm rounded-full text-[var(--color-text)] hover:text-white hover:bg-indigo-600 transition-all duration-300 shadow-lg"
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          <Github className="w-4 h-4" />
-                        </a>
-                        {project.demo && (
-                          <a
-                            href={project.demo}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="p-2 bg-[var(--color-surface)]/90 backdrop-blur-sm rounded-full text-[var(--color-text)] hover:text-white hover:bg-indigo-600 transition-all duration-300 shadow-lg"
-                            onClick={(e) => e.stopPropagation()}
-                          >
-                            <ExternalLink className="w-4 h-4" />
-                          </a>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Content */}
-                    <div className="p-5">
-                      <h3 className="text-xl font-bold text-[var(--color-text)] mb-3 group-hover:text-indigo-500 transition-colors">
-                        {project.title}
-                      </h3>
-
-                      {/* Tech Tags */}
-                      <div className="flex flex-wrap gap-1.5 mb-3">
-                        {project.technologies
-                          .split(", ")
-                          .slice(0, 3)
-                          .map((tech, i) => (
-                            <span
-                              key={i}
-                              className="text-xs px-2.5 py-1 rounded-full bg-[var(--color-bg)] text-[var(--color-muted)] font-medium border border-[var(--color-border)] backdrop-blur-sm"
-                            >
-                              {tech}
-                            </span>
-                          ))}
-                        {project.technologies.split(", ").length > 3 && (
-                          <span className="text-xs px-2.5 py-1 rounded-full bg-indigo-500/10 text-indigo-400 font-semibold">
-                            +{project.technologies.split(", ").length - 3}
-                          </span>
-                        )}
-                      </div>
-
-                      {/* Description */}
-                      <p className="text-[var(--color-muted)] text-sm mb-4 line-clamp-2 leading-relaxed">
-                        {project.description[0]}
-                      </p>
-
-                      {/* View Details */}
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setActiveProject(project);
-                        }}
-                        className="group/btn inline-flex items-center gap-1.5 text-sm text-indigo-500 hover:text-indigo-400 font-semibold transition-colors"
-                      >
-                        <span>View Details</span>
-                        <ChevronRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </Tilt>
-            </FadeInView>
-          ))}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
+            {projects.map((project, i) => (
+              <ProjectCard
+                key={project.id}
+                project={project}
+                index={i}
+                onOpen={setActiveProject}
+                featured={i === 0}
+              />
+            ))}
+          </div>
         </div>
-      </div>
+      </section>
 
-      {/* Modal */}
+      {/* Modal portaled to body — fully independent of section layout */}
       <AnimatePresence>
         {activeProject && (
-          <motion.div
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={handleClickOutside}
-          >
-            <motion.div
-              ref={modalRef}
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              transition={{ type: "spring", stiffness: 300, damping: 30 }}
-              className="bg-[var(--color-surface)] glass-card backdrop-blur-2xl rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-elevated"
-            >
-              {/* Modal Header Image */}
-              <div className="relative">
-                <div className="h-72 overflow-hidden">
-                  {activeProject.livePreview === "merge-sort" ? (
-                    <div className="w-full h-full bg-black/80 flex items-center justify-center">
-                      <MergeSortViz />
-                    </div>
-                  ) : activeProject.livePreview === "chat" ? (
-                    <div className="w-full h-full">
-                      <ChatViz />
-                    </div>
-                  ) : activeProject.livePreview === "job-search" ? (
-                    <div className="w-full h-full">
-                      <NaviCVViz />
-                    </div>
-                  ) : (
-                    <img
-                      src={activeProject.image}
-                      alt={activeProject.title}
-                      className="w-full h-full object-cover"
-                    />
-                  )}
-                  <div
-                    className={`absolute inset-0 bg-gradient-to-br ${activeProject.color} opacity-20`}
-                  />
-                </div>
-
-                {/* Close Button */}
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setActiveProject(null);
-                  }}
-                  className="absolute top-4 right-4 p-2 bg-[var(--color-surface)]/90 backdrop-blur-sm rounded-full text-[var(--color-muted)] hover:text-white hover:bg-red-500 transition-all duration-300 shadow-lg"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-
-                {/* Category Badge */}
-                <div className="absolute bottom-4 left-6">
-                  <span className="inline-flex items-center gap-2 px-4 py-2 bg-[var(--color-surface)]/90 backdrop-blur-sm rounded-full font-semibold text-[var(--color-text)] shadow-lg border border-[var(--color-border)]">
-                    <Zap className="w-4 h-4 text-indigo-500" />
-                    {activeProject.category}
-                  </span>
-                </div>
-              </div>
-
-              {/* Modal Content */}
-              <div className="p-8">
-                <h3 className="text-3xl md:text-4xl font-bold text-[var(--color-text)] mb-6">
-                  {activeProject.title}
-                </h3>
-
-                {/* Tech Stack */}
-                <div className="mb-8">
-                  <div className="flex items-center gap-2 mb-4">
-                    <Code className="w-5 h-5 text-indigo-500" />
-                    <h4 className="text-xl font-bold text-[var(--color-text)]">
-                      Tech Stack
-                    </h4>
-                  </div>
-                  <div className="flex flex-wrap gap-2">
-                    {activeProject.technologies.split(", ").map((tech, i) => (
-                      <span
-                        key={i}
-                        className="px-4 py-2 rounded-lg bg-[var(--color-bg)] text-[var(--color-muted)] font-medium border border-[var(--color-border)] hover:border-indigo-500/50 transition-colors"
-                      >
-                        {tech}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Description Bullets */}
-                <div className="mb-8">
-                  <div className="flex items-center gap-2 mb-4">
-                    <Sparkles className="w-5 h-5 text-indigo-500" />
-                    <h4 className="text-xl font-bold text-[var(--color-text)]">
-                      Project Overview
-                    </h4>
-                  </div>
-                  <div className="space-y-4">
-                    {activeProject.description.map((item, i) => (
-                      <div key={i} className="flex items-start gap-3">
-                        <div className="flex-shrink-0 w-6 h-6 rounded-full bg-indigo-500/10 flex items-center justify-center mt-0.5">
-                          <div className="w-2 h-2 rounded-full bg-indigo-500" />
-                        </div>
-                        <p className="text-[var(--color-muted)] leading-relaxed">
-                          {item}
-                        </p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Action Buttons */}
-                <div className="flex flex-wrap gap-4">
-                  <a
-                    href={activeProject.github}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-6 py-3 bg-[var(--color-bg)] border border-[var(--color-border)] text-[var(--color-text)] rounded-xl font-semibold hover:border-indigo-500/50 transition-all duration-300 shadow-lg hover:shadow-xl"
-                  >
-                    <Github className="w-5 h-5" />
-                    View Code
-                  </a>
-                  {activeProject.demo && (
-                    <a
-                      href={activeProject.demo}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-indigo-600 to-cyan-600 text-white rounded-xl font-semibold hover:shadow-xl transition-all duration-300 shadow-lg"
-                    >
-                      <ExternalLink className="w-5 h-5" />
-                      Live Demo
-                    </a>
-                  )}
-                </div>
-              </div>
-            </motion.div>
-          </motion.div>
+          <ProjectModal
+            key={activeProject.id}
+            project={activeProject}
+            onClose={() => setActiveProject(null)}
+          />
         )}
       </AnimatePresence>
-    </section>
+    </>
   );
 };
 
