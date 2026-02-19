@@ -1,11 +1,57 @@
-import { useEffect } from "react";
-import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
+import { useEffect, useRef, useCallback } from "react";
+import { motion, useMotionValue, useSpring, useTransform, useScroll } from "framer-motion";
 import { TypeAnimation } from "react-type-animation";
 import { FaGithub, FaLinkedin, FaEnvelope, FaFileAlt } from "react-icons/fa";
 import hero from "../data/hero";
 
 const iconMap = { Mail: FaEnvelope, Github: FaGithub, Linkedin: FaLinkedin, FileText: FaFileAlt };
 const buildSequence = (titles) => titles.flatMap((t) => [t, 2200]);
+
+/* ── Magnetic Button — follows cursor with spring physics ── */
+const MagneticButton = ({ children, className = "", style, onMouseEnter, onMouseLeave: onLeaveProp, ...props }) => {
+  const ref = useRef(null);
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+  const springX = useSpring(x, { stiffness: 150, damping: 15 });
+  const springY = useSpring(y, { stiffness: 150, damping: 15 });
+
+  const handleMouse = useCallback((e) => {
+    const el = ref.current;
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top + rect.height / 2;
+    x.set((e.clientX - cx) * 0.3);
+    y.set((e.clientY - cy) * 0.3);
+  }, [x, y]);
+
+  const handleLeave = useCallback((e) => {
+    x.set(0); y.set(0);
+    // Reset inline styles on leave
+    e.currentTarget.style.backgroundColor = "";
+    e.currentTarget.style.borderColor = "";
+    e.currentTarget.style.boxShadow = "";
+    onLeaveProp?.(e);
+  }, [x, y, onLeaveProp]);
+
+  const handleEnter = useCallback((e) => { onMouseEnter?.(e); }, [onMouseEnter]);
+
+  return (
+    <motion.a
+      ref={ref}
+      onMouseMove={handleMouse}
+      onMouseEnter={handleEnter}
+      onMouseLeave={handleLeave}
+      style={{ x: springX, y: springY, ...style }}
+      whileHover={{ scale: 1.06 }}
+      whileTap={{ scale: 0.95 }}
+      className={className}
+      {...props}
+    >
+      {children}
+    </motion.a>
+  );
+};
 
 /* ── Floating Gradient Orb ─────────────────────────────── */
 const FloatingOrb = ({ size, color, left, top, delay = 0, duration = 20 }) => (
@@ -48,10 +94,17 @@ const GradientName = ({ text, gradient, delay = 0 }) => (
 
 /* ── Hero Component ────────────────────────────────────── */
 const Hero = () => {
+  const sectionRef = useRef(null);
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
   const smoothX = useSpring(mouseX, { stiffness: 40, damping: 20 });
   const smoothY = useSpring(mouseY, { stiffness: 40, damping: 20 });
+
+  /* Scroll-based parallax depth */
+  const { scrollYProgress } = useScroll({ target: sectionRef, offset: ["start start", "end start"] });
+  const nameY = useTransform(scrollYProgress, [0, 1], [0, -120]);
+  const nameScale = useTransform(scrollYProgress, [0, 0.5], [1, 0.92]);
+  const nameOpacity = useTransform(scrollYProgress, [0, 0.7], [1, 0]);
 
   /* Parallax for outline layers */
   const bg1X = useTransform(smoothX, [-0.5, 0.5], [-25, 25]);
@@ -69,7 +122,7 @@ const Hero = () => {
   }, [mouseX, mouseY]);
 
   return (
-    <section className="relative min-h-screen flex flex-col items-center justify-center px-4 overflow-hidden">
+    <section ref={sectionRef} className="relative min-h-screen flex flex-col items-center justify-center px-4 overflow-hidden">
       {/* ── Floating Gradient Orbs ── */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <FloatingOrb size="350px" color="rgba(var(--color-primary-rgb), 0.10)" left="5%" top="15%" delay={0} duration={26} />
@@ -79,7 +132,10 @@ const Hero = () => {
       </div>
 
       {/* ── Content ── */}
-      <div className="relative z-10 flex flex-col items-center text-center w-full max-w-5xl mx-auto">
+      <motion.div
+        className="relative z-10 flex flex-col items-center text-center w-full max-w-5xl mx-auto"
+        style={{ y: nameY, scale: nameScale, opacity: nameOpacity }}
+      >
         {/* Greeting */}
         <motion.p
           initial={{ opacity: 0, y: 12, filter: "blur(8px)" }}
@@ -252,25 +308,18 @@ const Hero = () => {
             const IconComponent = iconMap[link.type];
             const isGithub = link.type === "Github";
             return (
-              <motion.a
+              <MagneticButton
                 key={index}
                 href={link.href}
                 target={link.href.startsWith("http") ? "_blank" : undefined}
                 rel={link.href.startsWith("http") ? "noopener noreferrer" : undefined}
                 aria-label={link.text}
-                whileHover={{ scale: 1.06, y: -3 }}
-                whileTap={{ scale: 0.95 }}
                 className="group glass-card shimmer-hover rounded-full px-5 py-2.5 flex items-center gap-2.5 transition-all duration-300"
                 style={{ "--btn-brand": link.brandColor }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.backgroundColor = link.brandColor;
                   e.currentTarget.style.borderColor = link.brandColor;
                   e.currentTarget.style.boxShadow = `0 0 30px ${link.brandColor}40, 0 8px 32px ${link.brandColor}20`;
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = "";
-                  e.currentTarget.style.borderColor = "";
-                  e.currentTarget.style.boxShadow = "";
                 }}
               >
                 {IconComponent && (
@@ -284,11 +333,11 @@ const Hero = () => {
                 <span className="text-sm font-semibold text-[var(--color-text)] transition-colors duration-300 group-hover:text-white">
                   {link.text}
                 </span>
-              </motion.a>
+              </MagneticButton>
             );
           })}
         </motion.div>
-      </div>
+      </motion.div>
 
     </section>
   );

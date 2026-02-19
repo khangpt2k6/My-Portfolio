@@ -1,6 +1,6 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { createPortal } from "react-dom";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useMotionValue, useSpring } from "framer-motion";
 import {
   Github,
   ExternalLink,
@@ -14,6 +14,62 @@ import AnimatedHeading from "./AnimatedHeading";
 import MergeSortViz from "./MergeSortViz";
 import ChatViz from "./ChatViz";
 import NaviCVViz from "./NaviCVViz";
+
+/* ── 3D Tilt Wrapper ─────────────────────────────────────────────────────── */
+const Tilt3D = ({ children, className = "" }) => {
+  const ref = useRef(null);
+  const rotateX = useMotionValue(0);
+  const rotateY = useMotionValue(0);
+  const glareX = useMotionValue(50);
+  const glareY = useMotionValue(50);
+  const glareOpacity = useMotionValue(0);
+  const springX = useSpring(rotateX, { stiffness: 200, damping: 20 });
+  const springY = useSpring(rotateY, { stiffness: 200, damping: 20 });
+
+  const handleMouse = useCallback((e) => {
+    const el = ref.current;
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width;
+    const y = (e.clientY - rect.top) / rect.height;
+    rotateX.set((y - 0.5) * -12);
+    rotateY.set((x - 0.5) * 12);
+    glareX.set(x * 100);
+    glareY.set(y * 100);
+    glareOpacity.set(0.15);
+  }, [rotateX, rotateY, glareX, glareY, glareOpacity]);
+
+  const handleLeave = useCallback(() => {
+    rotateX.set(0);
+    rotateY.set(0);
+    glareOpacity.set(0);
+  }, [rotateX, rotateY, glareOpacity]);
+
+  return (
+    <motion.div
+      ref={ref}
+      onMouseMove={handleMouse}
+      onMouseLeave={handleLeave}
+      style={{
+        rotateX: springX,
+        rotateY: springY,
+        transformStyle: "preserve-3d",
+        perspective: 1000,
+      }}
+      className={className}
+    >
+      {children}
+      {/* Specular glare overlay */}
+      <motion.div
+        className="pointer-events-none absolute inset-0 rounded-2xl z-20"
+        style={{
+          opacity: glareOpacity,
+          background: `radial-gradient(circle at ${glareX.get()}% ${glareY.get()}%, rgba(255,255,255,0.25), transparent 60%)`,
+        }}
+      />
+    </motion.div>
+  );
+};
 
 /* ── Live preview ──────────────────────────────────────────────────────────── */
 const LivePreview = ({ type, image, title, className = "" }) => {
@@ -46,13 +102,19 @@ const ProjectCard = ({ project, index, onOpen, featured = false }) => {
       transition={{ duration: 0.5, delay: index * 0.12, ease: [0.22, 1, 0.36, 1] }}
       className={`group relative ${featured ? "md:col-span-2" : ""}`}
     >
+      <Tilt3D className="relative h-full">
       <div
         onClick={() => onOpen(project)}
-        className="relative h-full rounded-2xl overflow-hidden cursor-pointer
+        onMouseMove={(e) => {
+          const rect = e.currentTarget.getBoundingClientRect();
+          e.currentTarget.style.setProperty("--glow-x", `${e.clientX - rect.left}px`);
+          e.currentTarget.style.setProperty("--glow-y", `${e.clientY - rect.top}px`);
+        }}
+        className={`relative h-full rounded-2xl overflow-hidden cursor-pointer
           bg-[var(--color-surface)] border border-[var(--color-border)]
-          transition-all duration-500
-          hover:-translate-y-2
-          hover:shadow-[0_24px_64px_-12px_rgba(0,0,0,0.25)]"
+          transition-all duration-500 glow-on-hover
+          hover:shadow-[0_24px_64px_-12px_rgba(0,0,0,0.25)]
+          ${featured ? "animated-border" : ""}`}
       >
         <div className={`relative overflow-hidden ${featured ? "h-52 sm:h-60 lg:h-72" : "h-44 sm:h-52"}`}>
           <LivePreview
@@ -104,6 +166,7 @@ const ProjectCard = ({ project, index, onOpen, featured = false }) => {
           </div>
         </div>
       </div>
+      </Tilt3D>
     </motion.article>
   );
 };

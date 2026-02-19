@@ -3,11 +3,13 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Code, Laptop, MapPin } from "lucide-react";
+import Tilt from "react-parallax-tilt";
 import experiences from "../data/experiences";
 import FadeInView from "./FadeInView";
 import AnimatedHeading from "./AnimatedHeading";
 
 const iconMap = { Code, Laptop };
+const isTouchDevice = typeof window !== "undefined" && "ontouchstart" in window;
 
 const TimelineDot = ({ index }) => (
   <motion.div
