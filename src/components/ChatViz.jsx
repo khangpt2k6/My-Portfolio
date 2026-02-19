@@ -30,10 +30,17 @@ const ChatViz = () => {
   const [activeContact, setActiveContact] = useState(0);
   const chatRef = useRef(null);
   const mountedRef = useRef(true);
-  const timeoutRef = useRef(null);
+  const timeoutsRef = useRef([]);
 
   const clearAllTimeouts = useCallback(() => {
-    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    timeoutsRef.current.forEach((id) => clearTimeout(id));
+    timeoutsRef.current = [];
+  }, []);
+
+  const addTimeout = useCallback((fn, delay) => {
+    const id = setTimeout(fn, delay);
+    timeoutsRef.current.push(id);
+    return id;
   }, []);
 
   useEffect(() => {
@@ -50,28 +57,29 @@ const ChatViz = () => {
       const nextStep = () => {
         if (!mountedRef.current) return;
         if (step >= MESSAGES.length) {
-          timeoutRef.current = setTimeout(() => {
+          addTimeout(() => {
             if (mountedRef.current) runChatLoop();
           }, 3000);
           return;
         }
 
         const msg = MESSAGES[step];
+        if (!msg) return;
         setTyping(msg.self ? "You" : msg.sender);
 
         const contactIdx = CONTACTS.findIndex((c) => c.name === msg.sender);
         if (contactIdx >= 0) setActiveContact(contactIdx);
 
-        timeoutRef.current = setTimeout(() => {
+        addTimeout(() => {
           if (!mountedRef.current) return;
           setTyping(null);
-          setVisibleMessages((prev) => [...prev, MESSAGES[step]]);
+          setVisibleMessages((prev) => [...prev, msg]);
           step++;
-          timeoutRef.current = setTimeout(nextStep, 600);
+          addTimeout(nextStep, 600);
         }, 800);
       };
 
-      timeoutRef.current = setTimeout(nextStep, 500);
+      addTimeout(nextStep, 500);
     };
 
     runChatLoop();
@@ -175,7 +183,9 @@ const ChatViz = () => {
 
         {/* Messages */}
         <div ref={chatRef} className="flex-1 overflow-hidden px-2 py-2 space-y-1.5" style={{ background: "rgba(0,0,0,0.2)" }}>
-          {visibleMessages.map((msg, i) => (
+          {visibleMessages.map((msg, i) => {
+            if (!msg) return null;
+            return (
             <div
               key={i}
               className="flex gap-1.5 animate-fadeIn"
@@ -211,7 +221,8 @@ const ChatViz = () => {
                 <span className="text-[5px] text-white/30 block text-right mt-0.5">{msg.time}</span>
               </div>
             </div>
-          ))}
+            );
+          })}
 
           {/* Typing indicator */}
           {typing && (

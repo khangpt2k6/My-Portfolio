@@ -62,7 +62,7 @@ const ContactChat = () => {
         onClick={() => setIsOpen((p) => !p)}
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
-        className="fixed bottom-6 right-6 z-50 w-12 h-12 rounded-full flex items-center justify-center text-white shadow-lg transition-shadow duration-300"
+        className="fixed bottom-6 right-20 z-50 w-12 h-12 rounded-full flex items-center justify-center text-white shadow-lg transition-shadow duration-300"
         style={{
           background:
             "linear-gradient(135deg, rgb(var(--color-primary-rgb)), rgb(var(--color-secondary-rgb)))",
@@ -108,7 +108,7 @@ const ContactChat = () => {
             animate={{ y: 0, opacity: 1, scale: 1 }}
             exit={{ y: 20, opacity: 0, scale: 0.95 }}
             transition={{ type: "spring", stiffness: 400, damping: 30 }}
-            className="fixed bottom-24 right-6 z-50 w-[340px] glass-card backdrop-blur-2xl rounded-2xl overflow-hidden"
+            className="fixed bottom-24 right-20 z-50 w-[340px] glass-card backdrop-blur-2xl rounded-2xl overflow-hidden"
             style={{ boxShadow: "0 8px 40px rgba(0,0,0,0.2)" }}
           >
             {/* ── Header ── */}
