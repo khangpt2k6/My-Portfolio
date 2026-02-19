@@ -220,12 +220,23 @@ const Hero = () => {
           <span className="text-[var(--color-text-muted)] opacity-40 ml-3">—</span>
         </motion.div>
 
+        {/* ── Tagline ── */}
+        <motion.p
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 1.4 }}
+          className="text-sm tracking-widest uppercase font-medium text-[var(--color-primary)] mb-4"
+          style={{ fontFamily: "var(--font-display)" }}
+        >
+          {hero.tagline}
+        </motion.p>
+
         {/* ── Bio ── */}
         <motion.p
           initial={{ opacity: 0, y: 15, filter: "blur(6px)" }}
           animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-          transition={{ duration: 0.7, delay: 1.5 }}
-          className="max-w-2xl mx-auto text-base md:text-lg text-[var(--color-text-muted)] leading-relaxed mb-10"
+          transition={{ duration: 0.7, delay: 1.6 }}
+          className="max-w-xl mx-auto text-base md:text-lg text-[var(--color-text-muted)] leading-relaxed mb-10"
         >
           {hero.bio}
         </motion.p>
@@ -234,7 +245,7 @@ const Hero = () => {
         <motion.div
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 1.7 }}
+          transition={{ duration: 0.6, delay: 1.8 }}
           className="flex flex-wrap items-center justify-center gap-3"
         >
           {hero.socialLinks.map((link, index) => {

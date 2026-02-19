@@ -8,6 +8,8 @@ import Navbar from "./components/Navbar"
 import Footer from "./components/Footer"
 import SettingsPanel from "./components/SettingsPanel"
 import ScrollProgress from "./components/ScrollProgress"
+import MiniPlayer from "./components/MiniPlayer"
+import ContactChat from "./components/ContactChat"
 
 // ── Lazy-loaded page components (code splitting) ────────────────────────────
 const Hero = lazy(() => import("./components/Hero"))
@@ -15,7 +17,6 @@ const Experience = lazy(() => import("./components/Experience"))
 const Projects = lazy(() => import("./components/Projects"))
 const Skills = lazy(() => import("./components/Skills"))
 const Education = lazy(() => import("./components/Education"))
-const Music = lazy(() => import("./components/Music"))
 
 // ── Page loading fallback ───────────────────────────────────────────────────
 const PageLoader = () => (
@@ -119,9 +120,6 @@ function AnimatedRoutes() {
           <Route path="/education" element={
             <PageWrapper transitionStyle={transitionStyle}><Education /></PageWrapper>
           } />
-          <Route path="/music" element={
-            <PageWrapper transitionStyle={transitionStyle}><Music /></PageWrapper>
-          } />
         </Routes>
       </AnimatePresence>
     </Suspense>
@@ -180,6 +178,8 @@ function App() {
         <AnimatedRoutes />
         <Footer />
         <SettingsPanel />
+        <MiniPlayer />
+        <ContactChat />
       </div>
     </Router>
   )

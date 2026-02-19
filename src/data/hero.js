@@ -17,13 +17,14 @@ const hero = {
     "AI Engineer",
   ],
 
-  bio: "I'm Khang, a Computer Science student at USF who lives off coffee, code, and curiosity. I love turning random ideas into full-stack projects, tinkering with AI, and seeing things actually work after hours of debugging (best feeling ever). I'm always chasing new challenges that make me learn, build, and maybe break a few things along the way",
+  bio: "Building intelligent, scalable applications at the intersection of full-stack engineering and AI.",
+
+  tagline: "Computer Science @ USF",
 
   socialLinks: [
     { type: "Mail",     text: "Contact Me",    href: "mailto:khang18@usf.edu",                brandColor: "#EA4335" },
     { type: "Github",   text: "GitHub",         href: "https://github.com/khangpt2k6",        brandColor: "#333" },
     { type: "Linkedin", text: "LinkedIn",        href: "https://linkedin.com/in/tuankhangphan", brandColor: "#0A66C2" },
-    { type: "FileText", text: "Resume",          href: "https://leetcode.com/u/KHcqTUn9ld/",   brandColor: "#4F46E5" },
   ],
 };
 

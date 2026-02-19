@@ -12,7 +12,6 @@ const navLinks = [
   { name: "Projects", to: "/projects" },
   { name: "Skills", to: "/skills" },
   { name: "Education", to: "/education" },
-  { name: "Music", to: "/music" },
 ];
 
 // ── Component ───────────────────────────────────────────────────────────────
