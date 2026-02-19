@@ -223,7 +223,7 @@ class Particle {
 }
 
 /* ── Component ────────────────────────────────────────────────────────────── */
-const Playground = () => {
+const Playground = ({ embedded = false }) => {
   const canvasRef = useRef(null);
   const particlesRef = useRef([]);
   const ambientRef = useRef([]);
@@ -517,10 +517,10 @@ const Playground = () => {
   }, []);
 
   return (
-    <section className={`relative min-h-screen bg-[var(--color-bg)] dark:bg-transparent ${isFullscreen ? "" : "pt-24 pb-16"}`}>
-      <div className={`relative mx-auto ${isFullscreen ? "max-w-none px-0" : "max-w-6xl px-4 sm:px-6"}`}>
-        {/* Header — hidden in fullscreen */}
-        {!isFullscreen && (
+    <section className={`relative ${embedded ? "" : `min-h-screen bg-[var(--color-bg)] dark:bg-transparent ${isFullscreen ? "" : "pt-24 pb-16"}`}`}>
+      <div className={`relative mx-auto ${isFullscreen ? "max-w-none px-0" : embedded ? "" : "max-w-6xl px-4 sm:px-6"}`}>
+        {/* Header — hidden in fullscreen & embedded */}
+        {!isFullscreen && !embedded && (
           <div className="text-center mb-8">
             <AnimatedHeading>Playground</AnimatedHeading>
             <motion.p

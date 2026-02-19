@@ -14,8 +14,7 @@ const navLinks = [
   { name: "Projects", to: "/projects" },
   { name: "Skills", to: "/skills" },
   { name: "Education", to: "/education" },
-  { name: "Playground", to: "/playground" },
-  { name: "Visualizer", to: "/visualizer" },
+  { name: "Lab", to: "/lab" },
 ];
 
 // ── Accent colors ───────────────────────────────────────────────────────────

@@ -259,7 +259,7 @@ function SortingVisualizer() {
             value={algo}
             onChange={e => setAlgo(e.target.value)}
             disabled={sorting}
-            className="appearance-none pl-3 pr-8 py-2 rounded-xl text-sm font-medium bg-[var(--color-surface2)] text-[var(--color-text)] border border-[var(--color-border)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] cursor-pointer disabled:opacity-50"
+            className="appearance-none pl-3 pr-8 py-2 rounded-xl text-sm font-medium bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 border border-[var(--color-border)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] cursor-pointer disabled:opacity-50 [&>option]:bg-white [&>option]:dark:bg-zinc-800 [&>option]:text-zinc-900 [&>option]:dark:text-zinc-100"
           >
             {SORT_ALGOS.map(a => <option key={a} value={a}>{a}</option>)}
           </select>
@@ -544,7 +544,7 @@ function PathfindingVisualizer() {
       <div className="flex flex-wrap items-center gap-3">
         <div className="relative">
           <select value={algo} onChange={e => setAlgo(e.target.value)} disabled={running}
-            className="appearance-none pl-3 pr-8 py-2 rounded-xl text-sm font-medium bg-[var(--color-surface2)] text-[var(--color-text)] border border-[var(--color-border)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] cursor-pointer disabled:opacity-50">
+            className="appearance-none pl-3 pr-8 py-2 rounded-xl text-sm font-medium bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 border border-[var(--color-border)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] cursor-pointer disabled:opacity-50 [&>option]:bg-white [&>option]:dark:bg-zinc-800 [&>option]:text-zinc-900 [&>option]:dark:text-zinc-100">
             {PF_ALGOS.map(a => <option key={a} value={a}>{a}</option>)}
           </select>
           <ChevronDown size={14} className="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-[var(--color-text-muted)]" />
@@ -873,7 +873,7 @@ function TreeVisualizer() {
             onKeyDown={e => e.key === "Enter" && insert()}
             placeholder="Value (1-99)"
             min="1" max="99"
-            className="w-28 px-3 py-2 rounded-xl text-sm bg-[var(--color-surface2)] text-[var(--color-text)] border border-[var(--color-border)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] placeholder:text-[var(--color-text-muted)]"
+            className="w-28 px-3 py-2 rounded-xl text-sm bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 border border-[var(--color-border)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] placeholder:text-zinc-400 dark:placeholder:text-zinc-500"
           />
           <button onClick={insert}
             className="flex items-center gap-1 px-3 py-2 rounded-xl text-sm font-semibold text-white transition-all"
@@ -900,7 +900,7 @@ function TreeVisualizer() {
         <div className="ml-auto flex items-center gap-2">
           <div className="relative">
             <select value={traversal} onChange={e => setTraversal(e.target.value)} disabled={traversing}
-              className="appearance-none pl-3 pr-8 py-2 rounded-xl text-sm font-medium bg-[var(--color-surface2)] text-[var(--color-text)] border border-[var(--color-border)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] cursor-pointer disabled:opacity-50">
+              className="appearance-none pl-3 pr-8 py-2 rounded-xl text-sm font-medium bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 border border-[var(--color-border)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] cursor-pointer disabled:opacity-50 [&>option]:bg-white [&>option]:dark:bg-zinc-800 [&>option]:text-zinc-900 [&>option]:dark:text-zinc-100">
               {TRAVERSALS.map(t => <option key={t} value={t}>{t}</option>)}
             </select>
             <ChevronDown size={14} className="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-[var(--color-text-muted)]" />
@@ -1007,3 +1007,4 @@ const AlgoVisualizer = () => {
 };
 
 export default AlgoVisualizer;
+export { SortingVisualizer, PathfindingVisualizer, TreeVisualizer };
