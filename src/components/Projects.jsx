@@ -12,12 +12,44 @@ import {
 } from "lucide-react";
 import projects from "../data/projects";
 import FadeInView from "./FadeInView";
+import AnimatedHeading from "./AnimatedHeading";
 import MergeSortViz from "./MergeSortViz";
 import ChatViz from "./ChatViz";
 import NaviCVViz from "./NaviCVViz";
 
 const isTouchDevice =
   typeof window !== "undefined" && "ontouchstart" in window;
+
+const renderLivePreview = (livePreview, image, title, extraClass = "") => {
+  if (livePreview === "merge-sort") {
+    return (
+      <div className={`w-full h-full bg-black/80 ${extraClass}`}>
+        <MergeSortViz />
+      </div>
+    );
+  }
+  if (livePreview === "chat") {
+    return (
+      <div className={`w-full h-full ${extraClass}`}>
+        <ChatViz />
+      </div>
+    );
+  }
+  if (livePreview === "job-search") {
+    return (
+      <div className={`w-full h-full ${extraClass}`}>
+        <NaviCVViz />
+      </div>
+    );
+  }
+  return (
+    <img
+      src={image}
+      alt={title}
+      className={`w-full h-full object-cover ${extraClass}`}
+    />
+  );
+};
 
 const Projects = () => {
   const [activeProject, setActiveProject] = useState(null);
@@ -41,20 +73,155 @@ const Projects = () => {
     }
   };
 
+  const heroProject = projects[0];
+  const regularProjects = projects.slice(1);
+
   return (
-    <section id="projects" className="relative min-h-screen pt-24 pb-28 bg-[var(--color-bg)] dark:bg-transparent">
+    <section
+      id="projects"
+      className="relative min-h-screen pt-24 pb-28 bg-[var(--color-bg)] dark:bg-transparent"
+    >
       <div className="relative mx-auto max-w-6xl px-4 md:px-6">
         {/* Section Header */}
         <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold text-[var(--color-text)]">
-            Portfolio
-          </h2>
+          <AnimatedHeading>Portfolio</AnimatedHeading>
         </div>
 
-        {/* Projects Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {projects.map((project, index) => (
-            <FadeInView key={project.id} delay={index * 0.1}>
+        {/* Bento Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {/* Hero Card - NaviCV (full width) */}
+          <FadeInView delay={0} className="md:col-span-2">
+            <Tilt
+              tiltMaxAngleX={isTouchDevice ? 0 : 5}
+              tiltMaxAngleY={isTouchDevice ? 0 : 5}
+              glareEnable={!isTouchDevice}
+              glareMaxOpacity={0.08}
+              glareColor="var(--color-primary)"
+              perspective={1200}
+            >
+              <div
+                className="group relative"
+                onMouseEnter={() => setHoveredCard("hero")}
+                onMouseLeave={() => setHoveredCard(null)}
+              >
+                <div
+                  className={`relative glass-card glow-border backdrop-blur-xl rounded-2xl overflow-hidden transition-all duration-500 cursor-pointer ${
+                    hoveredCard === "hero"
+                      ? "-translate-y-1 shadow-card-hover"
+                      : ""
+                  }`}
+                  onClick={() => setActiveProject(heroProject)}
+                >
+                  {/* Hero layout: split on desktop, stacked on mobile */}
+                  <div className="flex flex-col lg:flex-row h-80 md:h-96">
+                    {/* Left - Live Preview */}
+                    <div className="relative w-full lg:w-1/2 h-48 lg:h-full overflow-hidden">
+                      {renderLivePreview(
+                        heroProject.livePreview,
+                        heroProject.image,
+                        heroProject.title,
+                        hoveredCard === "hero"
+                          ? "transition-transform duration-700 scale-105"
+                          : "transition-transform duration-700 scale-100"
+                      )}
+
+                      {/* Gradient Overlay */}
+                      <div className="absolute inset-0 bg-gradient-to-t lg:bg-gradient-to-r from-black/40 to-transparent" />
+
+                      {/* Category Badge */}
+                      <div className="absolute top-3 left-3">
+                        <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-[var(--color-surface)]/90 backdrop-blur-sm rounded-full text-xs font-semibold text-[var(--color-text)]">
+                          <Zap className="w-3 h-3 text-indigo-500" />
+                          {heroProject.category}
+                        </span>
+                      </div>
+
+                      {/* Quick Action Icons */}
+                      <div
+                        className={`absolute bottom-3 right-3 flex gap-2 transition-all duration-300 ${
+                          hoveredCard === "hero"
+                            ? "opacity-100 translate-y-0"
+                            : "opacity-0 translate-y-3"
+                        }`}
+                      >
+                        <a
+                          href={heroProject.github}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="p-2 bg-[var(--color-surface)]/90 backdrop-blur-sm rounded-full text-[var(--color-text)] hover:text-white hover:bg-indigo-600 transition-all duration-300 shadow-lg"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <Github className="w-4 h-4" />
+                        </a>
+                        {heroProject.demo && (
+                          <a
+                            href={heroProject.demo}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="p-2 bg-[var(--color-surface)]/90 backdrop-blur-sm rounded-full text-[var(--color-text)] hover:text-white hover:bg-indigo-600 transition-all duration-300 shadow-lg"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <ExternalLink className="w-4 h-4" />
+                          </a>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Right - Content */}
+                    <div className="flex flex-col justify-center w-full lg:w-1/2 p-6 lg:p-8">
+                      <h3 className="text-2xl lg:text-3xl font-bold text-[var(--color-text)] mb-4 group-hover:text-indigo-500 transition-colors">
+                        {heroProject.title}
+                      </h3>
+
+                      {/* Tech Tags */}
+                      <div className="flex flex-wrap gap-1.5 mb-4">
+                        {heroProject.technologies
+                          .split(", ")
+                          .slice(0, 5)
+                          .map((tech, i) => (
+                            <span
+                              key={i}
+                              className="text-xs px-2.5 py-1 rounded-full bg-[var(--color-bg)] text-[var(--color-muted)] font-medium border border-[var(--color-border)] backdrop-blur-sm"
+                            >
+                              {tech}
+                            </span>
+                          ))}
+                        {heroProject.technologies.split(", ").length > 5 && (
+                          <span className="text-xs px-2.5 py-1 rounded-full bg-indigo-500/10 text-indigo-400 font-semibold">
+                            +{heroProject.technologies.split(", ").length - 5}
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Description - show more for hero */}
+                      <p className="text-[var(--color-muted)] text-sm mb-2 leading-relaxed line-clamp-2">
+                        {heroProject.description[0]}
+                      </p>
+                      <p className="text-[var(--color-muted)] text-sm mb-5 leading-relaxed line-clamp-1 hidden lg:block">
+                        {heroProject.description[1]}
+                      </p>
+
+                      {/* View Details */}
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setActiveProject(heroProject);
+                        }}
+                        className="group/btn inline-flex items-center gap-1.5 text-sm text-indigo-500 hover:text-indigo-400 font-semibold transition-colors w-fit"
+                      >
+                        <span>View Details</span>
+                        <ChevronRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </Tilt>
+          </FadeInView>
+
+          {/* Regular Cards */}
+          {regularProjects.map((project, index) => (
+            <FadeInView key={project.id} delay={(index + 1) * 0.1}>
               <Tilt
                 tiltMaxAngleX={isTouchDevice ? 0 : 8}
                 tiltMaxAngleY={isTouchDevice ? 0 : 8}
@@ -65,38 +232,26 @@ const Projects = () => {
               >
                 <div
                   className="group relative h-full"
-                  onMouseEnter={() => setHoveredCard(index)}
+                  onMouseEnter={() => setHoveredCard(project.id)}
                   onMouseLeave={() => setHoveredCard(null)}
                 >
                   <div
-                    className={`relative h-full glass-card glow-border backdrop-blur-xl rounded-2xl overflow-hidden transition-all duration-500 ${
-                      hoveredCard === index
+                    className={`relative h-full glass-card glow-border backdrop-blur-xl rounded-2xl overflow-hidden transition-all duration-500 cursor-pointer ${
+                      hoveredCard === project.id
                         ? "-translate-y-1 shadow-card-hover"
                         : ""
                     }`}
+                    onClick={() => setActiveProject(project)}
                   >
                     {/* Image Area */}
                     <div className="relative h-52 overflow-hidden">
-                      {project.livePreview === "merge-sort" ? (
-                        <div className="w-full h-full bg-black/80">
-                          <MergeSortViz />
-                        </div>
-                      ) : project.livePreview === "chat" ? (
-                        <div className="w-full h-full">
-                          <ChatViz />
-                        </div>
-                      ) : project.livePreview === "job-search" ? (
-                        <div className="w-full h-full">
-                          <NaviCVViz />
-                        </div>
-                      ) : (
-                        <img
-                          src={project.image}
-                          alt={project.title}
-                          className={`w-full h-full object-cover transition-transform duration-700 ${
-                            hoveredCard === index ? "scale-105" : "scale-100"
-                          }`}
-                        />
+                      {renderLivePreview(
+                        project.livePreview,
+                        project.image,
+                        project.title,
+                        hoveredCard === project.id
+                          ? "transition-transform duration-700 scale-105"
+                          : "transition-transform duration-700 scale-100"
                       )}
 
                       {/* Gradient Overlay */}
@@ -113,7 +268,7 @@ const Projects = () => {
                       {/* Quick Action Icons */}
                       <div
                         className={`absolute bottom-3 right-3 flex gap-2 transition-all duration-300 ${
-                          hoveredCard === index
+                          hoveredCard === project.id
                             ? "opacity-100 translate-y-0"
                             : "opacity-0 translate-y-3"
                         }`}
@@ -168,13 +323,16 @@ const Projects = () => {
                       </div>
 
                       {/* Description */}
-                      <p className="text-[var(--color-muted)] text-sm mb-4 line-clamp-1 leading-relaxed">
+                      <p className="text-[var(--color-muted)] text-sm mb-4 line-clamp-2 leading-relaxed">
                         {project.description[0]}
                       </p>
 
                       {/* View Details */}
                       <button
-                        onClick={() => setActiveProject(project)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setActiveProject(project);
+                        }}
                         className="group/btn inline-flex items-center gap-1.5 text-sm text-indigo-500 hover:text-indigo-400 font-semibold transition-colors"
                       >
                         <span>View Details</span>

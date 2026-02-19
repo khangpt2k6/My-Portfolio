@@ -1,17 +1,32 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, Suspense, lazy } from "react"
 import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom"
 import { motion, useMotionValue, useSpring, AnimatePresence } from "framer-motion"
 import StarfieldBg from "./components/StarfieldBg"
 import Navbar from "./components/Navbar"
-import Hero from "./components/Hero"
-import Experience from "./components/Experience"
-import Projects from "./components/Projects"
-import Skills from "./components/Skills"
-import Education from "./components/Education"
 import Footer from "./components/Footer"
 import SettingsPanel from "./components/SettingsPanel"
+import ScrollProgress from "./components/ScrollProgress"
+
+// ── Lazy-loaded page components (code splitting) ────────────────────────────
+const Hero = lazy(() => import("./components/Hero"))
+const Experience = lazy(() => import("./components/Experience"))
+const Projects = lazy(() => import("./components/Projects"))
+const Skills = lazy(() => import("./components/Skills"))
+const Education = lazy(() => import("./components/Education"))
+const Music = lazy(() => import("./components/Music"))
+
+// ── Page loading fallback ───────────────────────────────────────────────────
+const PageLoader = () => (
+  <div className="min-h-screen flex items-center justify-center">
+    <motion.div
+      className="w-10 h-10 rounded-full border-2 border-[var(--color-primary)] border-t-transparent"
+      animate={{ rotate: 360 }}
+      transition={{ duration: 0.8, repeat: Infinity, ease: "linear" }}
+    />
+  </div>
+)
 
 // ── Transition presets ──────────────────────────────────────────────────────
 const transitionPresets = {
@@ -86,25 +101,30 @@ function AnimatedRoutes() {
   }, [location.pathname])
 
   return (
-    <AnimatePresence mode="wait">
-      <Routes location={location} key={location.pathname}>
-        <Route path="/" element={
-          <PageWrapper transitionStyle={transitionStyle}><Hero /></PageWrapper>
-        } />
-        <Route path="/experience" element={
-          <PageWrapper transitionStyle={transitionStyle}><Experience /></PageWrapper>
-        } />
-        <Route path="/projects" element={
-          <PageWrapper transitionStyle={transitionStyle}><Projects /></PageWrapper>
-        } />
-        <Route path="/skills" element={
-          <PageWrapper transitionStyle={transitionStyle}><Skills /></PageWrapper>
-        } />
-        <Route path="/education" element={
-          <PageWrapper transitionStyle={transitionStyle}><Education /></PageWrapper>
-        } />
-      </Routes>
-    </AnimatePresence>
+    <Suspense fallback={<PageLoader />}>
+      <AnimatePresence mode="wait">
+        <Routes location={location} key={location.pathname}>
+          <Route path="/" element={
+            <PageWrapper transitionStyle={transitionStyle}><Hero /></PageWrapper>
+          } />
+          <Route path="/experience" element={
+            <PageWrapper transitionStyle={transitionStyle}><Experience /></PageWrapper>
+          } />
+          <Route path="/projects" element={
+            <PageWrapper transitionStyle={transitionStyle}><Projects /></PageWrapper>
+          } />
+          <Route path="/skills" element={
+            <PageWrapper transitionStyle={transitionStyle}><Skills /></PageWrapper>
+          } />
+          <Route path="/education" element={
+            <PageWrapper transitionStyle={transitionStyle}><Education /></PageWrapper>
+          } />
+          <Route path="/music" element={
+            <PageWrapper transitionStyle={transitionStyle}><Music /></PageWrapper>
+          } />
+        </Routes>
+      </AnimatePresence>
+    </Suspense>
   )
 }
 
@@ -154,6 +174,7 @@ function App() {
     <Router>
       <div className="bg-white dark:bg-black text-[var(--color-text)] min-h-screen transition-colors duration-300">
         <StarfieldBg />
+        <ScrollProgress />
         <CustomCursor />
         <Navbar />
         <AnimatedRoutes />

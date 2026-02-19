@@ -5,6 +5,7 @@ import Tilt from "react-parallax-tilt";
 import { Award, MapPin, GraduationCap } from "lucide-react";
 import education from "../data/education";
 import FadeInView from "./FadeInView";
+import AnimatedHeading from "./AnimatedHeading";
 
 const isTouchDevice =
   typeof window !== "undefined" && "ontouchstart" in window;
@@ -44,11 +45,9 @@ const Education = () => {
     <section id="education" className="min-h-screen pt-24 pb-28 bg-[var(--color-bg)] dark:bg-transparent">
       <div className="max-w-6xl mx-auto px-4 md:px-6">
         {/* ---- Section header ---- */}
-        <FadeInView direction="up" className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold text-[var(--color-text)]">
-            Education
-          </h2>
-        </FadeInView>
+        <div className="text-center mb-16">
+          <AnimatedHeading>Education</AnimatedHeading>
+        </div>
 
         {/* ---- Card ---- */}
         <FadeInView direction="up" delay={0.15} className="flex justify-center">

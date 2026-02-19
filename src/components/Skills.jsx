@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import skillCategories from "../data/skills";
+import AnimatedHeading from "./AnimatedHeading";
 
 /* Alternating scroll direction & speed per row */
 const rowConfig = [
@@ -32,9 +33,7 @@ const Skills = () => {
     <section id="skills" className="min-h-screen pt-24 pb-28 bg-[var(--color-surface)] dark:bg-transparent">
       {/* Section Header — constrained width */}
       <div className="max-w-6xl mx-auto px-4 md:px-6 text-center mb-16">
-        <h2 className="text-4xl md:text-5xl font-bold text-[var(--color-text)]">
-          Technical Skills
-        </h2>
+        <AnimatedHeading>Technical Skills</AnimatedHeading>
       </div>
 
       {/* Marquee Rows — full width */}

@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { Code, Laptop, MapPin } from "lucide-react";
 import experiences from "../data/experiences";
 import FadeInView from "./FadeInView";
+import AnimatedHeading from "./AnimatedHeading";
 
 const iconMap = { Code, Laptop };
 
@@ -96,9 +97,7 @@ const Experience = () => {
       <div className="max-w-6xl mx-auto">
         {/* Section header */}
         <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold text-[var(--color-text)]">
-            Experience
-          </h2>
+          <AnimatedHeading>Experience</AnimatedHeading>
         </div>
 
         {/* Tab switcher -- only rendered when both categories have entries */}
