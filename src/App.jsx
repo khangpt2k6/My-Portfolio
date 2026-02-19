@@ -16,6 +16,7 @@ const Experience = lazy(() => import("./components/Experience"))
 const Projects = lazy(() => import("./components/Projects"))
 const Skills = lazy(() => import("./components/Skills"))
 const Education = lazy(() => import("./components/Education"))
+const Playground = lazy(() => import("./components/Playground"))
 
 // ── Page loading fallback ───────────────────────────────────────────────────
 const PageLoader = () => (
@@ -118,6 +119,9 @@ function AnimatedRoutes() {
           } />
           <Route path="/education" element={
             <PageWrapper transitionStyle={transitionStyle}><Education /></PageWrapper>
+          } />
+          <Route path="/playground" element={
+            <PageWrapper transitionStyle={transitionStyle}><Playground /></PageWrapper>
           } />
         </Routes>
       </AnimatePresence>

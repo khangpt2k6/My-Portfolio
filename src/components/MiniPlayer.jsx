@@ -56,7 +56,8 @@ const MiniPlayer = () => {
   useEffect(() => {
     const a = audioRef.current;
     if (!a) return;
-    a.src = track.src;
+    // Encode URI to handle spaces, parentheses, brackets in filenames
+    a.src = encodeURI(track.src);
     a.muted = muted;
     setError(false);
     if (isPlaying) {
