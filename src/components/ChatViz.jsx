@@ -15,9 +15,9 @@ const CONTACTS = [
 
 const MESSAGES = [
   { sender: "Juniper Hall", avatar: "JH", color: "#8B5CF6", text: "hi everyone 👋", time: "10:42 AM", self: false },
-  { sender: "You", avatar: "KP", color: "#6366F1", text: "Hey! What's up?", time: "10:42 AM", self: true },
+  { sender: "You", avatar: "KP", color: "#3B82F6", text: "Hey! What's up?", time: "10:42 AM", self: true },
   { sender: "Alex Chen", avatar: "AC", color: "#06B6D4", text: "Working on the new feature", time: "10:43 AM", self: false },
-  { sender: "You", avatar: "KP", color: "#6366F1", text: "Nice, need any help? 🚀", time: "10:43 AM", self: true },
+  { sender: "You", avatar: "KP", color: "#3B82F6", text: "Nice, need any help? 🚀", time: "10:43 AM", self: true },
   { sender: "Juniper Hall", avatar: "JH", color: "#8B5CF6", text: "Let's sync at 3pm", time: "10:44 AM", self: false },
   { sender: "Alex Chen", avatar: "AC", color: "#06B6D4", text: "sounds good!", time: "10:44 AM", self: false },
 ];
@@ -95,10 +95,10 @@ const ChatViz = () => {
   return (
     <div className="w-full h-full flex overflow-hidden select-none" style={{ fontSize: "10px", background: "#0F0F1A" }}>
       {/* Sidebar */}
-      <div className="flex flex-col w-[90px] shrink-0 border-r border-white/[0.06]" style={{ background: "rgba(139,92,246,0.08)" }}>
+      <div className="flex flex-col w-[90px] shrink-0 border-r border-white/[0.06]" style={{ background: "rgba(59,130,246,0.08)" }}>
         {/* Sidebar header */}
         <div className="flex items-center gap-1.5 px-2 py-2 border-b border-white/[0.06]">
-          <div className="w-5 h-5 rounded-full flex items-center justify-center text-[7px] font-bold text-white" style={{ background: "#6366F1" }}>
+          <div className="w-5 h-5 rounded-full flex items-center justify-center text-[7px] font-bold text-white" style={{ background: "#3B82F6" }}>
             KP
           </div>
           <div className="flex flex-col min-w-0">
@@ -125,8 +125,8 @@ const ChatViz = () => {
               key={contact.name}
               className="flex items-center gap-1.5 px-2 py-1.5 transition-colors duration-300"
               style={{
-                background: activeContact === i ? "rgba(99,102,241,0.15)" : "transparent",
-                borderLeft: activeContact === i ? "2px solid #6366F1" : "2px solid transparent",
+                background: activeContact === i ? "rgba(59,130,246,0.15)" : "transparent",
+                borderLeft: activeContact === i ? "2px solid #3B82F6" : "2px solid transparent",
               }}
             >
               <div className="relative shrink-0">
@@ -200,7 +200,7 @@ const ChatViz = () => {
                 className="max-w-[70%] px-2 py-1 rounded-lg"
                 style={{
                   background: msg.self
-                    ? "linear-gradient(135deg, #6366F1, #8B5CF6)"
+                    ? "linear-gradient(135deg, #3B82F6, #6366F1)"
                     : "rgba(255,255,255,0.06)",
                   borderBottomRightRadius: msg.self ? "2px" : undefined,
                   borderBottomLeftRadius: !msg.self ? "2px" : undefined,
@@ -249,7 +249,7 @@ const ChatViz = () => {
             </svg>
             <span className="text-[7px] text-white/20 flex-1">Type a message...</span>
             <svg width="8" height="8" viewBox="0 0 12 12" fill="none">
-              <path d="M1 6l10-4.5L7.5 6l3.5 4.5L1 6z" fill="#6366F1" opacity="0.6" />
+              <path d="M1 6l10-4.5L7.5 6l3.5 4.5L1 6z" fill="#3B82F6" opacity="0.6" />
             </svg>
           </div>
         </div>

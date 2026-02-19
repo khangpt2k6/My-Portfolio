@@ -14,6 +14,7 @@ import projects from "../data/projects";
 import FadeInView from "./FadeInView";
 import MergeSortViz from "./MergeSortViz";
 import ChatViz from "./ChatViz";
+import NaviCVViz from "./NaviCVViz";
 
 const isTouchDevice =
   typeof window !== "undefined" && "ontouchstart" in window;
@@ -83,6 +84,10 @@ const Projects = () => {
                       ) : project.livePreview === "chat" ? (
                         <div className="w-full h-full">
                           <ChatViz />
+                        </div>
+                      ) : project.livePreview === "job-search" ? (
+                        <div className="w-full h-full">
+                          <NaviCVViz />
                         </div>
                       ) : (
                         <img
@@ -212,6 +217,10 @@ const Projects = () => {
                   ) : activeProject.livePreview === "chat" ? (
                     <div className="w-full h-full">
                       <ChatViz />
+                    </div>
+                  ) : activeProject.livePreview === "job-search" ? (
+                    <div className="w-full h-full">
+                      <NaviCVViz />
                     </div>
                   ) : (
                     <img
