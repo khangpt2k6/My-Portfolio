@@ -13,6 +13,7 @@ import {
 import projects from "../data/projects";
 import FadeInView from "./FadeInView";
 import MergeSortViz from "./MergeSortViz";
+import ChatViz from "./ChatViz";
 
 const isTouchDevice =
   typeof window !== "undefined" && "ontouchstart" in window;
@@ -78,6 +79,10 @@ const Projects = () => {
                       {project.livePreview === "merge-sort" ? (
                         <div className="w-full h-full bg-black/80">
                           <MergeSortViz />
+                        </div>
+                      ) : project.livePreview === "chat" ? (
+                        <div className="w-full h-full">
+                          <ChatViz />
                         </div>
                       ) : (
                         <img
@@ -203,6 +208,10 @@ const Projects = () => {
                   {activeProject.livePreview === "merge-sort" ? (
                     <div className="w-full h-full bg-black/80 flex items-center justify-center">
                       <MergeSortViz />
+                    </div>
+                  ) : activeProject.livePreview === "chat" ? (
+                    <div className="w-full h-full">
+                      <ChatViz />
                     </div>
                   ) : (
                     <img

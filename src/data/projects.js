@@ -32,6 +32,7 @@ const projects = [
   {
     id: 2,
     title: "Zelo",
+    livePreview: "chat",
     technologies: "TypeScript, Next.js, RabbitMQ, Cloudinary, Socket.IO, MongoDB, Docker, AWS",
     description: [
       "Real-time social campus chat application built with microservice architecture for scalability.",
