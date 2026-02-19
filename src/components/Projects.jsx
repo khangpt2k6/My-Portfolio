@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { Github, ExternalLink, Code, Sparkles, Zap, X, ChevronRight } from "lucide-react";
+import projects from "../data/projects";
 
 const Projects = () => {
   const [activeProject, setActiveProject] = useState(null);
@@ -48,58 +49,13 @@ const Projects = () => {
     }
   };
 
-  const projects = [
-    {
-      id: 1,
-      title: "NaviCV",
-      technologies: "Python, FastAPI, Vector Search, Transformers, Docker, Firebase, GitHub Actions",
-      description: [
-        "AI-powered resume optimization platform using vector search and NLP to match candidates with relevant job opportunities.",
-        "Implements advanced transformer models for intelligent content analysis and recommendation scoring.",
-        "Features automated deployment pipeline with Docker containerization and CI/CD integration."
-      ],
-      image: "/Navicv.png",
-      github: "https://github.com/khangpt2k6/NaviCV",
-      category: "AI/ML",
-      color: "from-emerald-500 to-green-600"
-    },
-    {
-      id: 2,
-      title: "Zelo",
-      technologies: "TypeScript, Next.js, RabbitMQ, Cloudinary, Socket.IO, MongoDB, Docker, AWS",
-      description: [
-        "Real-time social campus chat application built with microservice architecture for scalability.",
-        "Implements message queuing with RabbitMQ and WebSocket connections for instant communication.",
-        "Features media sharing via Cloudinary integration and cloud deployment on AWS infrastructure."
-      ],
-      image: "/zelo.png",
-      github: "https://github.com/khangpt2k6/Zelo",
-      category: "Full-Stack",
-      color: "from-blue-500 to-cyan-600"
-    },
-    {
-      id: 3,
-      title: "Algovis",
-      technologies: "Java, JavaFX",
-      description: [
-        "Interactive algorithm visualization tool with dynamic animations for sorting algorithms.",
-        "Real-time performance analysis and comparison between different sorting techniques.",
-        "Educational interface designed to enhance understanding of algorithm complexity and behavior."
-      ],
-      image: "/Algovis.png",
-      github: "https://github.com/khangpt2k6/Algovis",
-      category: "Education",
-      color: "from-purple-500 to-pink-600"
-    },
-  ];
-
   return (
-    <section 
+    <section
       ref={sectionRef}
-      id="projects" 
+      id="projects"
       className="relative py-24 bg-white overflow-hidden"
     >
-      
+
       {/* Subtle background decoration */}
       <div className="absolute inset-0 opacity-[0.02]" style={{
         backgroundImage: `radial-gradient(circle at 2px 2px, rgb(22 163 74) 1px, transparent 0)`,
@@ -109,7 +65,7 @@ const Projects = () => {
       <div className={`container relative mx-auto px-4 md:px-6 z-10 max-w-7xl transition-all duration-1000 ease-out ${
         hasAnimated ? 'scale-100 opacity-100' : 'scale-150 opacity-0'
       }`}>
-        
+
         {/* Header Section */}
         <div className="text-center mb-20">
           <h2 className="text-5xl md:text-6xl font-bold mb-6 text-neutral-900">
@@ -127,11 +83,11 @@ const Projects = () => {
               onMouseLeave={() => setHoveredCard(null)}
             >
               <div className={`relative h-full bg-white rounded-2xl overflow-hidden border-2 transition-all duration-500 ${
-                hoveredCard === index 
-                  ? 'border-green-500 shadow-2xl shadow-green-500/20 -translate-y-2' 
+                hoveredCard === index
+                  ? 'border-green-500 shadow-2xl shadow-green-500/20 -translate-y-2'
                   : 'border-neutral-200 shadow-lg'
               }`}>
-                
+
                 {/* Project Image */}
                 <div className="relative h-64 overflow-hidden bg-neutral-100">
                   <img
@@ -141,7 +97,7 @@ const Projects = () => {
                       hoveredCard === index ? 'scale-110' : 'scale-100'
                     }`}
                   />
-                  
+
                   {/* Gradient Overlay */}
                   <div className={`absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent transition-opacity duration-500 ${
                     hoveredCard === index ? 'opacity-100' : 'opacity-40'
@@ -350,12 +306,12 @@ const Projects = () => {
           -webkit-box-orient: vertical;
           overflow: hidden;
         }
-        
+
         @keyframes fadeIn {
           from { opacity: 0; }
           to { opacity: 1; }
         }
-        
+
         @keyframes slideUp {
           from {
             opacity: 0;
@@ -366,11 +322,11 @@ const Projects = () => {
             transform: translateY(0);
           }
         }
-        
+
         .animate-fadeIn {
           animation: fadeIn 0.3s ease-out;
         }
-        
+
         .animate-slideUp {
           animation: slideUp 0.3s ease-out;
         }

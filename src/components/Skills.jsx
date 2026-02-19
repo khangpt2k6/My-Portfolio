@@ -1,77 +1,18 @@
 import { useState } from "react";
-import { Code, Database, Wrench, Laptop, Cloud, Award, Sparkles, ChevronRight } from "lucide-react";
+import { Code, Database, Wrench, Cloud } from "lucide-react";
+import skillCategories from "../data/skills";
+
+const iconMap = { Code, Database, Wrench, Cloud };
 
 const Skills = () => {
   const [selectedCategory, setSelectedCategory] = useState(0);
   const [hoveredSkill, setHoveredSkill] = useState(null);
 
-  const skillCategories = [
-    {
-      title: "Languages",
-      icon: <Code className="w-5 h-5" />,
-      description: "Core programming languages for building robust applications",
-      skills: [
-        { name: "JavaScript", icon: "js" },
-        { name: "TypeScript", icon: "ts" },
-        { name: "Python", icon: "python" },
-        { name: "Java", icon: "java" },
-        { name: "C++", icon: "cpp" },
-        { name: "Go", icon: "go" },
-        { name: "C", icon: "c" },
-        { name: "HTML", icon: "html" },
-        { name: "CSS", icon: "css" },
-      ],
-    },
-    {
-      title: "Frameworks",
-      icon: <Wrench className="w-5 h-5" />,
-      description: "Modern frameworks and tools for building applications",
-      skills: [
-        { name: "React", icon: "react" },
-        { name: "Next.js", icon: "nextjs" },
-        { name: "Redux", icon: "redux" },
-        { name: "Tailwind CSS", icon: "tailwind" },
-        { name: "Vite", icon: "vite" },
-        { name: "Node.js", icon: "nodejs" },
-        { name: "Express", icon: "express" },
-        { name: "Django", icon: "django" },
-        { name: "FastAPI", icon: "fastapi" },
-        { name: "Flask", icon: "flask" },
-        { name: "Spring", icon: "spring" },
-        { name: ".NET", icon: "dotnet" },
-      ],
-    },
-    {
-      title: "Databases",
-      icon: <Database className="w-5 h-5" />,
-      description: "Data storage and management solutions",
-      skills: [
-        { name: "MongoDB", icon: "mongodb" },
-        { name: "PostgreSQL", icon: "postgresql" },
-        { name: "Redis", icon: "redis" },
-        { name: "Firebase", icon: "firebase" },
-        { name: "Supabase", icon: "supabase" },
-      ],
-    },
-    {
-      title: "Cloud & DevOps",
-      icon: <Cloud className="w-5 h-5" />,
-      description: "Cloud platforms and deployment tools",
-      skills: [
-        { name: "AWS", icon: "aws" },
-        { name: "Google Cloud", icon: "gcp" },
-        { name: "Docker", icon: "docker" },
-        { name: "Kubernetes", icon: "kubernetes" },
-        { name: "GitHub Actions", icon: "githubactions" },
-      ],
-    },
-  ];
-
   const currentCategory = skillCategories[selectedCategory];
 
   return (
     <section id="skills" className="py-24 bg-white relative overflow-hidden">
-      
+
       {/* Subtle background pattern */}
       <div className="absolute inset-0 opacity-[0.02]" style={{
         backgroundImage: `radial-gradient(circle at 2px 2px, rgb(22 163 74) 1px, transparent 0)`,
@@ -79,14 +20,14 @@ const Skills = () => {
       }}></div>
 
       <div className="container mx-auto px-4 md:px-6 max-w-7xl relative z-10">
-        
+
         {/* Header */}
         <div className="text-center mb-20">
-          
+
           <h2 className="text-5xl md:text-6xl font-bold mb-6 text-neutral-900">
             Technical Skills
           </h2>
-          
+
         </div>
 
         {/* Category Navigation */}
@@ -108,7 +49,7 @@ const Skills = () => {
 
         {/* Skills Display */}
         <div className="max-w-6xl mx-auto">
-          
+
           {/* Category Header */}
           <div className="mb-12 text-center">
             <h3 className="text-4xl font-bold text-neutral-900 mb-2">
@@ -134,7 +75,7 @@ const Skills = () => {
                     ? "bg-gradient-to-br from-green-500 to-emerald-600 shadow-2xl shadow-green-500/40 -translate-y-3 scale-110"
                     : "bg-white/60 backdrop-blur-sm shadow-lg hover:shadow-xl"
                 }`}>
-                  
+
                   {/* Animated background glow */}
                   {hoveredSkill === index && (
                     <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-green-400 to-emerald-500 blur-xl opacity-60 animate-pulse"></div>
@@ -144,7 +85,7 @@ const Skills = () => {
                   <div className={`relative mb-4 transform transition-all duration-500 ${
                     hoveredSkill === index ? "scale-125 rotate-6" : "scale-100"
                   }`}>
-                    <img 
+                    <img
                       src={`https://skillicons.dev/icons?i=${skill.icon}&theme=light`}
                       alt={skill.name}
                       className="w-16 h-16 drop-shadow-lg"
@@ -185,9 +126,9 @@ const Skills = () => {
           </div>
         </div>
 
-       
 
-        
+
+
       </div>
 
       {/* Decorative gradient orbs */}
