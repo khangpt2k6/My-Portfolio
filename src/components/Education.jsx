@@ -41,7 +41,7 @@ const Education = () => {
   const gpaNumeric = parseFloat(education.gpa); // 4.0
 
   return (
-    <section id="education" className="min-h-screen pt-24 pb-28 bg-[var(--color-bg)]">
+    <section id="education" className="min-h-screen pt-24 pb-28 bg-[var(--color-bg)] dark:bg-transparent">
       <div className="max-w-6xl mx-auto px-4 md:px-6">
         {/* ---- Section header ---- */}
         <FadeInView direction="up" className="text-center mb-16">
@@ -59,7 +59,7 @@ const Education = () => {
             glareMaxOpacity={0.05}
             className="max-w-2xl w-full"
           >
-            <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl shadow-card p-8">
+            <div className="glass-card glow-border rounded-2xl backdrop-blur-xl p-8">
               {/* -- Header row: logo + university info -- */}
               <div className="flex items-start gap-4 mb-8">
                 <img

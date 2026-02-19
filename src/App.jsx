@@ -3,6 +3,7 @@
 import { useEffect } from "react"
 import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom"
 import { motion, useMotionValue, useSpring, AnimatePresence } from "framer-motion"
+import StarfieldBg from "./components/StarfieldBg"
 import Navbar from "./components/Navbar"
 import Hero from "./components/Hero"
 import Experience from "./components/Experience"
@@ -107,7 +108,8 @@ function CustomCursor() {
 function App() {
   return (
     <Router>
-      <div className="bg-[var(--color-bg)] text-[var(--color-text)] min-h-screen transition-colors duration-300">
+      <div className="bg-white dark:bg-black text-[var(--color-text)] min-h-screen transition-colors duration-300">
+        <StarfieldBg />
         <CustomCursor />
         <Navbar />
         <AnimatedRoutes />

@@ -30,8 +30,8 @@ const TimelineDot = ({ index }) => (
 const ExperienceCard = ({ exp, index }) => (
   <FadeInView direction="left" delay={index * 0.15}>
     <div
-      className="group bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl shadow-card p-6 md:p-8
-                 transition-all duration-300 hover:-translate-y-1 hover:shadow-card-hover hover:border-[var(--color-primary)]/20"
+      className="group glass-card glow-border rounded-2xl backdrop-blur-xl p-6 md:p-8
+                 transition-all duration-300 hover:-translate-y-1 hover:shadow-card-hover"
     >
       {/* Top row: logo + title/company + period badge */}
       <div className="flex flex-col sm:flex-row sm:items-start gap-4 mb-4">
@@ -91,7 +91,7 @@ const Experience = () => {
   return (
     <section
       id="experience"
-      className="min-h-screen bg-[var(--color-surface)] dark:bg-[var(--color-surface)] pt-24 pb-16 md:pb-28 px-4"
+      className="min-h-screen bg-[var(--color-surface)] dark:bg-transparent pt-24 pb-16 md:pb-28 px-4"
     >
       <div className="max-w-6xl mx-auto">
         {/* Section header */}
@@ -104,7 +104,7 @@ const Experience = () => {
         {/* Tab switcher -- only rendered when both categories have entries */}
         {showTabs && (
           <div className="flex justify-center mb-14">
-            <div className="inline-flex gap-1 p-1 bg-[var(--color-surface2)] rounded-full">
+            <div className="inline-flex gap-1 p-1 bg-[var(--color-surface2)] dark:bg-white/[0.05] dark:backdrop-blur-xl rounded-full">
               {["professional", "volunteering"].map((tab) => (
                 <button
                   key={tab}

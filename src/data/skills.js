@@ -1,42 +1,41 @@
 /**
  * Skills Data
  * -------------------------------------------------------
- * Edit this file to add/remove/update skills.
- * Each category has:
- *   title       - Category heading
- *   icon        - Lucide icon name: "Code" | "Wrench" | "Database" | "Cloud"
- *   description - Short category description
- *   skills      - Array of { name, icon } where icon is the skillicons.dev key
- *
- * Browse available icons at: https://skillicons.dev
+ * Each category creates one marquee row.
+ * icon = skillicons.dev key  →  https://skillicons.dev
  */
 
 const skillCategories = [
   {
     title: "Languages",
     icon: "Code",
-    description: "Core programming languages for building robust applications",
     skills: [
       { name: "JavaScript", icon: "js" },
       { name: "TypeScript", icon: "ts" },
       { name: "Python", icon: "python" },
       { name: "Java", icon: "java" },
       { name: "C++", icon: "cpp" },
-      { name: "Go", icon: "go" },
       { name: "C", icon: "c" },
+      { name: "Go", icon: "go" },
+      { name: "Rust", icon: "rust" },
       { name: "HTML", icon: "html" },
       { name: "CSS", icon: "css" },
+      { name: "Sass", icon: "sass" },
+      { name: "Markdown", icon: "md" },
     ],
   },
   {
-    title: "Frameworks",
+    title: "Frameworks & Libraries",
     icon: "Wrench",
-    description: "Modern frameworks and tools for building applications",
     skills: [
       { name: "React", icon: "react" },
       { name: "Next.js", icon: "nextjs" },
+      { name: "Vue.js", icon: "vue" },
+      { name: "Angular", icon: "angular" },
       { name: "Redux", icon: "redux" },
       { name: "Tailwind CSS", icon: "tailwind" },
+      { name: "Bootstrap", icon: "bootstrap" },
+      { name: "Material UI", icon: "materialui" },
       { name: "Vite", icon: "vite" },
       { name: "Node.js", icon: "nodejs" },
       { name: "Express", icon: "express" },
@@ -45,30 +44,65 @@ const skillCategories = [
       { name: "Flask", icon: "flask" },
       { name: "Spring", icon: "spring" },
       { name: ".NET", icon: "dotnet" },
+      { name: "Three.js", icon: "threejs" },
     ],
   },
   {
-    title: "Databases",
+    title: "Databases & Storage",
     icon: "Database",
-    description: "Data storage and management solutions",
     skills: [
       { name: "MongoDB", icon: "mongodb" },
       { name: "PostgreSQL", icon: "postgresql" },
+      { name: "MySQL", icon: "mysql" },
       { name: "Redis", icon: "redis" },
       { name: "Firebase", icon: "firebase" },
       { name: "Supabase", icon: "supabase" },
+      { name: "SQLite", icon: "sqlite" },
+      { name: "Prisma", icon: "prisma" },
     ],
   },
   {
     title: "Cloud & DevOps",
     icon: "Cloud",
-    description: "Cloud platforms and deployment tools",
     skills: [
       { name: "AWS", icon: "aws" },
       { name: "Google Cloud", icon: "gcp" },
+      { name: "Azure", icon: "azure" },
       { name: "Docker", icon: "docker" },
       { name: "Kubernetes", icon: "kubernetes" },
       { name: "GitHub Actions", icon: "githubactions" },
+      { name: "Vercel", icon: "vercel" },
+      { name: "Netlify", icon: "netlify" },
+      { name: "Nginx", icon: "nginx" },
+      { name: "Linux", icon: "linux" },
+      { name: "Bash", icon: "bash" },
+    ],
+  },
+  {
+    title: "AI & Machine Learning",
+    icon: "Sparkles",
+    skills: [
+      { name: "TensorFlow", icon: "tensorflow" },
+      { name: "PyTorch", icon: "pytorch" },
+      { name: "OpenCV", icon: "opencv" },
+      { name: "Sklearn", icon: "sklearn" },
+    ],
+  },
+  {
+    title: "Tools & Design",
+    icon: "Palette",
+    skills: [
+      { name: "Git", icon: "git" },
+      { name: "GitHub", icon: "github" },
+      { name: "VS Code", icon: "vscode" },
+      { name: "Figma", icon: "figma" },
+      { name: "Photoshop", icon: "ps" },
+      { name: "Illustrator", icon: "ai" },
+      { name: "Notion", icon: "notion" },
+      { name: "Postman", icon: "postman" },
+      { name: "Webpack", icon: "webpack" },
+      { name: "Gradle", icon: "gradle" },
+      { name: "Maven", icon: "maven" },
     ],
   },
 ];

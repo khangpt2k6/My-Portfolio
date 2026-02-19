@@ -67,8 +67,8 @@ const Navbar = () => {
   const isDark = theme === "dark";
   const glassBg = isDark
     ? scrolled
-      ? "rgba(10, 14, 26, 0.90)"
-      : "rgba(10, 14, 26, 0.70)"
+      ? "rgba(0, 0, 0, 0.6)"
+      : "rgba(0, 0, 0, 0.3)"
     : scrolled
       ? "rgba(255, 255, 255, 0.90)"
       : "rgba(255, 255, 255, 0.70)";
@@ -83,6 +83,7 @@ const Navbar = () => {
         className="
           pointer-events-auto
           w-full max-w-6xl rounded-2xl
+          border border-white/[0.06]
           backdrop-blur-xl
           shadow-[0_1px_2px_rgba(0,0,0,0.04),0_4px_16px_rgba(0,0,0,0.06)]
         "
@@ -137,7 +138,7 @@ const Navbar = () => {
                       className="absolute inset-0 rounded-full"
                       style={{
                         backgroundColor: "var(--color-primary)",
-                        opacity: 0.1,
+                        opacity: 0.15,
                       }}
                       transition={{
                         type: "spring",
@@ -163,6 +164,7 @@ const Navbar = () => {
                 px-3 py-1.5 rounded-full
                 bg-[var(--color-surface2)]
                 border border-[var(--color-border)]
+                backdrop-blur-xl
                 transition-colors duration-200
               "
               style={{ color: "var(--color-text)" }}
@@ -257,7 +259,7 @@ const Navbar = () => {
               transition={{ duration: 0.25, ease: "easeInOut" }}
               className="md:hidden overflow-hidden"
             >
-              <div className="flex flex-col gap-1 px-4 pb-4 pt-1">
+              <div className="flex flex-col gap-1 px-4 pb-4 pt-1 backdrop-blur-xl">
                 {navLinks.map((link) => {
                   const isActive = location.pathname === link.to;
                   return (
@@ -282,7 +284,7 @@ const Navbar = () => {
                           className="absolute inset-0 rounded-xl"
                           style={{
                             backgroundColor: "var(--color-primary)",
-                            opacity: 0.1,
+                            opacity: 0.15,
                           }}
                           transition={{
                             type: "spring",

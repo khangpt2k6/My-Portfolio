@@ -57,7 +57,8 @@ const Footer = () => {
   };
 
   return (
-    <footer className="bg-[var(--color-surface2)]">
+    <footer className="bg-[var(--color-surface2)] dark:bg-transparent">
+      <div className="h-px bg-gradient-to-r from-transparent via-[var(--color-primary)]/30 to-transparent" />
       <div className="max-w-6xl mx-auto px-6 py-16">
         {/* Three-column grid */}
         <FadeInView direction="up">
@@ -85,7 +86,7 @@ const Footer = () => {
                           : "noopener noreferrer"
                       }
                       aria-label={link.label}
-                      className="group w-10 h-10 rounded-full border border-[var(--color-border)] bg-[var(--color-surface)] flex items-center justify-center transition-colors duration-300 hover:bg-[var(--color-primary)] hover:border-[var(--color-primary)]"
+                      className="group w-10 h-10 rounded-full border border-[var(--color-border)] bg-[var(--color-surface)] backdrop-blur-xl flex items-center justify-center transition-colors duration-300 hover:bg-[var(--color-primary)] hover:border-[var(--color-primary)]"
                     >
                       {Icon && (
                         <Icon
@@ -162,7 +163,7 @@ const Footer = () => {
                       className="inline-flex cursor-pointer"
                       aria-label="Back to top"
                     >
-                      <div className="w-10 h-10 rounded-full bg-[var(--color-primary)] text-white flex items-center justify-center transition-shadow duration-300 hover:shadow-lg">
+                      <div className="w-10 h-10 glass backdrop-blur-xl rounded-full bg-[var(--color-primary)] text-white flex items-center justify-center transition-shadow duration-300 hover:shadow-lg">
                         <ArrowUp size={18} />
                       </div>
                     </button>

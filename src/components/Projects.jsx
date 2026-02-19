@@ -39,7 +39,7 @@ const Projects = () => {
   };
 
   return (
-    <section id="projects" className="relative min-h-screen pt-24 pb-28 bg-[var(--color-bg)]">
+    <section id="projects" className="relative min-h-screen pt-24 pb-28 bg-[var(--color-bg)] dark:bg-transparent">
       <div className="relative mx-auto max-w-6xl px-4 md:px-6">
         {/* Section Header */}
         <div className="text-center mb-16">
@@ -66,10 +66,10 @@ const Projects = () => {
                   onMouseLeave={() => setHoveredCard(null)}
                 >
                   <div
-                    className={`relative h-full bg-[var(--color-surface)] border rounded-2xl overflow-hidden shadow-card transition-all duration-500 ${
+                    className={`relative h-full glass-card glow-border backdrop-blur-xl rounded-2xl overflow-hidden transition-all duration-500 ${
                       hoveredCard === index
-                        ? "-translate-y-1 shadow-card-hover border-indigo-500/40"
-                        : "border-[var(--color-border)]"
+                        ? "-translate-y-1 shadow-card-hover"
+                        : ""
                     }`}
                   >
                     {/* Image Area */}
@@ -138,7 +138,7 @@ const Projects = () => {
                           .map((tech, i) => (
                             <span
                               key={i}
-                              className="text-xs px-2.5 py-1 rounded-full bg-[var(--color-bg)] text-[var(--color-muted)] font-medium border border-[var(--color-border)]"
+                              className="text-xs px-2.5 py-1 rounded-full bg-[var(--color-bg)] text-[var(--color-muted)] font-medium border border-[var(--color-border)] backdrop-blur-sm"
                             >
                               {tech}
                             </span>
@@ -188,7 +188,7 @@ const Projects = () => {
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
               transition={{ type: "spring", stiffness: 300, damping: 30 }}
-              className="bg-[var(--color-surface)] rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-elevated"
+              className="bg-[var(--color-surface)] glass-card backdrop-blur-2xl rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-elevated"
             >
               {/* Modal Header Image */}
               <div className="relative">

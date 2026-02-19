@@ -7,6 +7,8 @@ const rowConfig = [
   { direction: "marquee-right", duration: "45s" },
   { direction: "marquee-left", duration: "35s" },
   { direction: "marquee-right", duration: "40s" },
+  { direction: "marquee-left", duration: "42s" },
+  { direction: "marquee-right", duration: "38s" },
 ];
 
 const Skills = () => {
@@ -27,7 +29,7 @@ const Skills = () => {
   const theme = isDark ? "dark" : "light";
 
   return (
-    <section id="skills" className="min-h-screen pt-24 pb-28 bg-[var(--color-surface)]">
+    <section id="skills" className="min-h-screen pt-24 pb-28 bg-[var(--color-surface)] dark:bg-transparent">
       {/* Section Header — constrained width */}
       <div className="max-w-6xl mx-auto px-4 md:px-6 text-center mb-16">
         <h2 className="text-4xl md:text-5xl font-bold text-[var(--color-text)]">
@@ -70,7 +72,7 @@ const Skills = () => {
                   {doubled.map((skill, i) => (
                     <div
                       key={`${skill.icon}-${i}`}
-                      className="inline-flex items-center gap-3 px-5 py-3 mx-2 rounded-xl bg-[var(--color-surface)] border border-[var(--color-border)] shadow-card transition-colors duration-200 hover:border-[var(--color-primary)]/30"
+                      className="inline-flex items-center gap-3 px-5 py-3 mx-2 rounded-xl glass-card backdrop-blur-xl transition-colors duration-200 hover:border-[var(--color-primary)]/30"
                     >
                       <img
                         src={`https://skillicons.dev/icons?i=${skill.icon}&theme=${theme}`}

@@ -1,5 +1,4 @@
-import { useRef } from "react";
-import { motion, useInView } from "framer-motion";
+import { motion } from "framer-motion";
 import { TypeAnimation } from "react-type-animation";
 import { FaGithub, FaLinkedin, FaEnvelope, FaFileAlt } from "react-icons/fa";
 import hero from "../data/hero";
@@ -11,38 +10,18 @@ const container = {
   hidden: { opacity: 0 },
   show: {
     opacity: 1,
-    transition: { staggerChildren: 0.15, delayChildren: 0.1 },
+    transition: { staggerChildren: 0.18, delayChildren: 0.15 },
   },
 };
 
 const fadeUp = {
-  hidden: { opacity: 0, y: 20 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } },
+  hidden: { opacity: 0, y: 30 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.7, ease: "easeOut" } },
 };
 
 /* ── Build the TypeAnimation sequence from hero.titles ── */
 const buildSequence = (titles) =>
   titles.flatMap((title) => [title, 2000]);
-
-/* ── Animated stat number component ── */
-const AnimatedStat = ({ value, label }) => {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-50px" });
-
-  return (
-    <div ref={ref} className="flex flex-col items-center">
-      <motion.span
-        className="text-2xl font-bold text-[var(--color-primary)]"
-        initial={{ opacity: 0, scale: 0.5 }}
-        animate={isInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.5 }}
-        transition={{ duration: 0.5, ease: "easeOut" }}
-      >
-        {value}
-      </motion.span>
-      <span className="text-sm text-[var(--color-text-muted)]">{label}</span>
-    </div>
-  );
-};
 
 const Hero = () => {
   return (
@@ -50,7 +29,7 @@ const Hero = () => {
       id="hero"
       className="relative min-h-screen flex flex-col items-center justify-center pt-24 px-4 overflow-hidden"
     >
-      {/* ── Animated gradient background ── */}
+      {/* ── Animated gradient background (light mode) ── */}
       <div
         className="absolute inset-0 -z-10"
         style={{
@@ -81,31 +60,15 @@ const Hero = () => {
         initial="hidden"
         animate="show"
       >
-        {/* 1 · Profile image with float animation */}
-        <motion.div variants={fadeUp} className="mb-6">
-          <motion.div
-            animate={{ y: [0, -8, 0] }}
-            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-          >
-            <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-[var(--color-border)] shadow-md">
-              <img
-                src={hero.profileImage}
-                alt={`${hero.firstName} ${hero.lastName}`}
-                className="w-full h-full object-cover"
-              />
-            </div>
-          </motion.div>
-        </motion.div>
-
-        {/* 2 · Overline greeting */}
+        {/* 1 · Overline greeting */}
         <motion.p
           variants={fadeUp}
           className="text-xs tracking-[0.3em] uppercase font-semibold text-[var(--color-primary)] mb-4"
         >
-          HELLO, I'M
+          {hero.greeting || "HELLO, I'M"}
         </motion.p>
 
-        {/* 3 · Name — visual centerpiece */}
+        {/* 2 · Name — visual centerpiece with text-shadow-glow in dark mode */}
         <motion.div variants={fadeUp} className="mb-6">
           <h1
             className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-bold leading-[1.05] bg-gradient-to-r from-indigo-600 via-indigo-500 to-cyan-500 bg-clip-text dark:text-shadow-glow"
@@ -114,7 +77,7 @@ const Hero = () => {
               WebkitTextFillColor: "transparent",
             }}
           >
-            Khang
+            {hero.firstName}
           </h1>
           <h1
             className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-bold leading-[1.05] bg-gradient-to-r from-indigo-600 via-indigo-500 to-cyan-500 bg-clip-text dark:text-shadow-glow"
@@ -123,11 +86,11 @@ const Hero = () => {
               WebkitTextFillColor: "transparent",
             }}
           >
-            Phan
+            {hero.lastName}
           </h1>
         </motion.div>
 
-        {/* 4 · Typing effect */}
+        {/* 3 · Typing effect */}
         <motion.div
           variants={fadeUp}
           className="h-10 flex items-center justify-center mb-8"
@@ -141,7 +104,7 @@ const Hero = () => {
           />
         </motion.div>
 
-        {/* 5 · Bio */}
+        {/* 4 · Bio */}
         <motion.p
           variants={fadeUp}
           className="max-w-2xl mx-auto text-base md:text-lg text-[var(--color-text-muted)] leading-relaxed mb-10"
@@ -149,29 +112,13 @@ const Hero = () => {
           {hero.bio}
         </motion.p>
 
-        {/* 6 · Stats row */}
-        <motion.div
-          variants={fadeUp}
-          className="flex items-center justify-center gap-8 mb-10"
-        >
-          {hero.stats.map((stat, index) => (
-            <div key={index} className="flex items-center gap-8">
-              {index > 0 && (
-                <div className="w-px h-8 bg-[var(--color-border)]" />
-              )}
-              <AnimatedStat value={stat.value} label={stat.label} />
-            </div>
-          ))}
-        </motion.div>
-
-        {/* 7 · Social links — pill buttons with brand colors */}
+        {/* 5 · Social links — glassmorphism pill buttons with brand colors */}
         <motion.div
           variants={fadeUp}
           className="flex flex-wrap items-center justify-center gap-3"
         >
           {hero.socialLinks.map((link, index) => {
             const IconComponent = iconMap[link.type];
-            /* GitHub uses white in dark mode, its dark brand color in light mode */
             const isGithub = link.type === "Github";
             return (
               <a
@@ -184,17 +131,19 @@ const Hero = () => {
                     : undefined
                 }
                 aria-label={link.text}
-                className="group px-4 py-2.5 rounded-full border border-[var(--color-border)] bg-[var(--color-surface)] flex items-center gap-2 transition-all duration-300 hover:border-transparent hover:shadow-lg"
+                className="group glass-card rounded-full px-4 py-2.5 flex items-center gap-2 transition-all duration-300 hover:shadow-lg hover:shadow-[var(--btn-brand)/0.3] hover:border-[var(--btn-brand)]"
                 style={{
                   "--btn-brand": link.brandColor,
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.backgroundColor = link.brandColor;
                   e.currentTarget.style.borderColor = link.brandColor;
+                  e.currentTarget.style.boxShadow = `0 0 20px ${link.brandColor}44, 0 0 40px ${link.brandColor}22`;
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.backgroundColor = "";
                   e.currentTarget.style.borderColor = "";
+                  e.currentTarget.style.boxShadow = "";
                 }}
               >
                 {IconComponent && (
@@ -203,7 +152,6 @@ const Hero = () => {
                     style={{
                       color: isGithub ? undefined : link.brandColor,
                     }}
-                    /* GitHub: dark in light mode, white in dark mode — handled via CSS class */
                     {...(isGithub && {
                       className:
                         "w-5 h-5 transition-colors duration-300 text-[#333] dark:text-white group-hover:text-white",
