@@ -3,8 +3,9 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sun, Moon, Menu, X, Palette, Check, MousePointer } from "lucide-react";
+import { Menu, X, Palette, Check, MousePointer } from "lucide-react";
 import { CURSOR_STYLES } from "./CustomCursor";
+import ThemeToggle from "./ThemeToggle";
 
 // ── Navigation links ────────────────────────────────────────────────────────
 const navLinks = [
@@ -14,6 +15,7 @@ const navLinks = [
   { name: "Skills", to: "/skills" },
   { name: "Education", to: "/education" },
   { name: "Playground", to: "/playground" },
+  { name: "Visualizer", to: "/visualizer" },
 ];
 
 // ── Accent colors ───────────────────────────────────────────────────────────
@@ -289,31 +291,10 @@ const Navbar = () => {
               </AnimatePresence>
             </div>
 
-            {/* Theme toggle */}
-            <motion.button
-              onClick={toggleTheme}
-              whileTap={{ scale: 0.9 }}
-              className="relative flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[var(--color-surface2)] border border-[var(--color-border)] backdrop-blur-xl transition-colors duration-200"
-              style={{ color: "var(--color-text)" }}
-              aria-label="Toggle theme"
-            >
-              <span className="relative h-[18px] w-[18px] flex items-center justify-center">
-                <AnimatePresence mode="wait" initial={false}>
-                  {theme === "dark" ? (
-                    <motion.span key="sun" initial={{ rotate: -90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: 90, opacity: 0 }} transition={{ duration: 0.2 }} className="absolute flex items-center justify-center">
-                      <Sun size={18} />
-                    </motion.span>
-                  ) : (
-                    <motion.span key="moon" initial={{ rotate: 90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: -90, opacity: 0 }} transition={{ duration: 0.2 }} className="absolute flex items-center justify-center">
-                      <Moon size={18} />
-                    </motion.span>
-                  )}
-                </AnimatePresence>
-              </span>
-              <span className="text-xs font-medium select-none">
-                {theme === "dark" ? "Light" : "Dark"}
-              </span>
-            </motion.button>
+            {/* Theme toggle — animated sun/moon */}
+            <div className="flex items-center rounded-full bg-[var(--color-surface2)] border border-[var(--color-border)] backdrop-blur-xl p-[3px]">
+              <ThemeToggle isDark={isDark} onToggle={toggleTheme} />
+            </div>
 
             {/* Mobile hamburger */}
             <motion.button
