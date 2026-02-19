@@ -36,29 +36,31 @@ const Experience = () => {
 
 
 
-          {/* Tab Switcher */}
-          <div className="inline-flex gap-2 p-2 bg-neutral-100 rounded-full">
-            <button
-              onClick={() => setActiveTab("professional")}
-              className={`px-8 py-3 rounded-full transition-all duration-300 font-semibold ${
-                activeTab === "professional"
-                  ? "bg-white text-green-600 shadow-lg"
-                  : "text-neutral-600 hover:text-neutral-900"
-              }`}
-            >
-              Professional
-            </button>
-            <button
-              onClick={() => setActiveTab("volunteering")}
-              className={`px-8 py-3 rounded-full transition-all duration-300 font-semibold ${
-                activeTab === "volunteering"
-                  ? "bg-white text-green-600 shadow-lg"
-                  : "text-neutral-600 hover:text-neutral-900"
-              }`}
-            >
-              Volunteering
-            </button>
-          </div>
+          {/* Tab Switcher - only show when both tabs have entries */}
+          {experiences.professional.length > 0 && experiences.volunteering.length > 0 && (
+            <div className="inline-flex gap-2 p-2 bg-neutral-100 rounded-full">
+              <button
+                onClick={() => setActiveTab("professional")}
+                className={`px-8 py-3 rounded-full transition-all duration-300 font-semibold ${
+                  activeTab === "professional"
+                    ? "bg-white text-green-600 shadow-lg"
+                    : "text-neutral-600 hover:text-neutral-900"
+                }`}
+              >
+                Professional
+              </button>
+              <button
+                onClick={() => setActiveTab("volunteering")}
+                className={`px-8 py-3 rounded-full transition-all duration-300 font-semibold ${
+                  activeTab === "volunteering"
+                    ? "bg-white text-green-600 shadow-lg"
+                    : "text-neutral-600 hover:text-neutral-900"
+                }`}
+              >
+                Volunteering
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Timeline */}
