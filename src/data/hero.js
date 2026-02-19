@@ -26,10 +26,10 @@ const hero = {
   ],
 
   socialLinks: [
-    { type: "Mail",     text: "Contact Me",   href: "mailto:khang18@usf.edu",                color: "from-blue-500 to-blue-600" },
-    { type: "Github",   text: "View Projects", href: "https://github.com/khangpt2k6",        color: "from-neutral-700 to-neutral-900" },
-    { type: "Linkedin", text: "LinkedIn",       href: "https://linkedin.com/in/tuankhangphan", color: "from-blue-600 to-blue-700" },
-    { type: "FileText", text: "Resume",         href: "https://leetcode.com/u/KHcqTUn9ld/",   color: "from-indigo-600 to-cyan-600" },
+    { type: "Mail",     text: "Contact Me",    href: "mailto:khang18@usf.edu",                brandColor: "#EA4335" },
+    { type: "Github",   text: "GitHub",         href: "https://github.com/khangpt2k6",        brandColor: "#333" },
+    { type: "Linkedin", text: "LinkedIn",        href: "https://linkedin.com/in/tuankhangphan", brandColor: "#0A66C2" },
+    { type: "FileText", text: "Resume",          href: "https://leetcode.com/u/KHcqTUn9ld/",   brandColor: "#4F46E5" },
   ],
 };
 

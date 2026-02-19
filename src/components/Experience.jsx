@@ -91,7 +91,7 @@ const Experience = () => {
   return (
     <section
       id="experience"
-      className="bg-[var(--color-surface)] dark:bg-[var(--color-surface)] py-16 md:py-28 px-4"
+      className="min-h-screen bg-[var(--color-surface)] dark:bg-[var(--color-surface)] pt-24 pb-16 md:pb-28 px-4"
     >
       <div className="max-w-6xl mx-auto">
         {/* Section header */}
@@ -99,7 +99,6 @@ const Experience = () => {
           <h2 className="text-4xl md:text-5xl font-bold text-[var(--color-text)]">
             Experience
           </h2>
-          <div className="h-1 w-16 bg-gradient-to-r from-indigo-600 to-cyan-600 mx-auto rounded-full mt-4" />
         </div>
 
         {/* Tab switcher -- only rendered when both categories have entries */}

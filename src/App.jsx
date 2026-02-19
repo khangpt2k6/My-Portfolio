@@ -1,8 +1,8 @@
 "use client"
 
 import { useEffect } from "react"
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom"
-import { motion, useMotionValue, useSpring } from "framer-motion"
+import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom"
+import { motion, useMotionValue, useSpring, AnimatePresence } from "framer-motion"
 import Navbar from "./components/Navbar"
 import Hero from "./components/Hero"
 import Experience from "./components/Experience"
@@ -11,7 +11,59 @@ import Skills from "./components/Skills"
 import Education from "./components/Education"
 import Footer from "./components/Footer"
 
-// Custom Cursor Component — framer-motion springs for smooth physics
+// ── Page transition wrapper ──────────────────────────────────────────────────
+const pageVariants = {
+  initial: { opacity: 0, y: 24 },
+  animate: { opacity: 1, y: 0, transition: { duration: 0.4, ease: [0.16, 1, 0.3, 1] } },
+  exit: { opacity: 0, y: -16, transition: { duration: 0.25, ease: "easeIn" } },
+}
+
+function PageWrapper({ children }) {
+  return (
+    <motion.div
+      variants={pageVariants}
+      initial="initial"
+      animate="animate"
+      exit="exit"
+    >
+      {children}
+    </motion.div>
+  )
+}
+
+// ── Animated routes ──────────────────────────────────────────────────────────
+function AnimatedRoutes() {
+  const location = useLocation()
+
+  // Scroll to top on route change
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [location.pathname])
+
+  return (
+    <AnimatePresence mode="wait">
+      <Routes location={location} key={location.pathname}>
+        <Route path="/" element={
+          <PageWrapper><Hero /></PageWrapper>
+        } />
+        <Route path="/experience" element={
+          <PageWrapper><Experience /></PageWrapper>
+        } />
+        <Route path="/projects" element={
+          <PageWrapper><Projects /></PageWrapper>
+        } />
+        <Route path="/skills" element={
+          <PageWrapper><Skills /></PageWrapper>
+        } />
+        <Route path="/education" element={
+          <PageWrapper><Education /></PageWrapper>
+        } />
+      </Routes>
+    </AnimatePresence>
+  )
+}
+
+// ── Custom Cursor ────────────────────────────────────────────────────────────
 function CustomCursor() {
   const cursorX = useMotionValue(0)
   const cursorY = useMotionValue(0)
@@ -31,7 +83,6 @@ function CustomCursor() {
     return () => window.removeEventListener("mousemove", updatePosition)
   }, [cursorX, cursorY])
 
-  // Only show on devices with fine pointer
   const hasFinePointer = typeof window !== 'undefined' &&
     window.matchMedia && window.matchMedia('(pointer: fine)').matches
 
@@ -39,56 +90,28 @@ function CustomCursor() {
 
   return (
     <>
-      {/* Outer ring */}
       <motion.div
         className="fixed pointer-events-none z-[9999] w-8 h-8 rounded-full border-2 border-[var(--color-primary)] opacity-50"
-        style={{
-          left: springX,
-          top: springY,
-          translateX: "-50%",
-          translateY: "-50%",
-        }}
+        style={{ left: springX, top: springY, translateX: "-50%", translateY: "-50%" }}
       />
-      {/* Inner dot */}
       <motion.div
         className="fixed pointer-events-none z-[9999] w-1.5 h-1.5 rounded-full bg-[var(--color-primary)]"
-        style={{
-          left: cursorX,
-          top: cursorY,
-          translateX: "-50%",
-          translateY: "-50%",
-        }}
+        style={{ left: cursorX, top: cursorY, translateX: "-50%", translateY: "-50%" }}
       />
-      <style>{`
-        @media (pointer: fine) {
-          * { cursor: none !important; }
-        }
-      `}</style>
+      <style>{`@media (pointer: fine) { * { cursor: none !important; } }`}</style>
     </>
   )
 }
 
+// ── App ──────────────────────────────────────────────────────────────────────
 function App() {
   return (
     <Router>
       <div className="bg-[var(--color-bg)] text-[var(--color-text)] min-h-screen transition-colors duration-300">
         <CustomCursor />
-        <Routes>
-          <Route
-            path="/"
-            element={
-              <>
-                <Navbar />
-                <Hero />
-                <Experience />
-                <Projects />
-                <Skills />
-                <Education />
-                <Footer />
-              </>
-            }
-          />
-        </Routes>
+        <Navbar />
+        <AnimatedRoutes />
+        <Footer />
       </div>
     </Router>
   )

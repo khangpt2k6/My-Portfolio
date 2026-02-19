@@ -1,18 +1,26 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-scroll";
+import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { GithubIcon, LinkedinIcon, Mail, Phone, MapPin, ArrowUp } from "lucide-react";
+import { FaGithub, FaLinkedin } from "react-icons/fa";
+import { Mail, Phone, MapPin, ArrowUp } from "lucide-react";
 import FadeInView from "./FadeInView";
 import footerData from "../data/footer";
 
 const socialIconMap = {
-  github: GithubIcon,
-  linkedin: LinkedinIcon,
+  github: FaGithub,
+  linkedin: FaLinkedin,
   email: Mail,
+};
+
+const socialColorMap = {
+  github: null, // handled dynamically for dark/light mode
+  linkedin: "#0A66C2",
+  email: null,
 };
 
 const Footer = () => {
   const [showTopBtn, setShowTopBtn] = useState(false);
+  const [isDark, setIsDark] = useState(false);
   const currentYear = new Date().getFullYear();
 
   useEffect(() => {
@@ -24,11 +32,32 @@ const Footer = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // Detect dark mode by observing the .dark class on <html>
+  useEffect(() => {
+    const root = document.documentElement;
+    setIsDark(root.classList.contains("dark"));
+
+    const observer = new MutationObserver(() => {
+      setIsDark(root.classList.contains("dark"));
+    });
+
+    observer.observe(root, { attributes: true, attributeFilter: ["class"] });
+    return () => observer.disconnect();
+  }, []);
+
+  const getIconColor = (type) => {
+    if (type === "github") {
+      return isDark ? "#fff" : "#333";
+    }
+    return socialColorMap[type] || undefined;
+  };
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   return (
     <footer className="bg-[var(--color-surface2)]">
-      {/* Top divider */}
-      <div className="h-px bg-gradient-to-r from-transparent via-[var(--color-primary)] to-transparent" />
-
       <div className="max-w-6xl mx-auto px-6 py-16">
         {/* Three-column grid */}
         <FadeInView direction="up">
@@ -44,6 +73,7 @@ const Footer = () => {
               <div className="flex items-center gap-3">
                 {footerData.socialLinks.map((link, index) => {
                   const Icon = socialIconMap[link.type];
+                  const color = getIconColor(link.type);
                   return (
                     <a
                       key={index}
@@ -60,7 +90,12 @@ const Footer = () => {
                       {Icon && (
                         <Icon
                           size={18}
-                          className="text-[var(--color-text-muted)] transition-colors duration-300 group-hover:text-white"
+                          style={color ? { color } : undefined}
+                          className={
+                            color
+                              ? "transition-colors duration-300 group-hover:!text-white"
+                              : "text-[var(--color-text-muted)] transition-colors duration-300 group-hover:text-white"
+                          }
                         />
                       )}
                     </a>
@@ -79,8 +114,6 @@ const Footer = () => {
                   <Link
                     key={index}
                     to={link.to}
-                    smooth={true}
-                    duration={500}
                     className="text-sm text-[var(--color-text-muted)] hover:text-[var(--color-primary)] transition-colors cursor-pointer"
                   >
                     {link.label}
@@ -124,16 +157,15 @@ const Footer = () => {
                     exit={{ opacity: 0, scale: 0.8 }}
                     transition={{ duration: 0.25 }}
                   >
-                    <Link
-                      to="hero"
-                      smooth={true}
-                      duration={500}
+                    <button
+                      onClick={scrollToTop}
                       className="inline-flex cursor-pointer"
+                      aria-label="Back to top"
                     >
                       <div className="w-10 h-10 rounded-full bg-[var(--color-primary)] text-white flex items-center justify-center transition-shadow duration-300 hover:shadow-lg">
                         <ArrowUp size={18} />
                       </div>
-                    </Link>
+                    </button>
                   </motion.div>
                 )}
               </AnimatePresence>

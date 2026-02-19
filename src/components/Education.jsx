@@ -41,14 +41,13 @@ const Education = () => {
   const gpaNumeric = parseFloat(education.gpa); // 4.0
 
   return (
-    <section id="education" className="py-28 bg-[var(--color-bg)]">
+    <section id="education" className="min-h-screen pt-24 pb-28 bg-[var(--color-bg)]">
       <div className="max-w-6xl mx-auto px-4 md:px-6">
         {/* ---- Section header ---- */}
         <FadeInView direction="up" className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold text-[var(--color-text)]">
             Education
           </h2>
-          <div className="h-1 w-16 bg-gradient-to-r from-indigo-600 to-cyan-600 mx-auto rounded-full mt-4" />
         </FadeInView>
 
         {/* ---- Card ---- */}

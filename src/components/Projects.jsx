@@ -39,14 +39,13 @@ const Projects = () => {
   };
 
   return (
-    <section id="projects" className="relative py-28 bg-[var(--color-bg)]">
+    <section id="projects" className="relative min-h-screen pt-24 pb-28 bg-[var(--color-bg)]">
       <div className="relative mx-auto max-w-6xl px-4 md:px-6">
         {/* Section Header */}
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold text-[var(--color-text)]">
             Portfolio
           </h2>
-          <div className="h-1 w-16 bg-gradient-to-r from-indigo-600 to-cyan-600 mx-auto rounded-full mt-4" />
         </div>
 
         {/* Projects Grid */}

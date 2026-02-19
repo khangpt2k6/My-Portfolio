@@ -1,38 +1,31 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { Link } from "react-scroll";
+import { NavLink, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Sun, Moon, Menu, X } from "lucide-react";
 
 // ── Navigation links ────────────────────────────────────────────────────────
 const navLinks = [
-  { name: "About", to: "hero" },
-  { name: "Experience", to: "experience" },
-  { name: "Projects", to: "projects" },
-  { name: "Skills", to: "skills" },
+  { name: "About", to: "/" },
+  { name: "Experience", to: "/experience" },
+  { name: "Projects", to: "/projects" },
+  { name: "Skills", to: "/skills" },
+  { name: "Education", to: "/education" },
 ];
 
 // ── Component ───────────────────────────────────────────────────────────────
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [activeSection, setActiveSection] = useState("hero");
   const [theme, setTheme] = useState("light");
 
-  // ── Scroll detection & scroll-spy ─────────────────────────────────────────
+  const location = useLocation();
+
+  // ── Scroll detection ────────────────────────────────────────────────────────
   useEffect(() => {
     const onScroll = () => {
       setScrolled(window.scrollY > 20);
-
-      const sections = ["hero", "experience", "projects", "skills"];
-      for (const id of [...sections].reverse()) {
-        const el = document.getElementById(id);
-        if (el && el.getBoundingClientRect().top <= 100) {
-          setActiveSection(id);
-          break;
-        }
-      }
     };
 
     window.addEventListener("scroll", onScroll, { passive: true });
@@ -97,10 +90,8 @@ const Navbar = () => {
         {/* ── Top bar ──────────────────────────────────────────────────── */}
         <div className="flex items-center justify-between h-16 px-6">
           {/* Logo */}
-          <Link
-            to="hero"
-            smooth
-            duration={500}
+          <NavLink
+            to="/"
             className="cursor-pointer flex-shrink-0"
           >
             <motion.img
@@ -110,20 +101,16 @@ const Navbar = () => {
               whileHover={{ scale: 1.08 }}
               transition={{ type: "spring", stiffness: 400, damping: 15 }}
             />
-          </Link>
+          </NavLink>
 
           {/* Desktop links */}
           <div className="hidden md:flex items-center gap-1">
             {navLinks.map((link) => {
-              const isActive = activeSection === link.to;
+              const isActive = location.pathname === link.to;
               return (
-                <Link
+                <NavLink
                   key={link.name}
                   to={link.to}
-                  spy
-                  smooth
-                  offset={-80}
-                  duration={500}
                   className="
                     relative px-4 py-2 text-sm font-medium
                     cursor-pointer select-none rounded-full
@@ -160,56 +147,57 @@ const Navbar = () => {
                     />
                   )}
                   <span className="relative z-10">{link.name}</span>
-                </Link>
+                </NavLink>
               );
             })}
           </div>
 
           {/* Right-side actions */}
           <div className="flex items-center gap-2">
-            {/* Theme toggle — animated Sun / Moon swap */}
+            {/* Theme toggle — pill-shaped button with icon + label */}
             <motion.button
               onClick={toggleTheme}
               whileTap={{ scale: 0.9 }}
               className="
-                relative h-9 w-9 flex items-center justify-center
-                rounded-full transition-colors duration-200
+                relative flex items-center gap-1.5
+                px-3 py-1.5 rounded-full
+                bg-[var(--color-surface2)]
+                border border-[var(--color-border)]
+                transition-colors duration-200
               "
               style={{ color: "var(--color-text)" }}
               aria-label="Toggle theme"
-              onMouseEnter={(e) =>
-                (e.currentTarget.style.backgroundColor =
-                  "var(--color-surface2)")
-              }
-              onMouseLeave={(e) =>
-                (e.currentTarget.style.backgroundColor = "transparent")
-              }
             >
-              <AnimatePresence mode="wait" initial={false}>
-                {theme === "dark" ? (
-                  <motion.span
-                    key="sun"
-                    initial={{ rotate: -90, opacity: 0 }}
-                    animate={{ rotate: 0, opacity: 1 }}
-                    exit={{ rotate: 90, opacity: 0 }}
-                    transition={{ duration: 0.2 }}
-                    className="absolute flex items-center justify-center"
-                  >
-                    <Sun size={18} />
-                  </motion.span>
-                ) : (
-                  <motion.span
-                    key="moon"
-                    initial={{ rotate: 90, opacity: 0 }}
-                    animate={{ rotate: 0, opacity: 1 }}
-                    exit={{ rotate: -90, opacity: 0 }}
-                    transition={{ duration: 0.2 }}
-                    className="absolute flex items-center justify-center"
-                  >
-                    <Moon size={18} />
-                  </motion.span>
-                )}
-              </AnimatePresence>
+              <span className="relative h-[18px] w-[18px] flex items-center justify-center">
+                <AnimatePresence mode="wait" initial={false}>
+                  {theme === "dark" ? (
+                    <motion.span
+                      key="sun"
+                      initial={{ rotate: -90, opacity: 0 }}
+                      animate={{ rotate: 0, opacity: 1 }}
+                      exit={{ rotate: 90, opacity: 0 }}
+                      transition={{ duration: 0.2 }}
+                      className="absolute flex items-center justify-center"
+                    >
+                      <Sun size={18} />
+                    </motion.span>
+                  ) : (
+                    <motion.span
+                      key="moon"
+                      initial={{ rotate: 90, opacity: 0 }}
+                      animate={{ rotate: 0, opacity: 1 }}
+                      exit={{ rotate: -90, opacity: 0 }}
+                      transition={{ duration: 0.2 }}
+                      className="absolute flex items-center justify-center"
+                    >
+                      <Moon size={18} />
+                    </motion.span>
+                  )}
+                </AnimatePresence>
+              </span>
+              <span className="text-xs font-medium select-none">
+                {theme === "dark" ? "Light" : "Dark"}
+              </span>
             </motion.button>
 
             {/* Mobile hamburger — animated Menu / X swap */}
@@ -271,15 +259,11 @@ const Navbar = () => {
             >
               <div className="flex flex-col gap-1 px-4 pb-4 pt-1">
                 {navLinks.map((link) => {
-                  const isActive = activeSection === link.to;
+                  const isActive = location.pathname === link.to;
                   return (
-                    <Link
+                    <NavLink
                       key={link.name}
                       to={link.to}
-                      spy
-                      smooth
-                      offset={-80}
-                      duration={500}
                       onClick={() => setIsOpen(false)}
                       className="
                         relative px-4 py-2.5 text-sm font-medium
@@ -308,7 +292,7 @@ const Navbar = () => {
                         />
                       )}
                       <span className="relative z-10">{link.name}</span>
-                    </Link>
+                    </NavLink>
                   );
                 })}
               </div>

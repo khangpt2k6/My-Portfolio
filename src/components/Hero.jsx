@@ -1,10 +1,10 @@
 import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
 import { TypeAnimation } from "react-type-animation";
-import { Mail, Github, Linkedin, FileText } from "lucide-react";
+import { FaGithub, FaLinkedin, FaEnvelope, FaFileAlt } from "react-icons/fa";
 import hero from "../data/hero";
 
-const iconMap = { Mail, Github, Linkedin, FileText };
+const iconMap = { Mail: FaEnvelope, Github: FaGithub, Linkedin: FaLinkedin, FileText: FaFileAlt };
 
 /* ── Framer-motion orchestration ── */
 const container = {
@@ -81,15 +81,20 @@ const Hero = () => {
         initial="hidden"
         animate="show"
       >
-        {/* 1 · Profile image */}
+        {/* 1 · Profile image with float animation */}
         <motion.div variants={fadeUp} className="mb-6">
-          <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-[var(--color-border)] shadow-md">
-            <img
-              src={hero.profileImage}
-              alt={`${hero.firstName} ${hero.lastName}`}
-              className="w-full h-full object-cover"
-            />
-          </div>
+          <motion.div
+            animate={{ y: [0, -8, 0] }}
+            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+          >
+            <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-[var(--color-border)] shadow-md">
+              <img
+                src={hero.profileImage}
+                alt={`${hero.firstName} ${hero.lastName}`}
+                className="w-full h-full object-cover"
+              />
+            </div>
+          </motion.div>
         </motion.div>
 
         {/* 2 · Overline greeting */}
@@ -159,13 +164,15 @@ const Hero = () => {
           ))}
         </motion.div>
 
-        {/* 7 · Social links */}
+        {/* 7 · Social links — pill buttons with brand colors */}
         <motion.div
           variants={fadeUp}
-          className="flex items-center justify-center gap-4"
+          className="flex flex-wrap items-center justify-center gap-3"
         >
           {hero.socialLinks.map((link, index) => {
             const IconComponent = iconMap[link.type];
+            /* GitHub uses white in dark mode, its dark brand color in light mode */
+            const isGithub = link.type === "Github";
             return (
               <a
                 key={index}
@@ -177,11 +184,35 @@ const Hero = () => {
                     : undefined
                 }
                 aria-label={link.text}
-                className="group w-11 h-11 rounded-full border border-[var(--color-border)] bg-[var(--color-surface)] flex items-center justify-center transition-all duration-300 hover:bg-[var(--color-primary)] hover:border-[var(--color-primary)]"
+                className="group px-4 py-2.5 rounded-full border border-[var(--color-border)] bg-[var(--color-surface)] flex items-center gap-2 transition-all duration-300 hover:border-transparent hover:shadow-lg"
+                style={{
+                  "--btn-brand": link.brandColor,
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = link.brandColor;
+                  e.currentTarget.style.borderColor = link.brandColor;
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = "";
+                  e.currentTarget.style.borderColor = "";
+                }}
               >
                 {IconComponent && (
-                  <IconComponent className="w-5 h-5 text-[var(--color-text-muted)] transition-colors duration-300 group-hover:text-white" />
+                  <IconComponent
+                    className="w-5 h-5 transition-colors duration-300 group-hover:text-white"
+                    style={{
+                      color: isGithub ? undefined : link.brandColor,
+                    }}
+                    /* GitHub: dark in light mode, white in dark mode — handled via CSS class */
+                    {...(isGithub && {
+                      className:
+                        "w-5 h-5 transition-colors duration-300 text-[#333] dark:text-white group-hover:text-white",
+                    })}
+                  />
                 )}
+                <span className="text-sm font-medium text-[var(--color-text)] transition-colors duration-300 group-hover:text-white">
+                  {link.text}
+                </span>
               </a>
             );
           })}
