@@ -1,6 +1,6 @@
 "use client"
 import { motion } from "framer-motion"
-import { FaGraduationCap, FaMedal, FaUniversity, FaTrophy, FaCode } from "react-icons/fa"
+import { FaMedal, FaCode } from "react-icons/fa"
 import { useState } from "react"
 import education from "../data/education"
 
@@ -97,7 +97,7 @@ const Education = () => {
             className="mt-10 max-w-2xl mx-auto"
             style={{ color: '#1F2937' }}
           >
-            {education.subtitle}
+            Building a foundation of knowledge and expertise
           </motion.p>
         </motion.div>
 
@@ -154,7 +154,7 @@ const Education = () => {
                   transition={{ delay: 0.2 }}
                   viewport={{ once: true }}
                 >
-                  {education.college}
+                  {education.degree}
                 </motion.p>
               </div>
             </motion.div>

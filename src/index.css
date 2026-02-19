@@ -5,6 +5,26 @@
 :root {
     font-family: 'Chakra Petch', sans-serif;
 
+    /* ── Light Theme (default) ── */
+    --color-bg:         #F9FAFB;   /* Soft White */
+    --color-surface:    #FFFFFF;   /* Pure White */
+    --color-surface2:   #F3F4F6;   /* Light Gray */
+    --color-primary:    #4F46E5;   /* Rich Indigo */
+    --color-secondary:  #0891B2;   /* Deep Cyan */
+    --color-text:       #111827;   /* Charcoal */
+    --color-text-muted: #6B7280;   /* Medium Gray */
+    --color-border:     #E5E7EB;   /* Light Line */
+  }
+
+  .dark {
+    --color-bg:         #0A0E1A;   /* Deep Slate */
+    --color-surface:    #111827;   /* Card Dark */
+    --color-surface2:   #1F2937;   /* Elevated */
+    --color-primary:    #6366F1;   /* Electric Indigo */
+    --color-secondary:  #22D3EE;   /* Cyan Glow */
+    --color-text:       #F9FAFB;   /* Snow White */
+    --color-text-muted: #9CA3AF;   /* Cool Gray */
+    --color-border:     #1F2937;   /* Subtle Line */
   }
 
   @keyframes fadeIn {

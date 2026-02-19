@@ -1,7 +1,13 @@
 import { useState, useEffect } from 'react';
 import { FaGithub, FaLinkedin, FaEnvelope, FaArrowUp, FaMapMarkerAlt, FaPhone } from "react-icons/fa";
 import { Link } from "react-scroll";
-import Experience from './Experience';
+import footerData from "../data/footer";
+
+const socialIconMap = {
+  github: FaGithub,
+  linkedin: FaLinkedin,
+  email: FaEnvelope,
+};
 
 const Footer = () => {
   const [isVisible, setIsVisible] = useState(false);
@@ -52,7 +58,7 @@ const Footer = () => {
       }
     };
     window.addEventListener("scroll", toggleVisibility);
-    
+
     return () => {
       window.removeEventListener("scroll", toggleVisibility);
     };
@@ -80,49 +86,35 @@ const Footer = () => {
       <div className="relative max-w-7xl mx-auto px-6 lg:px-8">
         {/* Main Content Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 mb-12">
-          
+
           {/* Personal Branding Section */}
           <div className="lg:col-span-1 space-y-6">
             <div>
               <h2 className="text-2xl font-bold text-gray-900 mb-2">
-                Khang Phan
+                {footerData.name}
               </h2>
               <div className="w-12 h-1 bg-green-600 mb-4"></div>
             </div>
-            
+
             {/* Social Links */}
             <div className="flex space-x-4">
-              <a
-                href="https://github.com/khangpt2k6"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group relative"
-                aria-label="GitHub Profile"
-              >
-                <div className="w-12 h-12 bg-white border border-gray-200 rounded-lg flex items-center justify-center transition-all duration-300 group-hover:border-green-600 group-hover:shadow-lg group-hover:-translate-y-1">
-                  <FaGithub className="text-gray-700 group-hover:text-green-600 transition-colors duration-300" size={18} />
-                </div>
-              </a>
-              <a
-                href="https://linkedin.com/in/tuankhangphan"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group relative"
-                aria-label="LinkedIn Profile"
-              >
-                <div className="w-12 h-12 bg-white border border-gray-200 rounded-lg flex items-center justify-center transition-all duration-300 group-hover:border-green-600 group-hover:shadow-lg group-hover:-translate-y-1">
-                  <FaLinkedin className="text-gray-700 group-hover:text-green-600 transition-colors duration-300" size={18} />
-                </div>
-              </a>
-              <a
-                href="mailto:khang18@usf.edu"
-                className="group relative"
-                aria-label="Email Contact"
-              >
-                <div className="w-12 h-12 bg-white border border-gray-200 rounded-lg flex items-center justify-center transition-all duration-300 group-hover:border-green-600 group-hover:shadow-lg group-hover:-translate-y-1">
-                  <FaEnvelope className="text-gray-700 group-hover:text-green-600 transition-colors duration-300" size={18} />
-                </div>
-              </a>
+              {footerData.socialLinks.map((link, index) => {
+                const IconComponent = socialIconMap[link.type];
+                return (
+                  <a
+                    key={index}
+                    href={link.href}
+                    target={link.href.startsWith("mailto:") ? undefined : "_blank"}
+                    rel={link.href.startsWith("mailto:") ? undefined : "noopener noreferrer"}
+                    className="group relative"
+                    aria-label={link.label}
+                  >
+                    <div className="w-12 h-12 bg-white border border-gray-200 rounded-lg flex items-center justify-center transition-all duration-300 group-hover:border-green-600 group-hover:shadow-lg group-hover:-translate-y-1">
+                      {IconComponent && <IconComponent className="text-gray-700 group-hover:text-green-600 transition-colors duration-300" size={18} />}
+                    </div>
+                  </a>
+                );
+              })}
             </div>
           </div>
 
@@ -137,19 +129,19 @@ const Footer = () => {
                   <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
                     <FaEnvelope className="text-green-600" size={14} />
                   </div>
-                  <span className="text-sm">khang18@usf.edu</span>
+                  <span className="text-sm">{footerData.contact.email}</span>
                 </div>
                 <div className="flex items-center space-x-3 text-gray-600">
                   <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
                     <FaPhone className="text-green-600" size={14} />
                   </div>
-                  <span className="text-sm">813-570-4370</span>
+                  <span className="text-sm">{footerData.contact.phone}</span>
                 </div>
                 <div className="flex items-center space-x-3 text-gray-600">
                   <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
                     <FaMapMarkerAlt className="text-green-600" size={14} />
                   </div>
-                  <span className="text-sm">Tampa, Florida, United States</span>
+                  <span className="text-sm">{footerData.contact.location}</span>
                 </div>
               </div>
             </div>
@@ -162,44 +154,22 @@ const Footer = () => {
                 Overview
               </h3>
               <div className="space-y-2">
-                <Link
-                  to="hero"
-                  smooth={true}
-                  duration={500}
-                  className="block text-neutral-600 dark:text-neutral-300 hover:text-green-600 transition-colors duration-300 cursor-pointer text-sm py-1"
-                >
-                  About Me
-                </Link>
-                <Link
-                  to="experience"
-                  smooth={true}
-                  duration={500}
-                  className="block text-neutral-600 dark:text-neutral-300 hover:text-green-600 transition-colors duration-300 cursor-pointer text-sm py-1"
-                >
-                  Experience
-                </Link>
-                <Link
-                  to="projects"
-                  smooth={true}
-                  duration={500}
-                  className="block text-neutral-600 dark:text-neutral-300 hover:text-green-600 transition-colors duration-300 cursor-pointer text-sm py-1"
-                >
-                  Projects
-                </Link>
-                <Link
-                  to="skills"
-                  smooth={true}
-                  duration={500}
-                  className="block text-neutral-600 dark:text-neutral-300 hover:text-green-600 transition-colors duration-300 cursor-pointer text-sm py-1"
-                >
-                  Skills
-                </Link>
-                
+                {footerData.navLinks.map((link, index) => (
+                  <Link
+                    key={index}
+                    to={link.to}
+                    smooth={true}
+                    duration={500}
+                    className="block text-neutral-600 dark:text-neutral-300 hover:text-green-600 transition-colors duration-300 cursor-pointer text-sm py-1"
+                  >
+                    {link.label}
+                  </Link>
+                ))}
               </div>
             </div>
 
             {/* Back to Top Button */}
-            <div 
+            <div
               className={`transition-opacity duration-300 ${
                 isVisible ? 'opacity-100' : 'opacity-0'
               }`}
@@ -223,10 +193,10 @@ const Footer = () => {
         <div className="pt-8 border-t border-neutral-200 dark:border-neutral-800 transition-colors">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             <div className="text-sm text-neutral-500 dark:text-neutral-400">
-              &copy; {currentYear} Tuan Khang Phan. All rights reserved.
+              &copy; {currentYear} {footerData.copyright}. All rights reserved.
             </div>
             <div className="flex items-center space-x-6 text-sm text-neutral-500 dark:text-neutral-400">
-              <span>Built with passion & dedication</span>
+              <span>{footerData.tagline}</span>
               <div className="w-2 h-2 bg-green-600 rounded-full animate-pulse"></div>
             </div>
           </div>

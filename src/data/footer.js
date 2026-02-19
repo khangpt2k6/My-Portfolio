@@ -11,7 +11,7 @@ const footer = {
 
   socialLinks: [
     { type: "github",   href: "https://github.com/khangpt2k6",        label: "GitHub Profile" },
-    { type: "linkedin", href: "https://linkedin.com/in/tuankhangphan", label: "LinkedIn Profile" },
+    { type: "linkedin", href: "https://linkedin.com/in/kvphan27", label: "LinkedIn Profile" },
     { type: "email",    href: "mailto:khang18@usf.edu",                label: "Email Contact" },
   ],
 
