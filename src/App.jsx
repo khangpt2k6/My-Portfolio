@@ -53,7 +53,7 @@ function CustomCursor() {
   if (!enabled) return null
 
   const ringColor = isDark ? 'rgba(255, 255, 255, 0.75)' : 'rgba(0, 0, 0, 0.7)'
-  const glowColor = isPointer ? 'rgba(22, 163, 74, 0.25)' : (isDark ? 'rgba(255, 255, 255, 0.12)' : 'rgba(0,0,0,0.08)')
+  const glowColor = isPointer ? 'rgba(79, 70, 229, 0.25)' : (isDark ? 'rgba(255, 255, 255, 0.12)' : 'rgba(0,0,0,0.08)')
   const innerColor = isDark ? '#ffffff' : '#111111'
 
   return (
@@ -84,7 +84,7 @@ function CustomCursor() {
             transform: 'translate(-50%, -50%)',
             left: '50%',
             top: '50%',
-            boxShadow: isPointer ? `0 0 10px rgba(22,163,74,0.35)` : `0 0 6px ${ringColor}`,
+            boxShadow: isPointer ? `0 0 10px rgba(79,70,229,0.35)` : `0 0 6px ${ringColor}`,
             borderRadius: '9999px',
           }}
         />
@@ -96,7 +96,7 @@ function CustomCursor() {
             transform: 'translate(-50%, -50%)',
             left: '50%',
             top: '50%',
-            boxShadow: isPointer ? '0 0 6px rgba(22,163,74,0.8)' : `0 0 4px ${ringColor}`,
+            boxShadow: isPointer ? '0 0 6px rgba(79,70,229,0.8)' : `0 0 4px ${ringColor}`,
           }}
         />
       </div>
@@ -131,7 +131,7 @@ function App() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-screen bg-neutral-50 dark:bg-neutral-950 transition-colors">
-        <div className="w-16 h-16 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
+        <div className="w-16 h-16 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
       </div>
     )
   }

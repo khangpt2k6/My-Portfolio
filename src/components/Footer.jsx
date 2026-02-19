@@ -71,7 +71,7 @@ const Footer = () => {
         {particles.map(particle => (
           <div
             key={particle.id}
-            className="absolute w-1 h-1 bg-green-600 rounded-full"
+            className="absolute w-1 h-1 bg-indigo-600 rounded-full"
             style={{
               left: `${particle.x}%`,
               top: `${particle.y}%`,
@@ -90,10 +90,10 @@ const Footer = () => {
           {/* Personal Branding Section */}
           <div className="lg:col-span-1 space-y-6">
             <div>
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-[#F9FAFB] mb-2">
                 {footerData.name}
               </h2>
-              <div className="w-12 h-1 bg-green-600 mb-4"></div>
+              <div className="w-12 h-1 bg-indigo-600 mb-4"></div>
             </div>
 
             {/* Social Links */}
@@ -109,8 +109,8 @@ const Footer = () => {
                     className="group relative"
                     aria-label={link.label}
                   >
-                    <div className="w-12 h-12 bg-white border border-gray-200 rounded-lg flex items-center justify-center transition-all duration-300 group-hover:border-green-600 group-hover:shadow-lg group-hover:-translate-y-1">
-                      {IconComponent && <IconComponent className="text-gray-700 group-hover:text-green-600 transition-colors duration-300" size={18} />}
+                    <div className="w-12 h-12 bg-white dark:bg-[#111827] border border-gray-200 dark:border-[#1F2937] rounded-lg flex items-center justify-center transition-all duration-300 group-hover:border-indigo-500 group-hover:shadow-lg group-hover:-translate-y-1">
+                      {IconComponent && <IconComponent className="text-gray-700 dark:text-[#9CA3AF] group-hover:text-indigo-500 transition-colors duration-300" size={18} />}
                     </div>
                   </a>
                 );
@@ -121,25 +121,25 @@ const Footer = () => {
           {/* Contact Information */}
           <div className="lg:col-span-1 space-y-6">
             <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-[#F9FAFB] mb-4">
                 Get In Touch
               </h3>
               <div className="space-y-3">
-                <div className="flex items-center space-x-3 text-gray-600">
-                  <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
-                    <FaEnvelope className="text-green-600" size={14} />
+                <div className="flex items-center space-x-3 text-gray-600 dark:text-[#9CA3AF]">
+                  <div className="w-8 h-8 bg-indigo-100 dark:bg-indigo-900/30 rounded-lg flex items-center justify-center">
+                    <FaEnvelope className="text-indigo-600 dark:text-indigo-400" size={14} />
                   </div>
                   <span className="text-sm">{footerData.contact.email}</span>
                 </div>
-                <div className="flex items-center space-x-3 text-gray-600">
-                  <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
-                    <FaPhone className="text-green-600" size={14} />
+                <div className="flex items-center space-x-3 text-gray-600 dark:text-[#9CA3AF]">
+                  <div className="w-8 h-8 bg-indigo-100 dark:bg-indigo-900/30 rounded-lg flex items-center justify-center">
+                    <FaPhone className="text-indigo-600 dark:text-indigo-400" size={14} />
                   </div>
                   <span className="text-sm">{footerData.contact.phone}</span>
                 </div>
-                <div className="flex items-center space-x-3 text-gray-600">
-                  <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
-                    <FaMapMarkerAlt className="text-green-600" size={14} />
+                <div className="flex items-center space-x-3 text-gray-600 dark:text-[#9CA3AF]">
+                  <div className="w-8 h-8 bg-indigo-100 dark:bg-indigo-900/30 rounded-lg flex items-center justify-center">
+                    <FaMapMarkerAlt className="text-indigo-600 dark:text-indigo-400" size={14} />
                   </div>
                   <span className="text-sm">{footerData.contact.location}</span>
                 </div>
@@ -150,7 +150,7 @@ const Footer = () => {
           {/* Quick Actions */}
           <div className="lg:col-span-1 space-y-6">
             <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-[#F9FAFB] mb-4">
                 Overview
               </h3>
               <div className="space-y-2">
@@ -160,7 +160,7 @@ const Footer = () => {
                     to={link.to}
                     smooth={true}
                     duration={500}
-                    className="block text-neutral-600 dark:text-neutral-300 hover:text-green-600 transition-colors duration-300 cursor-pointer text-sm py-1"
+                    className="block text-neutral-600 dark:text-neutral-300 hover:text-indigo-500 transition-colors duration-300 cursor-pointer text-sm py-1"
                   >
                     {link.label}
                   </Link>
@@ -180,7 +180,7 @@ const Footer = () => {
                 duration={500}
                 className="cursor-pointer inline-flex"
               >
-                <div className="flex items-center space-x-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5">
+                <div className="flex items-center space-x-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5">
                   <FaArrowUp size={12} />
                   <span className="text-sm font-medium">Back to Top</span>
                 </div>
@@ -197,7 +197,7 @@ const Footer = () => {
             </div>
             <div className="flex items-center space-x-6 text-sm text-neutral-500 dark:text-neutral-400">
               <span>{footerData.tagline}</span>
-              <div className="w-2 h-2 bg-green-600 rounded-full animate-pulse"></div>
+              <div className="w-2 h-2 bg-indigo-600 rounded-full animate-pulse"></div>
             </div>
           </div>
         </div>

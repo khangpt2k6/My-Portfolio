@@ -13,11 +13,11 @@ const Experience = () => {
   const currentExperiences = experiences[activeTab];
 
   return (
-    <section id="experience" className="min-h-screen bg-white py-20 px-4 relative overflow-hidden">
+    <section id="experience" className="min-h-screen bg-white dark:bg-[#0A0E1A] py-20 px-4 relative overflow-hidden">
 
       {/* Subtle background pattern */}
       <div className="absolute inset-0 opacity-[0.03]" style={{
-        backgroundImage: `radial-gradient(circle at 1px 1px, rgb(22 163 74) 1px, transparent 0)`,
+        backgroundImage: `radial-gradient(circle at 1px 1px, rgb(79 70 229) 1px, transparent 0)`,
         backgroundSize: '40px 40px'
       }}></div>
 
@@ -25,12 +25,12 @@ const Experience = () => {
 
         {/* Header Section */}
         <div className="text-center mb-16">
-          <div className="inline-flex items-center gap-2 mb-4 px-4 py-2 bg-green-50 rounded-full">
-            <Briefcase className="w-4 h-4 text-green-600" />
-            <span className="text-sm font-semibold text-green-600 tracking-wider uppercase">My Journey</span>
+          <div className="inline-flex items-center gap-2 mb-4 px-4 py-2 bg-indigo-50 dark:bg-indigo-900/30 rounded-full">
+            <Briefcase className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+            <span className="text-sm font-semibold text-indigo-600 dark:text-indigo-400 tracking-wider uppercase">My Journey</span>
           </div>
 
-          <h1 className="text-5xl md:text-6xl font-bold mb-4 text-neutral-900">
+          <h1 className="text-5xl md:text-6xl font-bold mb-4 text-neutral-900 dark:text-[#F9FAFB]">
             Experience
           </h1>
 
@@ -38,13 +38,13 @@ const Experience = () => {
 
           {/* Tab Switcher - only show when both tabs have entries */}
           {experiences.professional.length > 0 && experiences.volunteering.length > 0 && (
-            <div className="inline-flex gap-2 p-2 bg-neutral-100 rounded-full">
+            <div className="inline-flex gap-2 p-2 bg-neutral-100 dark:bg-[#1F2937] rounded-full">
               <button
                 onClick={() => setActiveTab("professional")}
                 className={`px-8 py-3 rounded-full transition-all duration-300 font-semibold ${
                   activeTab === "professional"
-                    ? "bg-white text-green-600 shadow-lg"
-                    : "text-neutral-600 hover:text-neutral-900"
+                    ? "bg-white dark:bg-[#111827] text-indigo-600 shadow-lg"
+                    : "text-neutral-600 dark:text-[#9CA3AF] hover:text-neutral-900 dark:hover:text-[#F9FAFB]"
                 }`}
               >
                 Professional
@@ -53,8 +53,8 @@ const Experience = () => {
                 onClick={() => setActiveTab("volunteering")}
                 className={`px-8 py-3 rounded-full transition-all duration-300 font-semibold ${
                   activeTab === "volunteering"
-                    ? "bg-white text-green-600 shadow-lg"
-                    : "text-neutral-600 hover:text-neutral-900"
+                    ? "bg-white dark:bg-[#111827] text-indigo-600 shadow-lg"
+                    : "text-neutral-600 dark:text-[#9CA3AF] hover:text-neutral-900 dark:hover:text-[#F9FAFB]"
                 }`}
               >
                 Volunteering
@@ -67,7 +67,7 @@ const Experience = () => {
         <div className="relative max-w-5xl mx-auto">
 
           {/* Vertical Timeline Line */}
-          <div className="absolute left-8 md:left-1/2 transform md:-translate-x-1/2 top-0 bottom-0 w-0.5 bg-gradient-to-b from-transparent via-green-200 to-transparent"></div>
+          <div className="absolute left-8 md:left-1/2 transform md:-translate-x-1/2 top-0 bottom-0 w-0.5 bg-gradient-to-b from-transparent via-indigo-200 dark:via-indigo-900/30 to-transparent"></div>
 
           {/* Experience Cards */}
           <div className="space-y-12">
@@ -88,29 +88,29 @@ const Experience = () => {
                     <div className="relative">
                       <div className={`w-16 h-16 rounded-full flex items-center justify-center transition-all duration-300 ${
                         hoveredIndex === index
-                          ? 'bg-gradient-to-br from-green-500 to-emerald-600 shadow-xl shadow-green-500/50 scale-110'
-                          : 'bg-gradient-to-br from-green-600 to-emerald-700 shadow-lg shadow-green-600/30'
+                          ? 'bg-gradient-to-br from-indigo-500 to-cyan-600 shadow-xl shadow-indigo-500/50 scale-110'
+                          : 'bg-gradient-to-br from-indigo-600 to-cyan-700 shadow-lg shadow-indigo-600/30'
                       }`}>
                         <div className="text-white">
                           <IconComponent className="w-6 h-6" />
                         </div>
                       </div>
                       {hoveredIndex === index && (
-                        <div className="absolute inset-0 bg-green-500 rounded-full blur-xl opacity-40 animate-pulse"></div>
+                        <div className="absolute inset-0 bg-indigo-500 rounded-full blur-xl opacity-40 animate-pulse"></div>
                       )}
                     </div>
                   </div>
 
                   {/* Content Card */}
                   <div className={`flex-1 ${index % 2 === 0 ? 'md:pr-16' : 'md:pl-16'} pl-20 md:pl-0`}>
-                    <div className={`group relative bg-white rounded-2xl border-2 transition-all duration-500 ${
+                    <div className={`group relative bg-white dark:bg-[#111827] rounded-2xl border-2 transition-all duration-500 ${
                       hoveredIndex === index
-                        ? 'border-green-500 shadow-2xl shadow-green-500/20 -translate-y-2'
-                        : 'border-neutral-200 shadow-lg hover:shadow-xl'
+                        ? 'border-indigo-500 shadow-2xl shadow-indigo-500/20 -translate-y-2'
+                        : 'border-neutral-200 dark:border-[#1F2937] shadow-lg hover:shadow-xl'
                     }`}>
 
                       {/* Gradient overlay on hover */}
-                      <div className={`absolute inset-0 bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl opacity-0 transition-opacity duration-500 ${
+                      <div className={`absolute inset-0 bg-gradient-to-br from-indigo-50 to-cyan-50 dark:from-indigo-950/30 dark:to-cyan-950/30 rounded-2xl opacity-0 transition-opacity duration-500 ${
                         hoveredIndex === index ? 'opacity-100' : ''
                       }`}></div>
 
@@ -121,7 +121,7 @@ const Experience = () => {
                           {exp.image && (
                             <div className="relative">
                               <div className={`w-14 h-14 rounded-xl overflow-hidden border-2 transition-all duration-300 ${
-                                hoveredIndex === index ? 'border-green-500 shadow-lg' : 'border-neutral-200'
+                                hoveredIndex === index ? 'border-indigo-500 shadow-lg' : 'border-neutral-200 dark:border-[#1F2937]'
                               }`}>
                                 <img
                                   src={exp.image}
@@ -133,17 +133,17 @@ const Experience = () => {
                           )}
 
                           <div className="flex-1">
-                            <h3 className="text-2xl font-bold text-neutral-900 mb-1 group-hover:text-green-600 transition-colors">
+                            <h3 className="text-2xl font-bold text-neutral-900 dark:text-[#F9FAFB] mb-1 group-hover:text-indigo-600 transition-colors">
                               {exp.title}
                             </h3>
-                            <p className="text-lg font-semibold text-neutral-700">
+                            <p className="text-lg font-semibold text-neutral-700 dark:text-[#9CA3AF]">
                               {exp.company}
                             </p>
                           </div>
 
                           {/* Year Badge */}
                           <div className="hidden md:block">
-                            <span className="inline-flex px-4 py-2 bg-green-100 text-green-700 rounded-full text-sm font-bold">
+                            <span className="inline-flex px-4 py-2 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 rounded-full text-sm font-bold">
                               {exp.year}
                             </span>
                           </div>
@@ -151,12 +151,12 @@ const Experience = () => {
 
                         {/* Location & Period */}
                         <div className="flex flex-wrap gap-4 mb-6 text-sm">
-                          <div className="flex items-center gap-2 text-neutral-600">
-                            <MapPin className="w-4 h-4 text-green-600" />
+                          <div className="flex items-center gap-2 text-neutral-600 dark:text-[#9CA3AF]">
+                            <MapPin className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
                             <span>{exp.location}</span>
                           </div>
-                          <div className="flex items-center gap-2 text-neutral-600">
-                            <Calendar className="w-4 h-4 text-green-600" />
+                          <div className="flex items-center gap-2 text-neutral-600 dark:text-[#9CA3AF]">
+                            <Calendar className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
                             <span>{exp.period}</span>
                           </div>
                         </div>
@@ -166,8 +166,8 @@ const Experience = () => {
                           <div className="space-y-3">
                             {exp.description.map((item, i) => (
                               <div key={i} className="flex gap-3 items-start group/item">
-                                <ChevronRight className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0 group-hover/item:translate-x-1 transition-transform" />
-                                <p className="text-neutral-700 leading-relaxed">
+                                <ChevronRight className="w-5 h-5 text-indigo-600 dark:text-indigo-400 mt-0.5 flex-shrink-0 group-hover/item:translate-x-1 transition-transform" />
+                                <p className="text-neutral-700 dark:text-[#9CA3AF] leading-relaxed">
                                   {item}
                                 </p>
                               </div>
@@ -177,14 +177,14 @@ const Experience = () => {
 
                         {/* Mobile Year Badge */}
                         <div className="md:hidden mt-4">
-                          <span className="inline-flex px-4 py-2 bg-green-100 text-green-700 rounded-full text-sm font-bold">
+                          <span className="inline-flex px-4 py-2 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 rounded-full text-sm font-bold">
                             {exp.year}
                           </span>
                         </div>
                       </div>
 
                       {/* Decorative corner accent */}
-                      <div className={`absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-green-500 to-emerald-600 opacity-0 transition-opacity duration-500 ${
+                      <div className={`absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-indigo-500 to-cyan-600 opacity-0 transition-opacity duration-500 ${
                         hoveredIndex === index ? 'opacity-10' : ''
                       }`} style={{ clipPath: 'polygon(100% 0, 100% 100%, 0 0)' }}></div>
                     </div>
@@ -200,7 +200,7 @@ const Experience = () => {
 
         {/* Bottom CTA */}
         <div className="text-center mt-20">
-          <div className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-full font-semibold shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 cursor-pointer">
+          <div className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-indigo-600 to-cyan-600 text-white rounded-full font-semibold shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 cursor-pointer">
             <span>Want to work together?</span>
             <ChevronRight className="w-5 h-5" />
           </div>
@@ -208,8 +208,8 @@ const Experience = () => {
       </div>
 
       {/* Decorative gradient orbs */}
-      <div className="absolute top-40 -right-40 w-80 h-80 bg-green-200 rounded-full blur-3xl opacity-20 pointer-events-none"></div>
-      <div className="absolute bottom-40 -left-40 w-80 h-80 bg-emerald-200 rounded-full blur-3xl opacity-20 pointer-events-none"></div>
+      <div className="absolute top-40 -right-40 w-80 h-80 bg-indigo-200 dark:bg-indigo-900/30 rounded-full blur-3xl opacity-20 pointer-events-none"></div>
+      <div className="absolute bottom-40 -left-40 w-80 h-80 bg-cyan-200 dark:bg-cyan-900/30 rounded-full blur-3xl opacity-20 pointer-events-none"></div>
     </section>
   );
 };

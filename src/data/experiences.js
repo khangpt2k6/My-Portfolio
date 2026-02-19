@@ -35,7 +35,7 @@ const experiences = {
       location: "Santa Monica, CA",
       period: "Nov 2025 – Present",
       year: "2025",
-      image: "/prox_shopping_logo.jpg",
+      image: "/prox-shopping.jpg",
       icon: "Code",
       description: [
         "Scaled a grocery products scraper from a single running browser to 19 concurrent headless browsers using a thread pool, Selenium, and BeautifulSoup, cutting processing time by 95% for 130+ common products",
@@ -64,7 +64,7 @@ const experiences = {
       location: "Tampa, FL",
       period: "Feb 2025 – Nov 2025",
       year: "2025",
-      image: "/RL.jpg",
+      image: "/rare-lab.jpg",
       icon: "Laptop",
       description: [
         "Built ETL pipelines in Python processing 15GB+ of IMU/GPS telemetry from 40+ robot experiments, parallelizing transformations with multiprocessing to reduce processing time by 60%",

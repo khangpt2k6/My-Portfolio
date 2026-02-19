@@ -8,7 +8,7 @@ const hero = {
   firstName: "Khang",
   lastName: "Phan",
   greeting: "Hello, I'm",
-  profileImage: "/anh.jpg?height=1000&width=800",
+  profileImage: "/profile.jpg?height=1000&width=800",
 
   titles: [
     "Full-Stack Developer",
@@ -29,7 +29,7 @@ const hero = {
     { type: "Mail",     text: "Contact Me",   href: "mailto:khang18@usf.edu",                color: "from-blue-500 to-blue-600" },
     { type: "Github",   text: "View Projects", href: "https://github.com/khangpt2k6",        color: "from-neutral-700 to-neutral-900" },
     { type: "Linkedin", text: "LinkedIn",       href: "https://linkedin.com/in/tuankhangphan", color: "from-blue-600 to-blue-700" },
-    { type: "FileText", text: "Resume",         href: "https://leetcode.com/u/KHcqTUn9ld/",   color: "from-green-600 to-emerald-600" },
+    { type: "FileText", text: "Resume",         href: "https://leetcode.com/u/KHcqTUn9ld/",   color: "from-indigo-600 to-cyan-600" },
   ],
 };
 

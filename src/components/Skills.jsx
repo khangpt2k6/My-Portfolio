@@ -11,11 +11,11 @@ const Skills = () => {
   const currentCategory = skillCategories[selectedCategory];
 
   return (
-    <section id="skills" className="py-24 bg-white relative overflow-hidden">
+    <section id="skills" className="py-24 bg-white dark:bg-[#0A0E1A] relative overflow-hidden">
 
       {/* Subtle background pattern */}
       <div className="absolute inset-0 opacity-[0.02]" style={{
-        backgroundImage: `radial-gradient(circle at 2px 2px, rgb(22 163 74) 1px, transparent 0)`,
+        backgroundImage: `radial-gradient(circle at 2px 2px, rgb(79 70 229) 1px, transparent 0)`,
         backgroundSize: '48px 48px'
       }}></div>
 
@@ -24,7 +24,7 @@ const Skills = () => {
         {/* Header */}
         <div className="text-center mb-20">
 
-          <h2 className="text-5xl md:text-6xl font-bold mb-6 text-neutral-900">
+          <h2 className="text-5xl md:text-6xl font-bold mb-6 text-neutral-900 dark:text-[#F9FAFB]">
             Technical Skills
           </h2>
 
@@ -38,8 +38,8 @@ const Skills = () => {
               onClick={() => setSelectedCategory(index)}
               className={`group px-6 py-4 rounded-2xl font-semibold transition-all duration-300 ${
                 selectedCategory === index
-                  ? "bg-gradient-to-r from-green-600 to-emerald-600 text-white shadow-lg shadow-green-600/30 scale-105"
-                  : "bg-neutral-100 text-neutral-700 hover:bg-neutral-200 hover:scale-105"
+                  ? "bg-gradient-to-r from-indigo-600 to-cyan-600 text-white shadow-lg shadow-indigo-600/30 scale-105"
+                  : "bg-neutral-100 dark:bg-[#1F2937] text-neutral-700 dark:text-[#9CA3AF] hover:bg-neutral-200 hover:scale-105"
               }`}
             >
               <span>{category.title}</span>
@@ -52,10 +52,10 @@ const Skills = () => {
 
           {/* Category Header */}
           <div className="mb-12 text-center">
-            <h3 className="text-4xl font-bold text-neutral-900 mb-2">
+            <h3 className="text-4xl font-bold text-neutral-900 dark:text-[#F9FAFB] mb-2">
               {currentCategory.title}
             </h3>
-            <div className="h-1 w-24 bg-gradient-to-r from-green-600 to-emerald-600 mx-auto rounded-full"></div>
+            <div className="h-1 w-24 bg-gradient-to-r from-indigo-600 to-cyan-600 mx-auto rounded-full"></div>
           </div>
 
           {/* Skills Grid */}
@@ -72,13 +72,13 @@ const Skills = () => {
               >
                 <div className={`relative flex flex-col items-center justify-center p-8 rounded-3xl transition-all duration-500 cursor-pointer ${
                   hoveredSkill === index
-                    ? "bg-gradient-to-br from-green-500 to-emerald-600 shadow-2xl shadow-green-500/40 -translate-y-3 scale-110"
-                    : "bg-white/60 backdrop-blur-sm shadow-lg hover:shadow-xl"
+                    ? "bg-gradient-to-br from-indigo-500 to-cyan-600 shadow-2xl shadow-indigo-500/40 -translate-y-3 scale-110"
+                    : "bg-white/60 dark:bg-[#111827]/60 backdrop-blur-sm shadow-lg hover:shadow-xl"
                 }`}>
 
                   {/* Animated background glow */}
                   {hoveredSkill === index && (
-                    <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-green-400 to-emerald-500 blur-xl opacity-60 animate-pulse"></div>
+                    <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-indigo-400 to-cyan-500 blur-xl opacity-60 animate-pulse"></div>
                   )}
 
                   {/* Skill Icon */}
@@ -94,7 +94,7 @@ const Skills = () => {
 
                   {/* Skill Name */}
                   <span className={`relative font-bold text-center transition-all duration-300 text-sm ${
-                    hoveredSkill === index ? "text-white scale-110" : "text-neutral-800"
+                    hoveredSkill === index ? "text-white scale-110" : "text-neutral-800 dark:text-[#F9FAFB]"
                   }`}>
                     {skill.name}
                   </span>
@@ -132,8 +132,8 @@ const Skills = () => {
       </div>
 
       {/* Decorative gradient orbs */}
-      <div className="absolute top-40 -right-40 w-80 h-80 bg-green-200 rounded-full blur-3xl opacity-20 pointer-events-none"></div>
-      <div className="absolute bottom-40 -left-40 w-80 h-80 bg-emerald-200 rounded-full blur-3xl opacity-20 pointer-events-none"></div>
+      <div className="absolute top-40 -right-40 w-80 h-80 bg-indigo-200 dark:bg-indigo-900/30 rounded-full blur-3xl opacity-20 pointer-events-none"></div>
+      <div className="absolute bottom-40 -left-40 w-80 h-80 bg-cyan-200 dark:bg-cyan-900/30 rounded-full blur-3xl opacity-20 pointer-events-none"></div>
     </section>
   );
 };

@@ -53,12 +53,12 @@ const Projects = () => {
     <section
       ref={sectionRef}
       id="projects"
-      className="relative py-24 bg-white overflow-hidden"
+      className="relative py-24 bg-white dark:bg-[#0A0E1A] overflow-hidden"
     >
 
       {/* Subtle background decoration */}
       <div className="absolute inset-0 opacity-[0.02]" style={{
-        backgroundImage: `radial-gradient(circle at 2px 2px, rgb(22 163 74) 1px, transparent 0)`,
+        backgroundImage: `radial-gradient(circle at 2px 2px, rgb(79 70 229) 1px, transparent 0)`,
         backgroundSize: '50px 50px'
       }}></div>
 
@@ -68,7 +68,7 @@ const Projects = () => {
 
         {/* Header Section */}
         <div className="text-center mb-20">
-          <h2 className="text-5xl md:text-6xl font-bold mb-6 text-neutral-900">
+          <h2 className="text-5xl md:text-6xl font-bold mb-6 text-neutral-900 dark:text-[#F9FAFB]">
             Portfolio
           </h2>
         </div>
@@ -82,14 +82,14 @@ const Projects = () => {
               onMouseEnter={() => setHoveredCard(index)}
               onMouseLeave={() => setHoveredCard(null)}
             >
-              <div className={`relative h-full bg-white rounded-2xl overflow-hidden border-2 transition-all duration-500 ${
+              <div className={`relative h-full bg-white dark:bg-[#111827] rounded-2xl overflow-hidden border-2 transition-all duration-500 ${
                 hoveredCard === index
-                  ? 'border-green-500 shadow-2xl shadow-green-500/20 -translate-y-2'
-                  : 'border-neutral-200 shadow-lg'
+                  ? 'border-indigo-500 shadow-2xl shadow-indigo-500/20 -translate-y-2'
+                  : 'border-neutral-200 dark:border-[#1F2937] shadow-lg'
               }`}>
 
                 {/* Project Image */}
-                <div className="relative h-64 overflow-hidden bg-neutral-100">
+                <div className="relative h-64 overflow-hidden bg-neutral-100 dark:bg-[#1F2937]">
                   <img
                     src={project.image}
                     alt={project.title}
@@ -105,8 +105,8 @@ const Projects = () => {
 
                   {/* Category Badge */}
                   <div className="absolute top-4 left-4">
-                    <span className="inline-flex items-center gap-1 px-3 py-1.5 bg-white/95 backdrop-blur-sm rounded-full text-xs font-semibold text-neutral-800 border border-neutral-200">
-                      <Zap className="w-3 h-3 text-green-600" />
+                    <span className="inline-flex items-center gap-1 px-3 py-1.5 bg-white/95 dark:bg-[#111827]/95 backdrop-blur-sm rounded-full text-xs font-semibold text-neutral-800 dark:text-[#F9FAFB] border border-neutral-200 dark:border-[#1F2937]">
+                      <Zap className="w-3 h-3 text-indigo-600" />
                       {project.category}
                     </span>
                   </div>
@@ -119,7 +119,7 @@ const Projects = () => {
                       href={project.github}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="p-2.5 bg-white/95 backdrop-blur-sm rounded-full text-neutral-700 hover:text-white hover:bg-green-600 transition-all duration-300 shadow-lg"
+                      className="p-2.5 bg-white/95 dark:bg-[#111827]/95 backdrop-blur-sm rounded-full text-neutral-700 dark:text-[#9CA3AF] hover:text-white hover:bg-indigo-600 transition-all duration-300 shadow-lg"
                       onClick={(e) => e.stopPropagation()}
                     >
                       <Github className="w-4 h-4" />
@@ -129,7 +129,7 @@ const Projects = () => {
                         href={project.demo}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="p-2.5 bg-white/95 backdrop-blur-sm rounded-full text-neutral-700 hover:text-white hover:bg-green-600 transition-all duration-300 shadow-lg"
+                        className="p-2.5 bg-white/95 dark:bg-[#111827]/95 backdrop-blur-sm rounded-full text-neutral-700 dark:text-[#9CA3AF] hover:text-white hover:bg-indigo-600 transition-all duration-300 shadow-lg"
                         onClick={(e) => e.stopPropagation()}
                       >
                         <ExternalLink className="w-4 h-4" />
@@ -140,7 +140,7 @@ const Projects = () => {
 
                 {/* Content */}
                 <div className="p-6">
-                  <h3 className="text-2xl font-bold text-neutral-900 mb-3 group-hover:text-green-600 transition-colors">
+                  <h3 className="text-2xl font-bold text-neutral-900 dark:text-[#F9FAFB] mb-3 group-hover:text-indigo-600 transition-colors">
                     {project.title}
                   </h3>
 
@@ -149,27 +149,27 @@ const Projects = () => {
                     {project.technologies.split(", ").slice(0, 3).map((tech, i) => (
                       <span
                         key={i}
-                        className="text-xs px-3 py-1.5 rounded-full bg-neutral-100 text-neutral-700 font-medium border border-neutral-200"
+                        className="text-xs px-3 py-1.5 rounded-full bg-neutral-100 dark:bg-[#1F2937] text-neutral-700 dark:text-[#9CA3AF] font-medium border border-neutral-200 dark:border-[#1F2937]"
                       >
                         {tech}
                       </span>
                     ))}
                     {project.technologies.split(", ").length > 3 && (
-                      <span className="text-xs px-3 py-1.5 rounded-full bg-green-100 text-green-700 font-semibold">
+                      <span className="text-xs px-3 py-1.5 rounded-full bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 font-semibold">
                         +{project.technologies.split(", ").length - 3} more
                       </span>
                     )}
                   </div>
 
                   {/* Description Preview */}
-                  <p className="text-neutral-600 mb-6 line-clamp-2 leading-relaxed">
+                  <p className="text-neutral-600 dark:text-[#9CA3AF] mb-6 line-clamp-2 leading-relaxed">
                     {project.description[0]}
                   </p>
 
                   {/* Explore Button */}
                   <button
                     onClick={() => setActiveProject(project)}
-                    className="group/btn flex items-center gap-2 text-green-600 hover:text-green-700 font-semibold transition-colors"
+                    className="group/btn flex items-center gap-2 text-indigo-600 hover:text-indigo-700 font-semibold transition-colors"
                   >
                     <span>View Details</span>
                     <ChevronRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
@@ -192,11 +192,11 @@ const Projects = () => {
         >
           <div
             ref={modalRef}
-            className="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl animate-slideUp"
+            className="bg-white dark:bg-[#111827] rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl animate-slideUp"
           >
             {/* Modal Header with Image */}
             <div className="relative">
-              <div className="h-72 overflow-hidden bg-neutral-100">
+              <div className="h-72 overflow-hidden bg-neutral-100 dark:bg-[#1F2937]">
                 <img
                   src={activeProject.image}
                   alt={activeProject.title}
@@ -211,15 +211,15 @@ const Projects = () => {
                   e.stopPropagation();
                   setActiveProject(null);
                 }}
-                className="absolute top-4 right-4 p-2 bg-white/95 backdrop-blur-sm rounded-full text-neutral-700 hover:text-white hover:bg-red-500 transition-all duration-300 shadow-lg"
+                className="absolute top-4 right-4 p-2 bg-white/95 dark:bg-[#111827]/95 backdrop-blur-sm rounded-full text-neutral-700 dark:text-[#9CA3AF] hover:text-white hover:bg-red-500 transition-all duration-300 shadow-lg"
               >
                 <X className="w-5 h-5" />
               </button>
 
               {/* Category Badge */}
               <div className="absolute bottom-4 left-6">
-                <span className="inline-flex items-center gap-2 px-4 py-2 bg-white/95 backdrop-blur-sm rounded-full font-semibold text-neutral-800 shadow-lg border border-neutral-200">
-                  <Zap className="w-4 h-4 text-green-600" />
+                <span className="inline-flex items-center gap-2 px-4 py-2 bg-white/95 dark:bg-[#111827]/95 backdrop-blur-sm rounded-full font-semibold text-neutral-800 dark:text-[#F9FAFB] shadow-lg border border-neutral-200 dark:border-[#1F2937]">
+                  <Zap className="w-4 h-4 text-indigo-600" />
                   {activeProject.category}
                 </span>
               </div>
@@ -227,21 +227,21 @@ const Projects = () => {
 
             {/* Modal Content */}
             <div className="p-8">
-              <h3 className="text-4xl font-bold text-neutral-900 mb-6">
+              <h3 className="text-4xl font-bold text-neutral-900 dark:text-[#F9FAFB] mb-6">
                 {activeProject.title}
               </h3>
 
               {/* Technologies */}
               <div className="mb-8">
                 <div className="flex items-center gap-2 mb-4">
-                  <Code className="w-5 h-5 text-green-600" />
-                  <h4 className="text-xl font-bold text-neutral-900">Tech Stack</h4>
+                  <Code className="w-5 h-5 text-indigo-600" />
+                  <h4 className="text-xl font-bold text-neutral-900 dark:text-[#F9FAFB]">Tech Stack</h4>
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {activeProject.technologies.split(", ").map((tech, i) => (
                     <span
                       key={i}
-                      className="px-4 py-2 rounded-lg bg-neutral-100 text-neutral-700 font-medium border border-neutral-200 hover:border-green-500 hover:bg-green-50 transition-colors"
+                      className="px-4 py-2 rounded-lg bg-neutral-100 dark:bg-[#1F2937] text-neutral-700 dark:text-[#9CA3AF] font-medium border border-neutral-200 dark:border-[#1F2937] hover:border-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 transition-colors"
                     >
                       {tech}
                     </span>
@@ -252,16 +252,16 @@ const Projects = () => {
               {/* Description */}
               <div className="mb-8">
                 <div className="flex items-center gap-2 mb-4">
-                  <Sparkles className="w-5 h-5 text-green-600" />
-                  <h4 className="text-xl font-bold text-neutral-900">Project Overview</h4>
+                  <Sparkles className="w-5 h-5 text-indigo-600" />
+                  <h4 className="text-xl font-bold text-neutral-900 dark:text-[#F9FAFB]">Project Overview</h4>
                 </div>
                 <div className="space-y-4">
                   {activeProject.description.map((item, i) => (
                     <div key={i} className="flex items-start gap-3">
-                      <div className="flex-shrink-0 w-6 h-6 rounded-full bg-green-100 flex items-center justify-center mt-1">
-                        <div className="w-2 h-2 rounded-full bg-green-600"></div>
+                      <div className="flex-shrink-0 w-6 h-6 rounded-full bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center mt-1">
+                        <div className="w-2 h-2 rounded-full bg-indigo-600"></div>
                       </div>
-                      <p className="text-neutral-700 leading-relaxed">{item}</p>
+                      <p className="text-neutral-700 dark:text-[#9CA3AF] leading-relaxed">{item}</p>
                     </div>
                   ))}
                 </div>
@@ -273,7 +273,7 @@ const Projects = () => {
                   href={activeProject.github}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-6 py-3 bg-neutral-900 text-white rounded-xl font-semibold hover:bg-neutral-800 transition-all duration-300 shadow-lg hover:shadow-xl"
+                  className="inline-flex items-center gap-2 px-6 py-3 bg-neutral-900 dark:bg-[#1F2937] text-white rounded-xl font-semibold hover:bg-neutral-800 dark:hover:bg-[#374151] transition-all duration-300 shadow-lg hover:shadow-xl"
                 >
                   <Github className="w-5 h-5" />
                   View Code
@@ -283,7 +283,7 @@ const Projects = () => {
                     href={activeProject.demo}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl font-semibold hover:shadow-xl transition-all duration-300 shadow-lg"
+                    className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-indigo-600 to-cyan-600 text-white rounded-xl font-semibold hover:shadow-xl transition-all duration-300 shadow-lg"
                   >
                     <ExternalLink className="w-5 h-5" />
                     Live Demo
@@ -296,8 +296,8 @@ const Projects = () => {
       )}
 
       {/* Decorative Elements */}
-      <div className="absolute top-1/4 -right-40 w-80 h-80 bg-green-200 rounded-full blur-3xl opacity-20 pointer-events-none"></div>
-      <div className="absolute bottom-1/4 -left-40 w-80 h-80 bg-emerald-200 rounded-full blur-3xl opacity-20 pointer-events-none"></div>
+      <div className="absolute top-1/4 -right-40 w-80 h-80 bg-indigo-200 dark:bg-indigo-900/30 rounded-full blur-3xl opacity-20 pointer-events-none"></div>
+      <div className="absolute bottom-1/4 -left-40 w-80 h-80 bg-cyan-200 dark:bg-cyan-900/30 rounded-full blur-3xl opacity-20 pointer-events-none"></div>
 
       <style jsx>{`
         .line-clamp-2 {

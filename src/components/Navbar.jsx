@@ -89,12 +89,12 @@ const Navbar = () => {
 
   const navbarVariants = {
     transparent: {
-      backgroundColor: "rgba(255, 255, 255, 0)",
+      backgroundColor: "rgba(0, 0, 0, 0)",
       height: "80px",
       boxShadow: "0 0 0 rgba(0,0,0,0)",
     },
     solid: {
-      backgroundColor: "rgba(255, 255, 255, 0.95)",
+      backgroundColor: "rgba(0, 0, 0, 0)",
       height: "70px",
       boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
     },
@@ -120,7 +120,7 @@ const Navbar = () => {
       },
     },
     active: {
-      color: "#16A34A",
+      color: "#4F46E5",
       fontWeight: 600,
       scale: 1.05,
     },
@@ -162,7 +162,7 @@ const Navbar = () => {
     >
       {/* Clean background with subtle border supporting dark mode */}
       <div className="absolute inset-0 bg-white/90 dark:bg-neutral-900/80 backdrop-blur-sm border-b border-neutral-200 dark:border-neutral-800 z-0 transition-colors" />
-      
+
       <div className="container mx-auto px-4 md:px-6 h-full relative z-10">
         <div className="flex justify-between items-center h-full">
           {/* Logo */}
@@ -203,12 +203,12 @@ const Navbar = () => {
                   offset={-70}
                   duration={500}
                   className={`
-                    px-3 py-2 rounded-md flex items-center justify-center 
+                    px-3 py-2 rounded-md flex items-center justify-center
                     transition-all duration-300 relative z-10 text-neutral-700 dark:text-neutral-200
                     ${
                       activeSection === link.to
-                        ? "text-green-600 font-semibold"
-                        : "hover:text-green-600"
+                        ? "text-indigo-600 font-semibold"
+                        : "hover:text-indigo-500"
                     }
                   `}
                 >
@@ -217,7 +217,7 @@ const Navbar = () => {
                   {/* Active indicator */}
                   {activeSection === link.to && (
                     <motion.div
-                      className="absolute bottom-0 left-0 right-0 h-0.5 bg-green-600"
+                      className="absolute bottom-0 left-0 right-0 h-0.5 bg-indigo-600"
                       layoutId="activeSection"
                       transition={{
                         type: "spring",
@@ -340,7 +340,7 @@ const Navbar = () => {
                         className={`flex items-center px-4 py-3 rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors duration-300
                           ${
                             activeSection === link.to
-                              ? "text-green-600 font-medium bg-green-50 dark:bg-green-900/20"
+                              ? "text-indigo-600 font-medium bg-indigo-50 dark:bg-indigo-900/20"
                               : "text-neutral-700 dark:text-neutral-200"
                           }
                         `}
@@ -351,7 +351,7 @@ const Navbar = () => {
                         {/* Active indicator */}
                         {activeSection === link.to && (
                           <motion.div
-                            className="absolute left-0 top-0 bottom-0 w-1 bg-green-600 rounded-r-full"
+                            className="absolute left-0 top-0 bottom-0 w-1 bg-indigo-600 rounded-r-full"
                             layoutId="mobileActiveSection"
                           />
                         )}
