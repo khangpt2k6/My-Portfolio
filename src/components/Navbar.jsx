@@ -1,370 +1,322 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Link } from "react-scroll";
 import { motion, AnimatePresence } from "framer-motion";
-import { Moon, Sun } from "lucide-react";
+import { Sun, Moon, Menu, X } from "lucide-react";
 
+// ── Navigation links ────────────────────────────────────────────────────────
+const navLinks = [
+  { name: "About", to: "hero" },
+  { name: "Experience", to: "experience" },
+  { name: "Projects", to: "projects" },
+  { name: "Skills", to: "skills" },
+];
+
+// ── Component ───────────────────────────────────────────────────────────────
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState("hero");
   const [theme, setTheme] = useState("light");
 
+  // ── Scroll detection & scroll-spy ─────────────────────────────────────────
   useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > 50) {
-        setScrolled(true);
-      } else {
-        setScrolled(false);
-      }
-    };
+    const onScroll = () => {
+      setScrolled(window.scrollY > 20);
 
-    // Update active section based on scroll position
-    const handleScrollSpy = () => {
-      const sections = [
-        "hero",
-        "experience",
-        "projects",
-        "skills",
-      ];
-
-      for (const section of sections.reverse()) {
-        const element = document.getElementById(section);
-        if (element) {
-          const rect = element.getBoundingClientRect();
-          if (rect.top <= 100) {
-            setActiveSection(section);
-            break;
-          }
+      const sections = ["hero", "experience", "projects", "skills"];
+      for (const id of [...sections].reverse()) {
+        const el = document.getElementById(id);
+        if (el && el.getBoundingClientRect().top <= 100) {
+          setActiveSection(id);
+          break;
         }
       }
     };
 
-    window.addEventListener("scroll", handleScroll);
-    window.addEventListener("scroll", handleScrollSpy);
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-      window.removeEventListener("scroll", handleScrollSpy);
-    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // Theme initialization and persistence
+  // ── Theme: initialise from localStorage / system preference ───────────────
   useEffect(() => {
     const stored = localStorage.getItem("theme");
-    const prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+    const prefersDark =
+      window.matchMedia &&
+      window.matchMedia("(prefers-color-scheme: dark)").matches;
     const initial = stored || (prefersDark ? "dark" : "light");
     setTheme(initial);
-    if (initial === "dark") document.documentElement.classList.add("dark");
-    else document.documentElement.classList.remove("dark");
+    document.documentElement.classList.toggle("dark", initial === "dark");
   }, []);
 
+  // ── Theme: persist & apply ────────────────────────────────────────────────
   useEffect(() => {
     localStorage.setItem("theme", theme);
-    if (theme === "dark") document.documentElement.classList.add("dark");
-    else document.documentElement.classList.remove("dark");
+    document.documentElement.classList.toggle("dark", theme === "dark");
   }, [theme]);
 
-  const toggleTheme = () => setTheme(theme === "dark" ? "light" : "dark");
+  const toggleTheme = useCallback(
+    () => setTheme((t) => (t === "dark" ? "light" : "dark")),
+    [],
+  );
 
-  // FIXED: Changed "about" to "hero" to match the actual section ID
-  const navLinks = [
-    { name: "About", to: "hero" },
-    { name: "Experience", to: "experience" },
-    { name: "Projects", to: "projects" },
-    { name: "Skills", to: "skills" },
-  ];
+  // ── Close mobile menu on resize to desktop ────────────────────────────────
+  useEffect(() => {
+    const onResize = () => {
+      if (window.innerWidth >= 768) setIsOpen(false);
+    };
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
 
-  // Animation variants
-  const logoVariants = {
-    initial: { scale: 1 },
-    hover: {
-      scale: 1.1,
-      rotate: [0, -5, 5, -3, 3, 0],
-      transition: {
-        duration: 0.5,
-      },
-    },
-  };
+  // ── Derived glass background color ────────────────────────────────────────
+  const isDark = theme === "dark";
+  const glassBg = isDark
+    ? scrolled
+      ? "rgba(10, 14, 26, 0.90)"
+      : "rgba(10, 14, 26, 0.70)"
+    : scrolled
+      ? "rgba(255, 255, 255, 0.90)"
+      : "rgba(255, 255, 255, 0.70)";
 
-  const navbarVariants = {
-    transparent: {
-      backgroundColor: "rgba(0, 0, 0, 0)",
-      height: "80px",
-      boxShadow: "0 0 0 rgba(0,0,0,0)",
-    },
-    solid: {
-      backgroundColor: "rgba(0, 0, 0, 0)",
-      height: "70px",
-      boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
-    },
-  };
-
-  const linkVariants = {
-    initial: { y: -20, opacity: 0 },
-    animate: (i) => ({
-      y: 0,
-      opacity: 1,
-      transition: {
-        delay: i * 0.1,
-        duration: 0.4,
-        ease: "easeOut",
-      },
-    }),
-    hover: {
-      scale: 1.1,
-      transition: {
-        type: "spring",
-        stiffness: 400,
-        damping: 10,
-      },
-    },
-    active: {
-      color: "#4F46E5",
-      fontWeight: 600,
-      scale: 1.05,
-    },
-  };
-
-  const mobileMenuVariants = {
-    closed: {
-      opacity: 0,
-      y: -20,
-      height: 0,
-      transition: {
-        y: { stiffness: 1000 },
-      },
-    },
-    open: {
-      opacity: 1,
-      y: 0,
-      height: "auto",
-      transition: {
-        duration: 0.4,
-        staggerChildren: 0.07,
-        delayChildren: 0.2,
-      },
-    },
-  };
-
-  const mobileLinkVariants = {
-    closed: { x: -20, opacity: 0 },
-    open: { x: 0, opacity: 1 },
-  };
-
+  // ── Render ────────────────────────────────────────────────────────────────
   return (
-    <motion.nav
-      initial="transparent"
-      animate={scrolled ? "solid" : "transparent"}
-      variants={navbarVariants}
-      transition={{ duration: 0.3 }}
-      className="fixed w-full z-50 backdrop-blur-sm"
-    >
-      {/* Clean background with subtle border supporting dark mode */}
-      <div className="absolute inset-0 bg-white/90 dark:bg-neutral-900/80 backdrop-blur-sm border-b border-neutral-200 dark:border-neutral-800 z-0 transition-colors" />
-
-      <div className="container mx-auto px-4 md:px-6 h-full relative z-10">
-        <div className="flex justify-between items-center h-full">
+    <nav className="fixed top-0 inset-x-0 z-50 flex justify-center px-4 pt-3 pointer-events-none">
+      <motion.div
+        initial={false}
+        animate={{ backgroundColor: glassBg }}
+        transition={{ duration: 0.35, ease: "easeInOut" }}
+        className="
+          pointer-events-auto
+          w-full max-w-6xl rounded-2xl
+          backdrop-blur-xl
+          shadow-[0_1px_2px_rgba(0,0,0,0.04),0_4px_16px_rgba(0,0,0,0.06)]
+        "
+      >
+        {/* ── Top bar ──────────────────────────────────────────────────── */}
+        <div className="flex items-center justify-between h-16 px-6">
           {/* Logo */}
           <Link
             to="hero"
-            smooth={true}
+            smooth
             duration={500}
-            className="cursor-pointer"
+            className="cursor-pointer flex-shrink-0"
           >
-            <motion.div
-              className="relative"
-              variants={logoVariants}
-              initial="initial"
-              whileHover="hover"
-            >
-              <div className="relative flex items-center space-x-2">
-                <img src="RiK.png" alt="RiK Logo" className="h-10 w-auto max-h-10" />
-              </div>
-            </motion.div>
+            <motion.img
+              src="RiK.png"
+              alt="RiK Logo"
+              className="h-9 w-auto"
+              whileHover={{ scale: 1.08 }}
+              transition={{ type: "spring", stiffness: 400, damping: 15 }}
+            />
           </Link>
 
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-1 lg:space-x-2">
-            {navLinks.map((link, i) => (
-              <motion.div
-                key={link.name}
-                custom={i}
-                variants={linkVariants}
-                initial="initial"
-                animate="animate"
-                whileHover="hover"
-                className="relative"
-              >
+          {/* Desktop links */}
+          <div className="hidden md:flex items-center gap-1">
+            {navLinks.map((link) => {
+              const isActive = activeSection === link.to;
+              return (
                 <Link
+                  key={link.name}
                   to={link.to}
-                  spy={true}
-                  smooth={true}
-                  offset={-70}
+                  spy
+                  smooth
+                  offset={-80}
                   duration={500}
-                  className={`
-                    px-3 py-2 rounded-md flex items-center justify-center
-                    transition-all duration-300 relative z-10 text-neutral-700 dark:text-neutral-200
-                    ${
-                      activeSection === link.to
-                        ? "text-indigo-600 font-semibold"
-                        : "hover:text-indigo-500"
-                    }
-                  `}
+                  className="
+                    relative px-4 py-2 text-sm font-medium
+                    cursor-pointer select-none rounded-full
+                    transition-colors duration-200
+                  "
+                  style={{
+                    color: isActive
+                      ? "var(--color-primary)"
+                      : "var(--color-text-muted)",
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!isActive)
+                      e.currentTarget.style.color = "var(--color-text)";
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!isActive)
+                      e.currentTarget.style.color = "var(--color-text-muted)";
+                  }}
                 >
-                  <span>{link.name}</span>
-
-                  {/* Active indicator */}
-                  {activeSection === link.to && (
+                  {/* Animated pill that slides between the active link */}
+                  {isActive && (
                     <motion.div
-                      className="absolute bottom-0 left-0 right-0 h-0.5 bg-indigo-600"
-                      layoutId="activeSection"
+                      layoutId="nav-pill"
+                      className="absolute inset-0 rounded-full"
+                      style={{
+                        backgroundColor: "var(--color-primary)",
+                        opacity: 0.1,
+                      }}
                       transition={{
                         type: "spring",
-                        stiffness: 300,
+                        stiffness: 350,
                         damping: 30,
                       }}
                     />
                   )}
+                  <span className="relative z-10">{link.name}</span>
                 </Link>
-
-                {/* Hover background effect */}
-                <motion.div
-                  className="absolute inset-0 rounded-md -z-10 bg-neutral-100 dark:bg-neutral-800"
-                  initial={{ opacity: 0 }}
-                  whileHover={{ opacity: 1 }}
-                  transition={{ duration: 0.2 }}
-                />
-              </motion.div>
-            ))}
+              );
+            })}
           </div>
 
-          {/* Theme toggle (desktop) */}
-          <div className="hidden md:flex items-center">
-            <button
-              onClick={toggleTheme}
-              className="ml-2 p-2 rounded-md border border-neutral-200 dark:border-neutral-700 text-neutral-700 dark:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
-              aria-label="Toggle theme"
-            >
-              {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
-            </button>
-          </div>
-
-          {/* Mobile Navigation Toggle */}
-          <div className="md:hidden flex items-center gap-1">
+          {/* Right-side actions */}
+          <div className="flex items-center gap-2">
+            {/* Theme toggle — animated Sun / Moon swap */}
             <motion.button
-              onClick={() => setIsOpen(!isOpen)}
-              className="text-neutral-700 dark:text-neutral-200 focus:outline-none p-2"
+              onClick={toggleTheme}
               whileTap={{ scale: 0.9 }}
+              className="
+                relative h-9 w-9 flex items-center justify-center
+                rounded-full transition-colors duration-200
+              "
+              style={{ color: "var(--color-text)" }}
+              aria-label="Toggle theme"
+              onMouseEnter={(e) =>
+                (e.currentTarget.style.backgroundColor =
+                  "var(--color-surface2)")
+              }
+              onMouseLeave={(e) =>
+                (e.currentTarget.style.backgroundColor = "transparent")
+              }
             >
-              <div className="relative w-6 h-5">
-                <AnimatePresence mode="wait">
-                  {isOpen ? (
-                    <motion.div
-                      key="close"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                      transition={{ duration: 0.2 }}
-                    >
-                      <svg
-                        className="w-6 h-6"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M6 18L18 6M6 6l12 12"
-                        />
-                      </svg>
-                    </motion.div>
-                  ) : (
-                    <motion.div
-                      key="menu"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                      transition={{ duration: 0.2 }}
-                    >
-                      <svg
-                        className="w-6 h-6"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M4 6h16M4 12h16M4 18h16"
-                        />
-                      </svg>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
+              <AnimatePresence mode="wait" initial={false}>
+                {theme === "dark" ? (
+                  <motion.span
+                    key="sun"
+                    initial={{ rotate: -90, opacity: 0 }}
+                    animate={{ rotate: 0, opacity: 1 }}
+                    exit={{ rotate: 90, opacity: 0 }}
+                    transition={{ duration: 0.2 }}
+                    className="absolute flex items-center justify-center"
+                  >
+                    <Sun size={18} />
+                  </motion.span>
+                ) : (
+                  <motion.span
+                    key="moon"
+                    initial={{ rotate: 90, opacity: 0 }}
+                    animate={{ rotate: 0, opacity: 1 }}
+                    exit={{ rotate: -90, opacity: 0 }}
+                    transition={{ duration: 0.2 }}
+                    className="absolute flex items-center justify-center"
+                  >
+                    <Moon size={18} />
+                  </motion.span>
+                )}
+              </AnimatePresence>
+            </motion.button>
+
+            {/* Mobile hamburger — animated Menu / X swap */}
+            <motion.button
+              onClick={() => setIsOpen((prev) => !prev)}
+              whileTap={{ scale: 0.9 }}
+              className="
+                md:hidden relative h-9 w-9 flex items-center justify-center
+                rounded-full transition-colors duration-200
+              "
+              style={{ color: "var(--color-text)" }}
+              aria-label="Toggle menu"
+              onMouseEnter={(e) =>
+                (e.currentTarget.style.backgroundColor =
+                  "var(--color-surface2)")
+              }
+              onMouseLeave={(e) =>
+                (e.currentTarget.style.backgroundColor = "transparent")
+              }
+            >
+              <AnimatePresence mode="wait" initial={false}>
+                {isOpen ? (
+                  <motion.span
+                    key="x"
+                    initial={{ rotate: -90, opacity: 0 }}
+                    animate={{ rotate: 0, opacity: 1 }}
+                    exit={{ rotate: 90, opacity: 0 }}
+                    transition={{ duration: 0.15 }}
+                    className="absolute flex items-center justify-center"
+                  >
+                    <X size={20} />
+                  </motion.span>
+                ) : (
+                  <motion.span
+                    key="menu"
+                    initial={{ rotate: 90, opacity: 0 }}
+                    animate={{ rotate: 0, opacity: 1 }}
+                    exit={{ rotate: -90, opacity: 0 }}
+                    transition={{ duration: 0.15 }}
+                    className="absolute flex items-center justify-center"
+                  >
+                    <Menu size={20} />
+                  </motion.span>
+                )}
+              </AnimatePresence>
             </motion.button>
           </div>
         </div>
 
-        {/* Mobile Navigation Menu */}
+        {/* ── Mobile dropdown ──────────────────────────────────────────── */}
         <AnimatePresence>
           {isOpen && (
             <motion.div
-              variants={mobileMenuVariants}
-              initial="closed"
-              animate="open"
-              exit="closed"
-              className="md:hidden mt-2 bg-white dark:bg-neutral-900 rounded-xl shadow-lg overflow-hidden absolute left-4 right-4 z-50 border border-neutral-200 dark:border-neutral-800"
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.25, ease: "easeInOut" }}
+              className="md:hidden overflow-hidden"
             >
-              <div className="p-4">
-                <div className="flex flex-col space-y-1">
-                  {navLinks.map((link, i) => (
-                    <motion.div
+              <div className="flex flex-col gap-1 px-4 pb-4 pt-1">
+                {navLinks.map((link) => {
+                  const isActive = activeSection === link.to;
+                  return (
+                    <Link
                       key={link.name}
-                      variants={mobileLinkVariants}
-                      custom={i}
-                      className="relative"
+                      to={link.to}
+                      spy
+                      smooth
+                      offset={-80}
+                      duration={500}
+                      onClick={() => setIsOpen(false)}
+                      className="
+                        relative px-4 py-2.5 text-sm font-medium
+                        cursor-pointer select-none rounded-xl
+                        transition-colors duration-200
+                      "
+                      style={{
+                        color: isActive
+                          ? "var(--color-primary)"
+                          : "var(--color-text-muted)",
+                      }}
                     >
-                      <Link
-                        to={link.to}
-                        spy={true}
-                        smooth={true}
-                        offset={-70}
-                        duration={500}
-                        className={`flex items-center px-4 py-3 rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors duration-300
-                          ${
-                            activeSection === link.to
-                              ? "text-indigo-600 font-medium bg-indigo-50 dark:bg-indigo-900/20"
-                              : "text-neutral-700 dark:text-neutral-200"
-                          }
-                        `}
-                        onClick={() => setIsOpen(false)}
-                      >
-                        <span>{link.name}</span>
-
-                        {/* Active indicator */}
-                        {activeSection === link.to && (
-                          <motion.div
-                            className="absolute left-0 top-0 bottom-0 w-1 bg-indigo-600 rounded-r-full"
-                            layoutId="mobileActiveSection"
-                          />
-                        )}
-                      </Link>
-                    </motion.div>
-                  ))}
-                </div>
+                      {isActive && (
+                        <motion.div
+                          layoutId="nav-pill-mobile"
+                          className="absolute inset-0 rounded-xl"
+                          style={{
+                            backgroundColor: "var(--color-primary)",
+                            opacity: 0.1,
+                          }}
+                          transition={{
+                            type: "spring",
+                            stiffness: 350,
+                            damping: 30,
+                          }}
+                        />
+                      )}
+                      <span className="relative z-10">{link.name}</span>
+                    </Link>
+                  );
+                })}
               </div>
             </motion.div>
           )}
         </AnimatePresence>
-      </div>
-    </motion.nav>
+      </motion.div>
+    </nav>
   );
 };
 

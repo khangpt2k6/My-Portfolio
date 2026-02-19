@@ -1,215 +1,149 @@
 "use client";
 
 import { useState } from "react";
-import { Briefcase, Code, Laptop, Users, Award, ChevronRight, MapPin, Calendar } from "lucide-react";
+import { motion } from "framer-motion";
+import { Code, Laptop, MapPin } from "lucide-react";
 import experiences from "../data/experiences";
+import FadeInView from "./FadeInView";
 
-const iconMap = { Code, Laptop, Users, Award };
+const iconMap = { Code, Laptop };
+
+const TimelineDot = ({ index }) => (
+  <motion.div
+    className="absolute left-0 md:left-8 z-10 -translate-x-1/2"
+    style={{ top: "2rem" }}
+    initial={{ scale: 0.8 }}
+    whileInView={{ scale: 1 }}
+    viewport={{ once: true, margin: "-80px" }}
+    transition={{ duration: 0.4, delay: index * 0.15 }}
+  >
+    <motion.div
+      className="w-3 h-3 rounded-full border-2 border-[var(--color-primary)]"
+      initial={{ backgroundColor: "var(--color-surface)" }}
+      whileInView={{ backgroundColor: "var(--color-primary)" }}
+      viewport={{ once: true, margin: "-80px" }}
+      transition={{ duration: 0.4, delay: index * 0.15 + 0.2 }}
+    />
+  </motion.div>
+);
+
+const ExperienceCard = ({ exp, index }) => (
+  <FadeInView direction="left" delay={index * 0.15}>
+    <div
+      className="group bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl shadow-card p-6 md:p-8
+                 transition-all duration-300 hover:-translate-y-1 hover:shadow-card-hover hover:border-[var(--color-primary)]/20"
+    >
+      {/* Top row: logo + title/company + period badge */}
+      <div className="flex flex-col sm:flex-row sm:items-start gap-4 mb-4">
+        <div className="flex items-start gap-4 flex-1 min-w-0">
+          {exp.image && (
+            <img
+              src={exp.image}
+              alt={exp.company}
+              className="w-10 h-10 rounded-lg object-cover flex-shrink-0"
+            />
+          )}
+          <div className="min-w-0">
+            <h3 className="text-xl font-bold text-[var(--color-text)] leading-tight">
+              {exp.title}
+            </h3>
+            <p className="text-[var(--color-text-muted)] mt-0.5">
+              {exp.company}
+            </p>
+          </div>
+        </div>
+
+        {/* Period badge */}
+        <span className="inline-flex self-start whitespace-nowrap bg-[var(--color-primary)]/10 text-[var(--color-primary)] text-xs font-semibold px-3 py-1 rounded-full">
+          {exp.period}
+        </span>
+      </div>
+
+      {/* Location */}
+      <div className="flex items-center gap-1.5 text-sm text-[var(--color-text-muted)] mb-5">
+        <MapPin className="w-3.5 h-3.5" />
+        <span>{exp.location}</span>
+      </div>
+
+      {/* Description bullets */}
+      {exp.description && exp.description.length > 0 && (
+        <ul className="space-y-3">
+          {exp.description.map((item, i) => (
+            <li key={i} className="flex gap-3 items-start">
+              <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-primary)] mt-2 flex-shrink-0" />
+              <span className="text-[var(--color-text-muted)] leading-relaxed">
+                {item}
+              </span>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  </FadeInView>
+);
 
 const Experience = () => {
   const [activeTab, setActiveTab] = useState("professional");
-  const [hoveredIndex, setHoveredIndex] = useState(null);
-
+  const showTabs =
+    experiences.professional.length > 0 && experiences.volunteering.length > 0;
   const currentExperiences = experiences[activeTab];
 
   return (
-    <section id="experience" className="min-h-screen bg-white dark:bg-[#0A0E1A] py-20 px-4 relative overflow-hidden">
-
-      {/* Subtle background pattern */}
-      <div className="absolute inset-0 opacity-[0.03]" style={{
-        backgroundImage: `radial-gradient(circle at 1px 1px, rgb(79 70 229) 1px, transparent 0)`,
-        backgroundSize: '40px 40px'
-      }}></div>
-
-      <div className="max-w-7xl mx-auto relative z-10">
-
-        {/* Header Section */}
+    <section
+      id="experience"
+      className="bg-[var(--color-surface)] dark:bg-[var(--color-surface)] py-16 md:py-28 px-4"
+    >
+      <div className="max-w-6xl mx-auto">
+        {/* Section header */}
         <div className="text-center mb-16">
-          <div className="inline-flex items-center gap-2 mb-4 px-4 py-2 bg-indigo-50 dark:bg-indigo-900/30 rounded-full">
-            <Briefcase className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
-            <span className="text-sm font-semibold text-indigo-600 dark:text-indigo-400 tracking-wider uppercase">My Journey</span>
-          </div>
-
-          <h1 className="text-5xl md:text-6xl font-bold mb-4 text-neutral-900 dark:text-[#F9FAFB]">
+          <h2 className="text-4xl md:text-5xl font-bold text-[var(--color-text)]">
             Experience
-          </h1>
-
-
-
-          {/* Tab Switcher - only show when both tabs have entries */}
-          {experiences.professional.length > 0 && experiences.volunteering.length > 0 && (
-            <div className="inline-flex gap-2 p-2 bg-neutral-100 dark:bg-[#1F2937] rounded-full">
-              <button
-                onClick={() => setActiveTab("professional")}
-                className={`px-8 py-3 rounded-full transition-all duration-300 font-semibold ${
-                  activeTab === "professional"
-                    ? "bg-white dark:bg-[#111827] text-indigo-600 shadow-lg"
-                    : "text-neutral-600 dark:text-[#9CA3AF] hover:text-neutral-900 dark:hover:text-[#F9FAFB]"
-                }`}
-              >
-                Professional
-              </button>
-              <button
-                onClick={() => setActiveTab("volunteering")}
-                className={`px-8 py-3 rounded-full transition-all duration-300 font-semibold ${
-                  activeTab === "volunteering"
-                    ? "bg-white dark:bg-[#111827] text-indigo-600 shadow-lg"
-                    : "text-neutral-600 dark:text-[#9CA3AF] hover:text-neutral-900 dark:hover:text-[#F9FAFB]"
-                }`}
-              >
-                Volunteering
-              </button>
-            </div>
-          )}
+          </h2>
+          <div className="h-1 w-16 bg-gradient-to-r from-indigo-600 to-cyan-600 mx-auto rounded-full mt-4" />
         </div>
+
+        {/* Tab switcher -- only rendered when both categories have entries */}
+        {showTabs && (
+          <div className="flex justify-center mb-14">
+            <div className="inline-flex gap-1 p-1 bg-[var(--color-surface2)] rounded-full">
+              {["professional", "volunteering"].map((tab) => (
+                <button
+                  key={tab}
+                  onClick={() => setActiveTab(tab)}
+                  className={`px-6 py-2.5 rounded-full text-sm font-semibold capitalize transition-all duration-300 ${
+                    activeTab === tab
+                      ? "bg-[var(--color-surface)] text-[var(--color-text)] shadow-md"
+                      : "text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
+                  }`}
+                >
+                  {tab}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Timeline */}
-        <div className="relative max-w-5xl mx-auto">
+        <div className="relative pl-6 md:pl-16">
+          {/* Vertical gradient line */}
+          <div
+            className="absolute left-0 md:left-8 top-0 bottom-0 w-0.5 -translate-x-1/2"
+            style={{
+              background:
+                "linear-gradient(to bottom, #4F46E5, #06B6D4)",
+            }}
+          />
 
-          {/* Vertical Timeline Line */}
-          <div className="absolute left-8 md:left-1/2 transform md:-translate-x-1/2 top-0 bottom-0 w-0.5 bg-gradient-to-b from-transparent via-indigo-200 dark:via-indigo-900/30 to-transparent"></div>
-
-          {/* Experience Cards */}
-          <div className="space-y-12">
-            {currentExperiences.map((exp, index) => {
-              const IconComponent = iconMap[exp.icon] || Code;
-              return (
-                <div
-                  key={index}
-                  className={`relative flex flex-col md:flex-row gap-8 ${
-                    index % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'
-                  }`}
-                  onMouseEnter={() => setHoveredIndex(index)}
-                  onMouseLeave={() => setHoveredIndex(null)}
-                >
-
-                  {/* Timeline Dot */}
-                  <div className="absolute left-8 md:left-1/2 transform -translate-x-1/2 z-20">
-                    <div className="relative">
-                      <div className={`w-16 h-16 rounded-full flex items-center justify-center transition-all duration-300 ${
-                        hoveredIndex === index
-                          ? 'bg-gradient-to-br from-indigo-500 to-cyan-600 shadow-xl shadow-indigo-500/50 scale-110'
-                          : 'bg-gradient-to-br from-indigo-600 to-cyan-700 shadow-lg shadow-indigo-600/30'
-                      }`}>
-                        <div className="text-white">
-                          <IconComponent className="w-6 h-6" />
-                        </div>
-                      </div>
-                      {hoveredIndex === index && (
-                        <div className="absolute inset-0 bg-indigo-500 rounded-full blur-xl opacity-40 animate-pulse"></div>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Content Card */}
-                  <div className={`flex-1 ${index % 2 === 0 ? 'md:pr-16' : 'md:pl-16'} pl-20 md:pl-0`}>
-                    <div className={`group relative bg-white dark:bg-[#111827] rounded-2xl border-2 transition-all duration-500 ${
-                      hoveredIndex === index
-                        ? 'border-indigo-500 shadow-2xl shadow-indigo-500/20 -translate-y-2'
-                        : 'border-neutral-200 dark:border-[#1F2937] shadow-lg hover:shadow-xl'
-                    }`}>
-
-                      {/* Gradient overlay on hover */}
-                      <div className={`absolute inset-0 bg-gradient-to-br from-indigo-50 to-cyan-50 dark:from-indigo-950/30 dark:to-cyan-950/30 rounded-2xl opacity-0 transition-opacity duration-500 ${
-                        hoveredIndex === index ? 'opacity-100' : ''
-                      }`}></div>
-
-                      <div className="relative p-8">
-
-                        {/* Company Logo & Title */}
-                        <div className="flex items-start gap-4 mb-4">
-                          {exp.image && (
-                            <div className="relative">
-                              <div className={`w-14 h-14 rounded-xl overflow-hidden border-2 transition-all duration-300 ${
-                                hoveredIndex === index ? 'border-indigo-500 shadow-lg' : 'border-neutral-200 dark:border-[#1F2937]'
-                              }`}>
-                                <img
-                                  src={exp.image}
-                                  alt={exp.company}
-                                  className="w-full h-full object-cover"
-                                />
-                              </div>
-                            </div>
-                          )}
-
-                          <div className="flex-1">
-                            <h3 className="text-2xl font-bold text-neutral-900 dark:text-[#F9FAFB] mb-1 group-hover:text-indigo-600 transition-colors">
-                              {exp.title}
-                            </h3>
-                            <p className="text-lg font-semibold text-neutral-700 dark:text-[#9CA3AF]">
-                              {exp.company}
-                            </p>
-                          </div>
-
-                          {/* Year Badge */}
-                          <div className="hidden md:block">
-                            <span className="inline-flex px-4 py-2 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 rounded-full text-sm font-bold">
-                              {exp.year}
-                            </span>
-                          </div>
-                        </div>
-
-                        {/* Location & Period */}
-                        <div className="flex flex-wrap gap-4 mb-6 text-sm">
-                          <div className="flex items-center gap-2 text-neutral-600 dark:text-[#9CA3AF]">
-                            <MapPin className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
-                            <span>{exp.location}</span>
-                          </div>
-                          <div className="flex items-center gap-2 text-neutral-600 dark:text-[#9CA3AF]">
-                            <Calendar className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
-                            <span>{exp.period}</span>
-                          </div>
-                        </div>
-
-                        {/* Description */}
-                        {exp.description && exp.description.length > 0 && (
-                          <div className="space-y-3">
-                            {exp.description.map((item, i) => (
-                              <div key={i} className="flex gap-3 items-start group/item">
-                                <ChevronRight className="w-5 h-5 text-indigo-600 dark:text-indigo-400 mt-0.5 flex-shrink-0 group-hover/item:translate-x-1 transition-transform" />
-                                <p className="text-neutral-700 dark:text-[#9CA3AF] leading-relaxed">
-                                  {item}
-                                </p>
-                              </div>
-                            ))}
-                          </div>
-                        )}
-
-                        {/* Mobile Year Badge */}
-                        <div className="md:hidden mt-4">
-                          <span className="inline-flex px-4 py-2 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 rounded-full text-sm font-bold">
-                            {exp.year}
-                          </span>
-                        </div>
-                      </div>
-
-                      {/* Decorative corner accent */}
-                      <div className={`absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-indigo-500 to-cyan-600 opacity-0 transition-opacity duration-500 ${
-                        hoveredIndex === index ? 'opacity-10' : ''
-                      }`} style={{ clipPath: 'polygon(100% 0, 100% 100%, 0 0)' }}></div>
-                    </div>
-                  </div>
-
-                  {/* Spacer for alternating layout */}
-                  <div className="hidden md:block flex-1"></div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Bottom CTA */}
-        <div className="text-center mt-20">
-          <div className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-indigo-600 to-cyan-600 text-white rounded-full font-semibold shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 cursor-pointer">
-            <span>Want to work together?</span>
-            <ChevronRight className="w-5 h-5" />
+          <div className="space-y-10">
+            {currentExperiences.map((exp, index) => (
+              <div key={index} className="relative">
+                <TimelineDot index={index} />
+                <ExperienceCard exp={exp} index={index} />
+              </div>
+            ))}
           </div>
         </div>
       </div>
-
-      {/* Decorative gradient orbs */}
-      <div className="absolute top-40 -right-40 w-80 h-80 bg-indigo-200 dark:bg-indigo-900/30 rounded-full blur-3xl opacity-20 pointer-events-none"></div>
-      <div className="absolute bottom-40 -left-40 w-80 h-80 bg-cyan-200 dark:bg-cyan-900/30 rounded-full blur-3xl opacity-20 pointer-events-none"></div>
     </section>
   );
 };
