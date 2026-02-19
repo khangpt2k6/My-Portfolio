@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import projects from "../data/projects";
 import FadeInView from "./FadeInView";
+import MergeSortViz from "./MergeSortViz";
 
 const isTouchDevice =
   typeof window !== "undefined" && "ontouchstart" in window;
@@ -74,13 +75,19 @@ const Projects = () => {
                   >
                     {/* Image Area */}
                     <div className="relative h-52 overflow-hidden">
-                      <img
-                        src={project.image}
-                        alt={project.title}
-                        className={`w-full h-full object-cover transition-transform duration-700 ${
-                          hoveredCard === index ? "scale-105" : "scale-100"
-                        }`}
-                      />
+                      {project.livePreview === "merge-sort" ? (
+                        <div className="w-full h-full bg-black/80">
+                          <MergeSortViz />
+                        </div>
+                      ) : (
+                        <img
+                          src={project.image}
+                          alt={project.title}
+                          className={`w-full h-full object-cover transition-transform duration-700 ${
+                            hoveredCard === index ? "scale-105" : "scale-100"
+                          }`}
+                        />
+                      )}
 
                       {/* Gradient Overlay */}
                       <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
@@ -193,11 +200,17 @@ const Projects = () => {
               {/* Modal Header Image */}
               <div className="relative">
                 <div className="h-72 overflow-hidden">
-                  <img
-                    src={activeProject.image}
-                    alt={activeProject.title}
-                    className="w-full h-full object-cover"
-                  />
+                  {activeProject.livePreview === "merge-sort" ? (
+                    <div className="w-full h-full bg-black/80 flex items-center justify-center">
+                      <MergeSortViz />
+                    </div>
+                  ) : (
+                    <img
+                      src={activeProject.image}
+                      alt={activeProject.title}
+                      className="w-full h-full object-cover"
+                    />
+                  )}
                   <div
                     className={`absolute inset-0 bg-gradient-to-br ${activeProject.color} opacity-20`}
                   />

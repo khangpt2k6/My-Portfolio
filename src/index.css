@@ -44,8 +44,8 @@
   --color-border:     rgba(255, 255, 255, 0.08);
 
   /* Glass (dark — semi-transparent, blur reveals galaxy) */
-  --glass-bg:         rgba(255, 255, 255, 0.04);
-  --glass-border:     rgba(255, 255, 255, 0.08);
+  --glass-bg:         rgba(255, 255, 255, 0.03);
+  --glass-border:     rgba(255, 255, 255, 0.05);
   --glass-blur:       20px;
 
   /* Shadows (glow-tinted) */

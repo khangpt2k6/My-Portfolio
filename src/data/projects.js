@@ -46,6 +46,7 @@ const projects = [
   {
     id: 3,
     title: "Algovis",
+    livePreview: "merge-sort",
     technologies: "Java, JavaFX",
     description: [
       "Interactive algorithm visualization tool with dynamic animations for sorting algorithms.",
