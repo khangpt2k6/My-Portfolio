@@ -3,7 +3,8 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sun, Moon, Menu, X, Palette, Check } from "lucide-react";
+import { Sun, Moon, Menu, X, Palette, Check, MousePointer } from "lucide-react";
+import { CURSOR_STYLES } from "./CustomCursor";
 
 // ── Navigation links ────────────────────────────────────────────────────────
 const navLinks = [
@@ -43,6 +44,7 @@ const Navbar = () => {
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [selectedColor, setSelectedColor] = useState("Indigo");
   const [selectedTransition, setSelectedTransition] = useState("Fade");
+  const [selectedCursor, setSelectedCursor] = useState("ring");
 
   const paletteRef = useRef(null);
   const paletteBtnRef = useRef(null);
@@ -76,8 +78,10 @@ const Navbar = () => {
   useEffect(() => {
     const saved = localStorage.getItem("accent-color") || "Indigo";
     const savedT = localStorage.getItem("page-transition") || "Fade";
+    const savedC = localStorage.getItem("cursor-style") || "ring";
     setSelectedColor(saved);
     setSelectedTransition(savedT);
+    setSelectedCursor(savedC);
     const colorObj = ACCENT_COLORS.find((c) => c.name === saved) || ACCENT_COLORS[0];
     applyAccentColor(colorObj);
   }, []);
@@ -116,6 +120,11 @@ const Navbar = () => {
   const handleTransitionChange = useCallback((t) => {
     setSelectedTransition(t);
     localStorage.setItem("page-transition", t);
+  }, []);
+
+  const handleCursorChange = useCallback((id) => {
+    setSelectedCursor(id);
+    localStorage.setItem("cursor-style", id);
   }, []);
 
   // ── Close mobile menu on resize ───────────────────────────────────────────
@@ -203,7 +212,7 @@ const Navbar = () => {
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: -8, scale: 0.95 }}
                     transition={{ duration: 0.15 }}
-                    className="absolute top-12 right-0 z-50 w-[240px] p-4 rounded-xl glass-card backdrop-blur-2xl border border-[var(--color-border)] shadow-[0_12px_40px_rgba(0,0,0,0.15)]"
+                    className="absolute top-12 right-0 z-50 w-[260px] p-4 rounded-xl glass-card backdrop-blur-2xl border border-[var(--color-border)] shadow-[0_12px_40px_rgba(0,0,0,0.15)]"
                   >
                     {/* Color swatches */}
                     <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--color-text-muted)] mb-2.5">
@@ -234,7 +243,7 @@ const Navbar = () => {
                     <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--color-text-muted)] mb-2.5">
                       Transitions
                     </p>
-                    <div className="flex items-center gap-1.5">
+                    <div className="flex items-center gap-1.5 mb-4">
                       {TRANSITIONS.map((t) => {
                         const isActive = selectedTransition === t;
                         return (
@@ -248,6 +257,29 @@ const Navbar = () => {
                             }}
                           >
                             {t}
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    {/* Cursor */}
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--color-text-muted)] mb-2.5 flex items-center gap-1.5">
+                      <MousePointer size={10} /> Cursor
+                    </p>
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      {CURSOR_STYLES.map((c) => {
+                        const isActive = selectedCursor === c.id;
+                        return (
+                          <button
+                            key={c.id}
+                            onClick={() => handleCursorChange(c.id)}
+                            className="flex-1 py-1.5 rounded-lg text-xs font-medium transition-colors duration-200 min-w-[52px]"
+                            style={{
+                              backgroundColor: isActive ? "var(--color-primary)" : "var(--color-surface2)",
+                              color: isActive ? "#fff" : "var(--color-text-muted)",
+                            }}
+                          >
+                            {c.label}
                           </button>
                         );
                       })}

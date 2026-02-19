@@ -1,12 +1,15 @@
 "use client"
 
 import { useEffect, useState, Suspense, lazy } from "react"
+
 import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom"
-import { motion, useMotionValue, useSpring, AnimatePresence } from "framer-motion"
+import { motion, AnimatePresence } from "framer-motion"
 import StarfieldBg from "./components/StarfieldBg"
+import AuroraBg from "./components/AuroraBg"
 import Navbar from "./components/Navbar"
 import Footer from "./components/Footer"
 import ScrollProgress from "./components/ScrollProgress"
+import CustomCursor from "./components/CustomCursor"
 import MiniPlayer from "./components/MiniPlayer"
 import ContactChat from "./components/ContactChat"
 
@@ -129,52 +132,13 @@ function AnimatedRoutes() {
   )
 }
 
-// ── Custom Cursor ────────────────────────────────────────────────────────────
-function CustomCursor() {
-  const cursorX = useMotionValue(0)
-  const cursorY = useMotionValue(0)
-  const springX = useSpring(cursorX, { stiffness: 500, damping: 28 })
-  const springY = useSpring(cursorY, { stiffness: 500, damping: 28 })
-
-  useEffect(() => {
-    const mq = window.matchMedia && window.matchMedia('(pointer: fine)')
-    if (!mq?.matches) return
-
-    const updatePosition = (e) => {
-      cursorX.set(e.clientX)
-      cursorY.set(e.clientY)
-    }
-
-    window.addEventListener("mousemove", updatePosition)
-    return () => window.removeEventListener("mousemove", updatePosition)
-  }, [cursorX, cursorY])
-
-  const hasFinePointer = typeof window !== 'undefined' &&
-    window.matchMedia && window.matchMedia('(pointer: fine)').matches
-
-  if (!hasFinePointer) return null
-
-  return (
-    <>
-      <motion.div
-        className="fixed pointer-events-none z-[9999] w-8 h-8 rounded-full border-2 border-[var(--color-primary)] opacity-50"
-        style={{ left: springX, top: springY, translateX: "-50%", translateY: "-50%" }}
-      />
-      <motion.div
-        className="fixed pointer-events-none z-[9999] w-1.5 h-1.5 rounded-full bg-[var(--color-primary)]"
-        style={{ left: cursorX, top: cursorY, translateX: "-50%", translateY: "-50%" }}
-      />
-      <style>{`@media (pointer: fine) { * { cursor: none !important; } }`}</style>
-    </>
-  )
-}
-
 // ── App ──────────────────────────────────────────────────────────────────────
 function App() {
   return (
     <Router>
       <div className="bg-white dark:bg-black text-[var(--color-text)] min-h-screen transition-colors duration-300">
         <StarfieldBg />
+        <AuroraBg />
         <ScrollProgress />
         <CustomCursor />
         <Navbar />
