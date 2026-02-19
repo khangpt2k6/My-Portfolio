@@ -10,6 +10,7 @@
  *   image        - Path to screenshot in /public
  *   github       - GitHub repo URL
  *   demo         - (optional) Live demo URL
+ *   livePreview  - (optional) "merge-sort" | "chat" | "job-search"
  *   category     - Category badge label
  *   color        - Tailwind gradient classes for accent
  */
@@ -18,14 +19,16 @@ const projects = [
   {
     id: 1,
     title: "NaviCV",
+    livePreview: "job-search",
     technologies: "Python, FastAPI, Vector Search, Transformers, Docker, Firebase, GitHub Actions",
     description: [
-      "AI-powered resume optimization platform using vector search and NLP to match candidates with relevant job opportunities.",
-      "Implements advanced transformer models for intelligent content analysis and recommendation scoring.",
+      "All-in-one AI-powered career assistant with advanced resume analysis, ATS optimization, and smart job matching from multiple sources.",
+      "Leverages machine learning, semantic search, and vector embeddings to deliver highly relevant career opportunities.",
       "Features automated deployment pipeline with Docker containerization and CI/CD integration.",
     ],
     image: "/navicv.png",
     github: "https://github.com/khangpt2k6/NaviCV",
+    demo: "https://navicv.vps.phuchoang.sbs/",
     category: "AI/ML",
     color: "from-indigo-500 to-cyan-600",
   },

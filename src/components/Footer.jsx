@@ -175,12 +175,9 @@ const Footer = () => {
 
         {/* Bottom bar */}
         <div className="mt-12 pt-6">
-          <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+          <div className="flex justify-center items-center">
             <span className="text-sm text-[var(--color-text-muted)]">
               &copy; {currentYear} {footerData.copyright}. All rights reserved.
-            </span>
-            <span className="text-sm text-[var(--color-text-muted)]">
-              {footerData.tagline}
             </span>
           </div>
         </div>
