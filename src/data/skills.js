@@ -17,7 +17,6 @@ const skillCategories = [
       { name: "TypeScript", icon: "ts" },
       { name: "C++", icon: "cpp" },
       { name: "C", icon: "c" },
-      { name: "SQL", icon: "postgresql" },
       { name: "HTML", icon: "html" },
       { name: "CSS", icon: "css" },
     ],
