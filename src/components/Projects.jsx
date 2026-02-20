@@ -23,6 +23,53 @@ const LivePreview = ({ type, image, title, className = "" }) => {
   return <img src={image} alt={title} className={`w-full h-full object-cover ${className}`} />;
 };
 
+/* ── Shape + Clock Reveal ─────────────────────────────────────────────────── */
+const shapeVariants = [
+  "circle(0% at 50% 50%)",   // circle
+  "polygon(50% 50%, 50% 50%, 50% 50%, 50% 50%)", // diamond collapsed
+  "circle(0% at 50% 50%)",
+  "polygon(50% 50%, 50% 50%, 50% 50%, 50% 50%)",
+];
+const shapeRevealed = [
+  "circle(100% at 50% 50%)",
+  "polygon(50% -20%, 120% 50%, 50% 120%, -20% 50%)",
+  "circle(100% at 50% 50%)",
+  "polygon(50% -20%, 120% 50%, 50% 120%, -20% 50%)",
+];
+
+const ShapeReveal = ({ children, index = 0, className = "" }) => {
+  const ref = useRef(null);
+  const [revealed, setRevealed] = useState(false);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) { setRevealed(true); observer.disconnect(); }
+      },
+      { threshold: 0.15 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  const i = index % shapeVariants.length;
+
+  return (
+    <div
+      ref={ref}
+      className={className}
+      style={{
+        clipPath: revealed ? shapeRevealed[i] : shapeVariants[i],
+        transition: `clip-path 1.2s cubic-bezier(0.22, 1, 0.36, 1) ${index * 0.5}s`,
+      }}
+    >
+      {children}
+    </div>
+  );
+};
+
 /* ── Per-project accent color ─────────────────────────────────────────────── */
 const projectAccents = {
   1: { line: "from-indigo-500 via-cyan-400 to-indigo-500", glow: "rgba(99,102,241,0.15)" },
@@ -59,24 +106,24 @@ const ProjectRow = ({ project, index, onOpen }) => {
         transition-all duration-500 hover:shadow-[0_32px_80px_-16px_rgba(0,0,0,0.2)]`}
       >
         {/* ── Viz Side ── */}
-        <div
-          ref={vizRef}
-          onMouseMove={handleGlow}
-          onClick={() => onOpen(project)}
-          className="relative w-full lg:w-[55%] h-64 sm:h-72 lg:h-[340px] cursor-pointer overflow-hidden glow-on-hover"
-        >
-          <LivePreview
-            type={project.livePreview}
-            image={project.image}
-            title={project.title}
-            className="transition-transform duration-700 ease-out group-hover:scale-[1.03]"
-          />
-          {/* Gradient accent line along the edge */}
-          <div className={`absolute ${isReversed ? "left-0 top-0 bottom-0 w-[3px]" : "right-0 top-0 bottom-0 w-[3px]"}
-            bg-gradient-to-b ${accent.line} opacity-0 group-hover:opacity-100 transition-opacity duration-500 hidden lg:block`} />
-          {/* Bottom fade for mobile */}
-          <div className="absolute bottom-0 inset-x-0 h-12 bg-gradient-to-t from-[var(--color-surface)] to-transparent pointer-events-none lg:hidden" />
-        </div>
+        <ShapeReveal index={index} className="w-full lg:w-[55%]">
+          <div
+            ref={vizRef}
+            onMouseMove={handleGlow}
+            onClick={() => onOpen(project)}
+            className="relative h-64 sm:h-72 lg:h-[340px] cursor-pointer overflow-hidden glow-on-hover"
+          >
+            <LivePreview
+              type={project.livePreview}
+              image={project.image}
+              title={project.title}
+              className="transition-transform duration-700 ease-out group-hover:scale-[1.03]"
+            />
+            <div className={`absolute ${isReversed ? "left-0 top-0 bottom-0 w-[3px]" : "right-0 top-0 bottom-0 w-[3px]"}
+              bg-gradient-to-b ${accent.line} opacity-0 group-hover:opacity-100 transition-opacity duration-500 hidden lg:block`} />
+            <div className="absolute bottom-0 inset-x-0 h-12 bg-gradient-to-t from-[var(--color-surface)] to-transparent pointer-events-none lg:hidden" />
+          </div>
+        </ShapeReveal>
 
         {/* ── Content Side ── */}
         <div className="relative w-full lg:w-[45%] p-6 sm:p-8 lg:p-10 flex flex-col justify-center">
@@ -94,7 +141,7 @@ const ProjectRow = ({ project, index, onOpen }) => {
             initial={{ opacity: 0, x: isReversed ? 20 : -20 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.2 }}
+            transition={{ duration: 0.6, delay: 0.7 }}
           >
             {project.title}
           </motion.h3>
@@ -105,7 +152,7 @@ const ProjectRow = ({ project, index, onOpen }) => {
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.3 }}
+            transition={{ duration: 0.5, delay: 0.85 }}
           >
             {project.description[0]}
           </motion.p>
@@ -116,7 +163,7 @@ const ProjectRow = ({ project, index, onOpen }) => {
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.4 }}
+            transition={{ duration: 0.5, delay: 1.0 }}
           >
             {project.technologies.split(", ").map((tech) => (
               <span
@@ -137,7 +184,7 @@ const ProjectRow = ({ project, index, onOpen }) => {
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.5 }}
+            transition={{ duration: 0.5, delay: 1.1 }}
           >
             <a
               href={project.github}
