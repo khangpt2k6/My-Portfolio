@@ -153,7 +153,7 @@ const Navbar = () => {
           <NavLink to="/" className="cursor-pointer flex-shrink-0">
             <motion.img
               src="/official_logo.jpg"
-              alt="Khang Phan"
+              alt="Kevin Phan"
               className="h-9 w-9 rounded-full object-cover ring-2 ring-[var(--color-border)] hover:ring-[var(--color-primary)] transition-all"
               whileHover={{ scale: 1.08 }}
               transition={{ type: "spring", stiffness: 400, damping: 15 }}

@@ -125,7 +125,7 @@ const ChatViz = () => {
             }} />
           </div>
           <div className="flex flex-col min-w-0">
-            <span className="text-[8px] font-semibold truncate" style={{ color: "#F0ABFC" }}>Khang</span>
+            <span className="text-[8px] font-semibold truncate" style={{ color: "#F0ABFC" }}>Kevin</span>
             <span className="text-[6px]" style={{ color: "#4ADE80" }}>Active</span>
           </div>
         </div>

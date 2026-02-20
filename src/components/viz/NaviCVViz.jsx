@@ -343,7 +343,7 @@ const NaviCVViz = () => {
                         <path d="M9 1v4h4" stroke="#60A5FA" strokeWidth="1" strokeLinecap="round" opacity="0.6" />
                       </svg>
                       <div className="flex flex-col flex-1 min-w-0">
-                        <span className="truncate" style={{ fontSize: "6px", color: "#E0EAFF" }}>resume_khang.pdf</span>
+                        <span className="truncate" style={{ fontSize: "6px", color: "#E0EAFF" }}>resume_kevin.pdf</span>
                         <span style={{ fontSize: "5px", color: "rgba(148,163,184,0.4)" }}>248 KB</span>
                       </div>
                       {uploadProgress >= 1 && (

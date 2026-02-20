@@ -1,202 +1,126 @@
 "use client";
 
 import { useRef } from "react";
-import { motion, useScroll, useTransform, useSpring, useMotionValue } from "framer-motion";
+import { motion, useScroll, useTransform, useSpring } from "framer-motion";
 import { FaGithub, FaLinkedin, FaEnvelope } from "react-icons/fa";
 import Tilt from "react-parallax-tilt";
 import about from "../data/about";
+import AnimatedHeading from "../components/ui/AnimatedHeading";
 
-/* ── Social icon config with brand colors ── */
+/* ── Social icon config ── */
 const socialConfig = {
-  Github: {
-    Icon: FaGithub,
-    color: "#6e5494",
-    gradient: "from-[#6e5494] to-[#4078c0]",
-    label: "GitHub",
-  },
-  Linkedin: {
-    Icon: FaLinkedin,
-    color: "#0A66C2",
-    gradient: "from-[#0A66C2] to-[#0077B5]",
-    label: "LinkedIn",
-  },
-  Mail: {
-    Icon: FaEnvelope,
-    color: "#EA4335",
-    gradient: "from-[#EA4335] to-[#FBBC04]",
-    label: "Email",
-  },
+  Github: { Icon: FaGithub, color: "#6e5494", label: "GitHub" },
+  Linkedin: { Icon: FaLinkedin, color: "#0A66C2", label: "LinkedIn" },
+  Mail: { Icon: FaEnvelope, color: "#EA4335", label: "Email" },
 };
 
-/* ── Parse <hl> tags into gradient-highlighted spans ── */
-const parseHighlights = (text) => {
-  const parts = text.split(/(<hl>.*?<\/hl>)/g);
-  return parts.map((part, i) => {
-    const match = part.match(/^<hl>(.*?)<\/hl>$/);
-    if (match) {
-      return (
-        <span
-          key={i}
-          className="font-bold bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)]
-                     bg-clip-text text-transparent"
-        >
-          {match[1]}
-        </span>
-      );
-    }
-    return part;
-  });
-};
-
-/* ── Decorative sparkle SVG with pulsing animation ── */
-const Sparkle = ({ size = 24, className = "", delay = 0 }) => (
-  <motion.svg
-    width={size}
-    height={size}
-    viewBox="0 0 24 24"
-    fill="none"
-    className={`absolute pointer-events-none z-10 ${className}`}
-    initial={{ opacity: 0, scale: 0, rotate: -45 }}
-    whileInView={{ opacity: 1, scale: 1, rotate: 0 }}
-    viewport={{ once: true }}
-    transition={{ duration: 0.7, delay, type: "spring", stiffness: 180 }}
-  >
-    <motion.path
-      d="M12 0L14.59 9.41L24 12L14.59 14.59L12 24L9.41 14.59L0 12L9.41 9.41L12 0Z"
-      fill="url(#sparkGrad)"
-      animate={{ scale: [1, 1.3, 1], opacity: [0.6, 1, 0.6] }}
-      transition={{ duration: 3, repeat: Infinity, delay }}
+/* ── Section Heading ── */
+const SectionHeading = () => (
+  <div className="text-center mb-14 relative">
+    <motion.div
+      className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[120px] pointer-events-none"
+      style={{
+        background:
+          "radial-gradient(ellipse, rgba(var(--color-primary-rgb),0.15) 0%, transparent 70%)",
+        filter: "blur(30px)",
+      }}
+      animate={{ scale: [1, 1.15, 1], opacity: [0.5, 0.8, 0.5] }}
+      transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
     />
-    <defs>
-      <linearGradient id="sparkGrad" x1="0" y1="0" x2="24" y2="24">
-        <stop offset="0%" stopColor="var(--color-primary)" />
-        <stop offset="100%" stopColor="var(--color-secondary)" />
-      </linearGradient>
-    </defs>
-  </motion.svg>
+    <div className="relative">
+      <AnimatedHeading className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-[var(--color-text)]">
+        About Me
+      </AnimatedHeading>
+    </div>
+  </div>
 );
 
-/* ── 3D Profile Image with tilt, light streak, and glow ── */
+/* ── 3D Profile Image ── */
 const ProfileImage = () => {
   const imgRef = useRef(null);
   const { scrollYProgress } = useScroll({
     target: imgRef,
     offset: ["start end", "end start"],
   });
-  const y = useTransform(scrollYProgress, [0, 1], [30, -30]);
+  const y = useTransform(scrollYProgress, [0, 1], [12, -12]);
   const smoothY = useSpring(y, { stiffness: 60, damping: 20 });
 
   return (
     <motion.div
       ref={imgRef}
-      className="relative w-full max-w-md mx-auto lg:mx-0"
-      initial={{ opacity: 0, x: -80, rotateY: 15 }}
-      whileInView={{ opacity: 1, x: 0, rotateY: 0 }}
+      className="relative w-full h-full"
+      initial={{ opacity: 0, scale: 0.95 }}
+      whileInView={{ opacity: 1, scale: 1 }}
       viewport={{ once: true, margin: "-80px" }}
       transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
-      style={{ perspective: 800 }}
     >
-      {/* Sparkle decorations */}
-      <Sparkle size={32} className="-top-5 -left-5" delay={0.4} />
-      <Sparkle size={22} className="-bottom-3 -right-3" delay={0.7} />
-      <Sparkle size={18} className="top-1/3 -right-6" delay={1.0} />
-
-      {/* Ambient glow behind image */}
+      {/* Ambient glow */}
       <motion.div
-        className="absolute -inset-6 rounded-3xl pointer-events-none"
+        className="absolute -inset-4 rounded-2xl pointer-events-none"
         style={{
           background:
-            "conic-gradient(from 180deg, rgba(var(--color-primary-rgb),0.25), rgba(var(--color-secondary-rgb),0.15), rgba(var(--color-primary-rgb),0.25))",
-          filter: "blur(40px)",
+            "conic-gradient(from 180deg, rgba(var(--color-primary-rgb),0.15), rgba(var(--color-secondary-rgb),0.08), rgba(var(--color-primary-rgb),0.15))",
+          filter: "blur(30px)",
         }}
-        animate={{
-          opacity: [0.4, 0.7, 0.4],
-          rotate: [0, 360],
-        }}
-        transition={{
-          opacity: { duration: 4, repeat: Infinity, ease: "easeInOut" },
-          rotate: { duration: 20, repeat: Infinity, ease: "linear" },
-        }}
+        animate={{ opacity: [0.2, 0.5, 0.2] }}
+        transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
       />
 
-      {/* 3D Tilt wrapper */}
-      <Tilt
-        tiltMaxAngleX={8}
-        tiltMaxAngleY={8}
-        glareEnable={true}
-        glareMaxOpacity={0.15}
-        glareColor="rgba(var(--color-primary-rgb), 0.5)"
-        glarePosition="all"
-        glareBorderRadius="1rem"
-        perspective={1000}
-        transitionSpeed={1500}
-        scale={1.02}
+      <motion.div
+        className="relative rounded-2xl overflow-hidden h-full"
+        style={{ y: smoothY }}
       >
-        <motion.div
-          className="relative rounded-2xl overflow-hidden"
-          style={{ y: smoothY }}
-        >
-          {/* Spinning conic border */}
-          <div
-            className="absolute -inset-[2px] rounded-2xl z-0 animated-border-spin"
-            style={{
-              background:
-                "conic-gradient(from var(--border-angle, 0deg), var(--color-primary), var(--color-secondary), transparent, var(--color-primary))",
-              mask: "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
-              maskComposite: "exclude",
-              padding: "2px",
-            }}
-          />
-
-          {/* Image bottom vignette */}
-          <div
-            className="absolute inset-0 z-10 pointer-events-none"
-            style={{
-              background:
-                "linear-gradient(180deg, transparent 50%, rgba(0,0,0,0.5) 100%)",
-            }}
-          />
-
-          {/* Animated light streak across the image */}
+        {/* Light sweep */}
+        <motion.div className="absolute inset-0 z-20 pointer-events-none overflow-hidden">
           <motion.div
-            className="absolute inset-0 z-20 pointer-events-none overflow-hidden"
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-          >
-            <motion.div
-              className="absolute inset-y-0 w-40"
-              style={{
-                background:
-                  "linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent)",
-              }}
-              animate={{ x: ["-100%", "500%"] }}
-              transition={{
-                duration: 4,
-                repeat: Infinity,
-                repeatDelay: 6,
-                ease: "easeInOut",
-              }}
-            />
-          </motion.div>
-
-          <img
-            src={about.image}
-            alt="Khang Phan"
-            className="relative z-[1] w-full aspect-[3/4] object-cover rounded-2xl"
+            className="absolute inset-y-0 w-24"
+            style={{
+              background:
+                "linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent)",
+            }}
+            animate={{ x: ["-100%", "500%"] }}
+            transition={{
+              duration: 4,
+              repeat: Infinity,
+              repeatDelay: 6,
+              ease: "easeInOut",
+            }}
           />
         </motion.div>
-      </Tilt>
+
+        <img
+          src={about.image}
+          alt="Kevin Phan"
+          className="relative z-[1] w-full h-full object-cover object-top rounded-2xl"
+        />
+      </motion.div>
     </motion.div>
   );
 };
 
+/* ── Detail row ── */
+const DetailRow = ({ label, value, index }) => (
+  <motion.div
+    className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-3"
+    initial={{ opacity: 0, y: 12 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true }}
+    transition={{ duration: 0.5, delay: 0.25 + index * 0.08, ease: [0.16, 1, 0.3, 1] }}
+  >
+    <span className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--color-primary)] w-20 flex-shrink-0">
+      {label}
+    </span>
+    <span className="text-sm md:text-[15px] text-[var(--color-text)] font-medium leading-snug">
+      {value}
+    </span>
+  </motion.div>
+);
 
-/* ── Colorful social icon button with brand gradient glow ── */
+/* ── Social button ── */
 const SocialButton = ({ type, href, index }) => {
   const config = socialConfig[type];
   if (!config) return null;
-  const { Icon, color, gradient, label } = config;
+  const { Icon, color, label } = config;
 
   return (
     <motion.a
@@ -205,50 +129,36 @@ const SocialButton = ({ type, href, index }) => {
       rel={href.startsWith("mailto:") ? undefined : "noopener noreferrer"}
       aria-label={label}
       className="group relative"
-      initial={{ opacity: 0, y: 20, scale: 0.8 }}
-      whileInView={{ opacity: 1, y: 0, scale: 1 }}
+      initial={{ opacity: 0, y: 15 }}
+      whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{
         type: "spring",
         stiffness: 260,
         damping: 20,
-        delay: 0.5 + index * 0.12,
+        delay: 0.5 + index * 0.08,
       }}
-      whileHover={{ y: -4 }}
-      whileTap={{ scale: 0.92 }}
+      whileHover={{ y: -2 }}
+      whileTap={{ scale: 0.96 }}
     >
-      {/* Glow behind on hover */}
       <div
-        className="absolute -inset-1 rounded-xl opacity-0 group-hover:opacity-60 blur-md
-                   transition-opacity duration-500"
+        className="absolute -inset-1 rounded-lg opacity-0 group-hover:opacity-40 blur-md transition-opacity duration-300"
         style={{ background: color }}
       />
-
       <div
-        className={`relative flex items-center gap-2.5 px-5 py-3 rounded-xl
-                    border border-[var(--glass-border)] backdrop-blur-xl
-                    bg-[var(--glass-bg)]
-                    transition-all duration-500
-                    group-hover:border-transparent group-hover:bg-gradient-to-r group-hover:${gradient}
-                    group-hover:shadow-[0_4px_20px_rgba(0,0,0,0.2)]`}
-        style={{
-          "--social-color": color,
-        }}
+        className="relative flex items-center gap-2 px-3.5 py-2 rounded-lg
+                   border border-[var(--glass-border)] bg-[var(--color-surface)]
+                   transition-all duration-300
+                   group-hover:border-transparent group-hover:shadow-lg"
+        onMouseEnter={(e) => { e.currentTarget.style.background = color; }}
+        onMouseLeave={(e) => { e.currentTarget.style.background = ""; }}
       >
-        <div
-          className="w-8 h-8 rounded-lg flex items-center justify-center
-                     transition-all duration-500"
-          style={{
-            background: `linear-gradient(135deg, ${color}20, ${color}10)`,
-          }}
-        >
-          <Icon
-            className="w-4 h-4 transition-all duration-500 group-hover:text-white group-hover:scale-110"
-            style={{ color }}
-          />
-        </div>
+        <Icon
+          className="w-3.5 h-3.5 transition-all duration-300 group-hover:text-white"
+          style={{ color }}
+        />
         <span
-          className="text-sm font-semibold transition-colors duration-500 group-hover:text-white"
+          className="text-xs font-semibold transition-colors duration-300 group-hover:text-white"
           style={{ color }}
         >
           {label}
@@ -263,49 +173,144 @@ const About = () => {
   return (
     <section
       id="about"
-      className="bg-[var(--color-surface)] dark:bg-transparent pb-16 md:pb-28 px-4 overflow-hidden"
+      className="bg-[var(--color-surface)] dark:bg-transparent py-16 md:py-28 px-4 overflow-hidden"
     >
-      <div className="max-w-6xl mx-auto">
-        {/* Two-column layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
-          {/* Left — 3D Profile image */}
-          <ProfileImage />
+      <div className="max-w-5xl mx-auto">
+        <SectionHeading />
 
-          {/* Right — Content */}
-          <div>
-            {/* Paragraphs */}
-            <div className="space-y-5 mb-8">
-              {about.paragraphs.map((para, i) => (
-                <motion.p
-                  key={i}
-                  className="text-base md:text-lg text-[var(--color-text-muted)] leading-relaxed"
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, margin: "-60px" }}
-                  transition={{
-                    duration: 0.6,
-                    delay: 0.15 + i * 0.12,
-                    ease: [0.16, 1, 0.3, 1],
-                  }}
-                >
-                  {parseHighlights(para)}
-                </motion.p>
-              ))}
-            </div>
+        {/* macOS Window */}
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-60px" }}
+          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+        >
+          <Tilt
+            tiltMaxAngleX={2}
+            tiltMaxAngleY={2}
+            glareEnable={true}
+            glareMaxOpacity={0.05}
+            glareColor="rgba(var(--color-primary-rgb), 0.3)"
+            glarePosition="top"
+            glareBorderRadius="1rem"
+            perspective={1400}
+            transitionSpeed={2000}
+            scale={1.005}
+          >
+            <div
+              className="rounded-2xl overflow-hidden border border-[var(--glass-border)]
+                         shadow-[0_8px_60px_rgba(0,0,0,0.08)] dark:shadow-[0_8px_60px_rgba(0,0,0,0.3)]"
+            >
+              {/* ── macOS title bar ── */}
+              <div
+                className="flex items-center gap-2 px-5 py-3 border-b border-[var(--glass-border)]"
+                style={{
+                  background:
+                    "linear-gradient(180deg, rgba(var(--color-primary-rgb),0.04), rgba(var(--color-primary-rgb),0.01))",
+                }}
+              >
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 rounded-full bg-[#FF5F57]" />
+                  <div className="w-3 h-3 rounded-full bg-[#FEBC2E]" />
+                  <div className="w-3 h-3 rounded-full bg-[#28C840]" />
+                </div>
+                <div className="flex-1 flex justify-center">
+                  <span className="text-xs font-medium text-[var(--color-text-muted)]/60 tracking-wide">
+                    about-kevin
+                  </span>
+                </div>
+                <div className="w-[52px]" />
+              </div>
 
-            {/* Social links — colorful with brand gradients */}
-            <div className="flex flex-wrap items-center gap-3">
-              {about.socialLinks.map((link, i) => (
-                <SocialButton
-                  key={i}
-                  type={link.type}
-                  href={link.href}
-                  index={i}
-                />
-              ))}
+              {/* ── Window content ── */}
+              <div
+                className="grid grid-cols-1 md:grid-cols-[280px_1fr] lg:grid-cols-[320px_1fr]"
+                style={{ background: "var(--color-surface)" }}
+              >
+                {/* Left — Image */}
+                <div className="p-5 md:p-6 lg:p-8">
+                  <ProfileImage />
+                </div>
+
+                {/* Right — Content */}
+                <div className="p-5 md:p-6 lg:p-8 flex flex-col justify-center md:border-l border-[var(--glass-border)]">
+                  {/* Name */}
+                  <motion.h2
+                    className="text-2xl md:text-3xl lg:text-4xl font-extrabold text-[var(--color-text)] leading-tight mb-1.5"
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.6, delay: 0.1 }}
+                  >
+                    {about.name}
+                  </motion.h2>
+
+                  {/* Role badge */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 12 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.5, delay: 0.15 }}
+                    className="mb-5"
+                  >
+                    <span className="inline-flex items-center gap-1.5 text-sm font-medium text-[var(--color-primary)]">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-primary)] animate-pulse" />
+                      {about.role}
+                    </span>
+                  </motion.div>
+
+                  {/* Bio */}
+                  <motion.p
+                    className="text-sm md:text-[15px] text-[var(--color-text-muted)] leading-relaxed mb-7"
+                    initial={{ opacity: 0, y: 12 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.5, delay: 0.2 }}
+                  >
+                    {about.bio}
+                  </motion.p>
+
+                  {/* Divider */}
+                  <motion.div
+                    className="h-px mb-6"
+                    style={{
+                      background:
+                        "linear-gradient(90deg, var(--color-primary), rgba(var(--color-secondary-rgb),0.3), transparent)",
+                    }}
+                    initial={{ scaleX: 0, originX: 0 }}
+                    whileInView={{ scaleX: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.8, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                  />
+
+                  {/* Details */}
+                  <div className="flex flex-col gap-3.5 mb-7">
+                    {about.details.map((item, i) => (
+                      <DetailRow
+                        key={item.label}
+                        label={item.label}
+                        value={item.value}
+                        index={i}
+                      />
+                    ))}
+                  </div>
+
+                  {/* Social links */}
+                  <div className="flex flex-wrap items-center gap-2.5">
+                    {about.socialLinks.map((link, i) => (
+                      <SocialButton
+                        key={i}
+                        type={link.type}
+                        href={link.href}
+                        index={i}
+                      />
+                    ))}
+                  </div>
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
+          </Tilt>
+        </motion.div>
       </div>
     </section>
   );

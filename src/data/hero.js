@@ -5,7 +5,7 @@
  */
 
 const hero = {
-  firstName: "Khang",
+  firstName: "Kevin",
   lastName: "Phan",
   greeting: "Hello, I'm",
   profileImage: "/profile.jpg?height=1000&width=800",
