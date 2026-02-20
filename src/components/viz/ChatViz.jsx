@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 
 /**
- * ChatViz — Zelo chat with layered pink/purple palette.
+ * ChatViz — CampusConnect chat with layered pink/purple palette.
  * Many intensities of pink and light purple mixed together.
  */
 

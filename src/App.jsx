@@ -4,21 +4,21 @@ import { useEffect, useState, Suspense, lazy } from "react"
 
 import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom"
 import { motion, AnimatePresence } from "framer-motion"
-import StarfieldBg from "./components/StarfieldBg"
-import AuroraBg from "./components/AuroraBg"
-import Navbar from "./components/Navbar"
-import Footer from "./components/Footer"
-import ScrollProgress from "./components/ScrollProgress"
-import CustomCursor from "./components/CustomCursor"
-import MiniPlayer from "./components/MiniPlayer"
-import ContactChat from "./components/ContactChat"
+import StarfieldBg from "./components/backgrounds/StarfieldBg"
+import AuroraBg from "./components/backgrounds/AuroraBg"
+import Navbar from "./components/layout/Navbar"
+import Footer from "./components/layout/Footer"
+import ScrollProgress from "./components/ui/ScrollProgress"
+import CustomCursor from "./components/ui/CustomCursor"
+import MiniPlayer from "./components/ui/MiniPlayer"
+import ContactChat from "./components/ui/ContactChat"
 
 // ── Lazy-loaded page components (code splitting) ────────────────────────────
-const Hero = lazy(() => import("./components/Hero"))
-const Experience = lazy(() => import("./components/Experience"))
-const Projects = lazy(() => import("./components/Projects"))
-const Skills = lazy(() => import("./components/Skills"))
-const Lab = lazy(() => import("./components/Lab"))
+const Hero = lazy(() => import("./pages/Hero"))
+const Experience = lazy(() => import("./pages/Experience"))
+const Projects = lazy(() => import("./pages/Projects"))
+const Skills = lazy(() => import("./pages/Skills"))
+const Lab = lazy(() => import("./pages/Lab"))
 
 // ── Page loading fallback ───────────────────────────────────────────────────
 const PageLoader = () => (

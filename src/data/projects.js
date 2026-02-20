@@ -44,7 +44,7 @@ const projects = [
   },
   {
     id: 3,
-    title: "Zelo",
+    title: "CampusConnect",
     livePreview: "chat",
     technologies: "TypeScript, Next.js, RabbitMQ, Cloudinary, Socket.IO, MongoDB, Docker, AWS",
     description: [
@@ -53,7 +53,7 @@ const projects = [
       "Features media sharing via Cloudinary integration and cloud deployment on AWS infrastructure.",
     ],
     image: "/zelo.png",
-    github: "https://github.com/khangpt2k6/Zelo",
+    github: "https://github.com/khangpt2k6/CampusConnect",
     color: "from-blue-500 to-cyan-600",
   },
   {
