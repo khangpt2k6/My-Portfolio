@@ -313,3 +313,8 @@ html {
 .glow-on-hover:hover::after {
   opacity: 1;
 }
+
+/* ── Animated spinning border for profile image ── */
+.animated-border-spin {
+  animation: rotate-border 4s linear infinite;
+}

@@ -15,6 +15,7 @@ import ContactChat from "./components/ui/ContactChat"
 
 // ── Lazy-loaded page components (code splitting) ────────────────────────────
 const Hero = lazy(() => import("./pages/Hero"))
+const About = lazy(() => import("./pages/About"))
 const Experience = lazy(() => import("./pages/Experience"))
 const Projects = lazy(() => import("./pages/Projects"))
 const Skills = lazy(() => import("./pages/Skills"))
@@ -108,7 +109,7 @@ function AnimatedRoutes() {
       <AnimatePresence mode="wait">
         <Routes location={location} key={location.pathname}>
           <Route path="/" element={
-            <PageWrapper transitionStyle={transitionStyle}><Hero /></PageWrapper>
+            <PageWrapper transitionStyle={transitionStyle}><Hero /><About /></PageWrapper>
           } />
           <Route path="/experience" element={
             <PageWrapper transitionStyle={transitionStyle}><Experience /></PageWrapper>
