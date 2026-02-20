@@ -173,7 +173,7 @@ const About = () => {
   return (
     <section
       id="about"
-      className="bg-[var(--color-surface)] dark:bg-transparent py-16 md:py-28 px-4 overflow-hidden"
+      className="bg-[var(--color-surface)] dark:bg-transparent pb-16 md:pb-28 px-4 overflow-hidden"
     >
       <div className="max-w-5xl mx-auto">
         <SectionHeading />
@@ -234,38 +234,24 @@ const About = () => {
 
                 {/* Right — Content */}
                 <div className="p-5 md:p-6 lg:p-8 flex flex-col justify-center md:border-l border-[var(--glass-border)]">
-                  {/* Name */}
+                  {/* Greeting */}
                   <motion.h2
-                    className="text-2xl md:text-3xl lg:text-4xl font-extrabold text-[var(--color-text)] leading-tight mb-1.5"
+                    className="text-2xl md:text-3xl lg:text-4xl font-extrabold text-[var(--color-text)] leading-tight mb-5"
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ duration: 0.6, delay: 0.1 }}
                   >
-                    {about.name}
+                    {about.greeting}
                   </motion.h2>
 
-                  {/* Role badge */}
-                  <motion.div
+                  {/* Bio */}
+                  <motion.p
+                    className="text-sm md:text-base text-[var(--color-text-muted)] leading-relaxed mb-7"
                     initial={{ opacity: 0, y: 12 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ duration: 0.5, delay: 0.15 }}
-                    className="mb-5"
-                  >
-                    <span className="inline-flex items-center gap-1.5 text-sm font-medium text-[var(--color-primary)]">
-                      <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-primary)] animate-pulse" />
-                      {about.role}
-                    </span>
-                  </motion.div>
-
-                  {/* Bio */}
-                  <motion.p
-                    className="text-sm md:text-[15px] text-[var(--color-text-muted)] leading-relaxed mb-7"
-                    initial={{ opacity: 0, y: 12 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.5, delay: 0.2 }}
                   >
                     {about.bio}
                   </motion.p>

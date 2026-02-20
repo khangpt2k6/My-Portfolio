@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { createPortal } from "react-dom";
-import { motion, AnimatePresence, useMotionValue, useSpring } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Github, ExternalLink, X, Code, Sparkles } from "lucide-react";
 import projects from "../data/projects";
 import AnimatedHeading from "../components/ui/AnimatedHeading";
@@ -23,13 +23,32 @@ const LivePreview = ({ type, image, title, className = "" }) => {
   return <img src={image} alt={title} className={`w-full h-full object-cover ${className}`} />;
 };
 
-
-/* ── Per-project accent color ─────────────────────────────────────────────── */
+/* ── Per-project accent ───────────────────────────────────────────────────── */
 const projectAccents = {
-  1: { line: "from-indigo-500 via-cyan-400 to-indigo-500", glow: "rgba(99,102,241,0.15)" },
-  2: { line: "from-emerald-500 via-green-400 to-emerald-500", glow: "rgba(16,185,129,0.15)" },
-  3: { line: "from-violet-500 via-blue-400 to-violet-500", glow: "rgba(139,92,246,0.15)" },
-  4: { line: "from-blue-500 via-amber-400 to-blue-500", glow: "rgba(59,130,246,0.15)" },
+  1: {
+    gradient: "from-indigo-500 via-cyan-400 to-indigo-500",
+    glow: "rgba(99,102,241,0.12)",
+    solid: "#6366F1",
+    rgb: "99,102,241",
+  },
+  2: {
+    gradient: "from-emerald-500 via-green-400 to-emerald-500",
+    glow: "rgba(16,185,129,0.12)",
+    solid: "#10B981",
+    rgb: "16,185,129",
+  },
+  3: {
+    gradient: "from-violet-500 via-purple-400 to-violet-500",
+    glow: "rgba(139,92,246,0.12)",
+    solid: "#8B5CF6",
+    rgb: "139,92,246",
+  },
+  4: {
+    gradient: "from-blue-500 via-amber-400 to-blue-500",
+    glow: "rgba(59,130,246,0.12)",
+    solid: "#3B82F6",
+    rgb: "59,130,246",
+  },
 };
 
 /* ── Project Showcase Row ─────────────────────────────────────────────────── */
@@ -37,10 +56,10 @@ const ProjectRow = ({ project, index, onOpen }) => {
   const isReversed = index % 2 !== 0;
   const num = String(index + 1).padStart(2, "0");
   const accent = projectAccents[project.id] || projectAccents[1];
-  const vizRef = useRef(null);
+  const cardRef = useRef(null);
 
   const handleGlow = useCallback((e) => {
-    const el = vizRef.current;
+    const el = cardRef.current;
     if (!el) return;
     const rect = el.getBoundingClientRect();
     el.style.setProperty("--glow-x", `${e.clientX - rect.left}px`);
@@ -53,132 +72,199 @@ const ProjectRow = ({ project, index, onOpen }) => {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-80px" }}
       transition={{ duration: 0.7, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
-      className="group"
+      className="group relative"
     >
-      <div className={`flex flex-col ${isReversed ? "lg:flex-row-reverse" : "lg:flex-row"} gap-0 lg:gap-0
-        rounded-3xl overflow-hidden border border-[var(--color-border)] bg-[var(--color-surface)]
-        transition-all duration-500 hover:shadow-[0_32px_80px_-16px_rgba(0,0,0,0.2)]`}
+      {/* Ambient glow behind card */}
+      <div
+        className="absolute -inset-4 rounded-[2rem] pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-700"
+        style={{
+          background: `radial-gradient(600px circle at 50% 50%, ${accent.glow}, transparent 70%)`,
+          filter: "blur(40px)",
+        }}
+      />
+
+      {/* Animated border wrapper */}
+      <div
+        ref={cardRef}
+        onMouseMove={handleGlow}
+        className="relative rounded-3xl glow-on-hover"
       >
-        {/* ── Viz Side ── */}
-        <motion.div
-          className="w-full lg:w-[55%]"
-          initial={{ opacity: 0, scale: 0.92 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: true, margin: "-60px" }}
-          transition={{ duration: 0.8, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
+        {/* Spinning gradient border — visible on hover */}
+        <div
+          className="absolute -inset-[1px] rounded-3xl z-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 animated-border-spin"
+          style={{
+            background: `conic-gradient(from var(--border-angle, 0deg), ${accent.solid}, transparent, ${accent.solid})`,
+            mask: "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
+            maskComposite: "exclude",
+            padding: "1.5px",
+          }}
+        />
+
+        <div
+          className={`relative flex flex-col ${isReversed ? "lg:flex-row-reverse" : "lg:flex-row"}
+            rounded-3xl overflow-hidden border border-[var(--color-border)] bg-[var(--color-surface)]
+            transition-all duration-500
+            group-hover:border-transparent
+            group-hover:shadow-[0_32px_80px_-16px_rgba(0,0,0,0.25)]`}
         >
-          <div
-            ref={vizRef}
-            onMouseMove={handleGlow}
-            onClick={() => onOpen(project)}
-            className="relative h-64 sm:h-72 lg:h-[340px] cursor-pointer overflow-hidden rounded-t-3xl lg:rounded-none glow-on-hover"
-          >
-            <LivePreview
-              type={project.livePreview}
-              image={project.image}
-              title={project.title}
-              className="transition-transform duration-700 ease-out group-hover:scale-[1.03]"
-            />
-            <div className={`absolute ${isReversed ? "left-0 top-0 bottom-0 w-[3px]" : "right-0 top-0 bottom-0 w-[3px]"}
-              bg-gradient-to-b ${accent.line} opacity-0 group-hover:opacity-100 transition-opacity duration-500 hidden lg:block`} />
-            <div className="absolute bottom-0 inset-x-0 h-12 bg-gradient-to-t from-[var(--color-surface)] to-transparent pointer-events-none lg:hidden" />
-          </div>
-        </motion.div>
-
-        {/* ── Content Side ── */}
-        <div className="relative w-full lg:w-[45%] p-6 sm:p-8 lg:p-10 flex flex-col justify-center">
-          {/* Project number */}
-          <span
-            className="absolute top-6 right-6 lg:top-8 lg:right-8 font-bold text-[var(--color-border)] select-none pointer-events-none"
-            style={{ fontSize: "clamp(48px, 6vw, 72px)", lineHeight: 1 }}
-          >
-            {num}
-          </span>
-
-          {/* Title */}
-          <motion.h3
-            className="text-2xl sm:text-3xl lg:text-4xl font-bold text-[var(--color-text)] mb-3 relative z-10"
-            initial={{ opacity: 0, x: isReversed ? 20 : -20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.7 }}
-          >
-            {project.title}
-          </motion.h3>
-
-          {/* Description */}
-          <motion.p
-            className="text-[var(--color-text-muted)] leading-relaxed mb-6 text-sm sm:text-base relative z-10 max-w-md"
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.85 }}
-          >
-            {project.description[0]}
-          </motion.p>
-
-          {/* Tech stack */}
+          {/* ── Viz Side ── */}
           <motion.div
-            className="flex flex-wrap gap-2 mb-6 relative z-10"
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 1.0 }}
+            className="w-full lg:w-[55%] relative overflow-hidden"
+            initial={{ opacity: 0, scale: 0.92 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true, margin: "-60px" }}
+            transition={{ duration: 0.8, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
           >
-            {project.technologies.split(", ").map((tech) => (
-              <span
-                key={tech}
-                className="text-xs px-3 py-1 rounded-full font-medium
-                  bg-[var(--color-surface2)] text-[var(--color-text-muted)]
-                  border border-[var(--color-border)] transition-colors duration-200
-                  hover:border-[var(--color-primary)]/40 hover:text-[var(--color-text)]"
-              >
-                {tech}
-              </span>
-            ))}
+            <div
+              onClick={() => onOpen(project)}
+              className="relative h-64 sm:h-72 lg:h-[360px] cursor-pointer overflow-hidden"
+            >
+              <LivePreview
+                type={project.livePreview}
+                image={project.image}
+                title={project.title}
+                className="transition-transform duration-700 ease-out group-hover:scale-[1.04]"
+              />
+
+              {/* Shimmer sweep on hover */}
+              <div className="absolute inset-0 z-10 pointer-events-none overflow-hidden">
+                <div
+                  className="absolute inset-y-0 w-40 -translate-x-full group-hover:translate-x-[500%] transition-transform duration-[1.5s] ease-in-out"
+                  style={{
+                    background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent)",
+                  }}
+                />
+              </div>
+
+              {/* Accent edge line */}
+              <div
+                className={`absolute ${isReversed ? "left-0" : "right-0"} top-0 bottom-0 w-[3px]
+                  bg-gradient-to-b ${accent.gradient}
+                  opacity-20 group-hover:opacity-100 transition-opacity duration-500 hidden lg:block`}
+              />
+
+              {/* Bottom fade on mobile */}
+              <div className="absolute bottom-0 inset-x-0 h-12 bg-gradient-to-t from-[var(--color-surface)] to-transparent pointer-events-none lg:hidden" />
+            </div>
           </motion.div>
 
-          {/* Actions */}
-          <motion.div
-            className="flex items-center gap-3 relative z-10"
-            initial={{ opacity: 0, y: 10 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 1.1 }}
-          >
-            <a
-              href={project.github}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold
-                bg-[var(--color-surface2)] text-[var(--color-text)] border border-[var(--color-border)]
-                hover:border-[var(--color-primary)] hover:text-[var(--color-primary)] transition-all duration-200"
+          {/* ── Content Side ── */}
+          <div className="relative w-full lg:w-[45%] p-6 sm:p-8 lg:p-10 flex flex-col justify-center">
+            {/* Project number — gradient text */}
+            <span
+              className="absolute top-6 right-6 lg:top-8 lg:right-8 font-extrabold select-none pointer-events-none
+                         bg-clip-text text-transparent opacity-15 group-hover:opacity-25 transition-opacity duration-500"
+              style={{
+                fontSize: "clamp(56px, 7vw, 80px)",
+                lineHeight: 1,
+                backgroundImage: `linear-gradient(135deg, ${accent.solid}, transparent)`,
+              }}
             >
-              <Github className="w-4 h-4" />
-              Code
-            </a>
-            {project.demo && (
+              {num}
+            </span>
+
+            {/* Title */}
+            <motion.h3
+              className="text-2xl sm:text-3xl lg:text-4xl font-bold text-[var(--color-text)] mb-3 relative z-10"
+              initial={{ opacity: 0, x: isReversed ? 20 : -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+            >
+              {project.title}
+            </motion.h3>
+
+            {/* Accent underline */}
+            <motion.div
+              className="h-[2px] w-12 rounded-full mb-4"
+              style={{ background: `linear-gradient(90deg, ${accent.solid}, transparent)` }}
+              initial={{ scaleX: 0, originX: 0 }}
+              whileInView={{ scaleX: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.4 }}
+            />
+
+            {/* Description */}
+            <motion.p
+              className="text-[var(--color-text-muted)] leading-relaxed mb-6 text-sm sm:text-base relative z-10 max-w-md"
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.45 }}
+            >
+              {project.description[0]}
+            </motion.p>
+
+            {/* Tech stack */}
+            <motion.div
+              className="flex flex-wrap gap-2 mb-6 relative z-10"
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.55 }}
+            >
+              {project.technologies.split(", ").map((tech) => (
+                <span
+                  key={tech}
+                  className="text-xs px-3 py-1 rounded-full font-medium
+                    bg-[var(--color-surface2)] text-[var(--color-text-muted)]
+                    border border-[var(--color-border)] transition-all duration-300
+                    hover:text-[var(--color-text)]"
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.borderColor = accent.solid;
+                    e.currentTarget.style.boxShadow = `0 0 12px rgba(${accent.rgb}, 0.15)`;
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.borderColor = "";
+                    e.currentTarget.style.boxShadow = "";
+                  }}
+                >
+                  {tech}
+                </span>
+              ))}
+            </motion.div>
+
+            {/* Actions */}
+            <motion.div
+              className="flex items-center gap-3 relative z-10"
+              initial={{ opacity: 0, y: 10 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.65 }}
+            >
               <a
-                href={project.demo}
+                href={project.github}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white
-                  transition-all duration-200 shadow-lg hover:shadow-xl hover:brightness-110"
-                style={{ background: "linear-gradient(135deg, var(--color-primary), var(--color-secondary))" }}
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold
+                  bg-[var(--color-surface2)] text-[var(--color-text)] border border-[var(--color-border)]
+                  hover:border-[var(--color-primary)] hover:text-[var(--color-primary)] transition-all duration-200"
               >
-                <ExternalLink className="w-4 h-4" />
-                Live Demo
+                <Github className="w-4 h-4" />
+                Code
               </a>
-            )}
-            <button
-              onClick={() => onOpen(project)}
-              className="ml-auto text-xs text-[var(--color-text-muted)] hover:text-[var(--color-primary)]
-                transition-colors duration-200 underline underline-offset-2 decoration-[var(--color-border)]
-                hover:decoration-[var(--color-primary)]"
-            >
-              Details
-            </button>
-          </motion.div>
+              {project.demo && (
+                <a
+                  href={project.demo}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white
+                    transition-all duration-200 shadow-lg hover:shadow-xl hover:brightness-110"
+                  style={{ background: `linear-gradient(135deg, ${accent.solid}, var(--color-secondary))` }}
+                >
+                  <ExternalLink className="w-4 h-4" />
+                  Live Demo
+                </a>
+              )}
+              <button
+                onClick={() => onOpen(project)}
+                className="ml-auto text-xs font-medium transition-colors duration-200 underline underline-offset-2"
+                style={{ color: accent.solid }}
+              >
+                Details
+              </button>
+            </motion.div>
+          </div>
         </div>
       </div>
     </motion.article>
@@ -188,6 +274,7 @@ const ProjectRow = ({ project, index, onOpen }) => {
 /* ── Project Detail Modal ─────────────────────────────────────────────────── */
 const ProjectModal = ({ project, onClose }) => {
   const modalRef = useRef(null);
+  const accent = projectAccents[project.id] || projectAccents[1];
 
   useEffect(() => {
     document.body.style.overflow = "hidden";
@@ -221,6 +308,12 @@ const ProjectModal = ({ project, onClose }) => {
           bg-[var(--color-surface)] border border-[var(--color-border)]
           shadow-[0_32px_80px_-12px_rgba(0,0,0,0.5)]"
       >
+        {/* Top accent line */}
+        <div
+          className="h-[2px] w-full"
+          style={{ background: `linear-gradient(90deg, ${accent.solid}, transparent)` }}
+        />
+
         <div className="relative h-48 sm:h-60 overflow-hidden">
           <LivePreview type={project.livePreview} image={project.image} title={project.title} />
           <div className="absolute bottom-0 inset-x-0 h-16 bg-gradient-to-t from-[var(--color-surface)] to-transparent pointer-events-none" />
@@ -239,7 +332,7 @@ const ProjectModal = ({ project, onClose }) => {
 
           <div className="mb-5">
             <div className="flex items-center gap-2 mb-2">
-              <Code className="w-3.5 h-3.5 text-[var(--color-primary)]" />
+              <Code className="w-3.5 h-3.5" style={{ color: accent.solid }} />
               <h4 className="text-[10px] font-bold uppercase tracking-widest text-[var(--color-text-muted)]">Tech Stack</h4>
             </div>
             <div className="flex flex-wrap gap-1.5">
@@ -253,13 +346,16 @@ const ProjectModal = ({ project, onClose }) => {
 
           <div className="mb-6">
             <div className="flex items-center gap-2 mb-2">
-              <Sparkles className="w-3.5 h-3.5 text-[var(--color-primary)]" />
+              <Sparkles className="w-3.5 h-3.5" style={{ color: accent.solid }} />
               <h4 className="text-[10px] font-bold uppercase tracking-widest text-[var(--color-text-muted)]">Overview</h4>
             </div>
             <div className="space-y-2">
               {project.description.map((item, i) => (
                 <div key={i} className="flex items-start gap-2.5">
-                  <div className="mt-[7px] w-1.5 h-1.5 rounded-full bg-[var(--color-primary)] flex-shrink-0" />
+                  <div
+                    className="mt-[7px] w-1.5 h-1.5 rounded-full flex-shrink-0"
+                    style={{ background: accent.solid }}
+                  />
                   <p className="text-[var(--color-text-muted)] leading-relaxed text-sm">{item}</p>
                 </div>
               ))}
@@ -274,7 +370,7 @@ const ProjectModal = ({ project, onClose }) => {
             {project.demo && (
               <a href={project.demo} target="_blank" rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 px-4 py-2 text-white rounded-xl text-sm font-semibold transition-all shadow-lg hover:shadow-xl hover:brightness-110"
-                style={{ background: "linear-gradient(135deg, var(--color-primary), var(--color-secondary))" }}>
+                style={{ background: `linear-gradient(135deg, ${accent.solid}, var(--color-secondary))` }}>
                 <ExternalLink className="w-4 h-4" /> Live Demo
               </a>
             )}
@@ -304,12 +400,12 @@ const Projects = () => {
               transition={{ delay: 0.3, duration: 0.5 }}
               className="text-[var(--color-text-muted)] mt-3 text-sm sm:text-base max-w-lg mx-auto"
             >
-              Real problems I've solved — from AI career tools to campus infrastructure.
+              Real problems I've solved, from AI career tools to campus apps.
             </motion.p>
           </div>
 
           {/* Project rows */}
-          <div className="space-y-10 lg:space-y-14">
+          <div className="space-y-12 lg:space-y-16">
             {projects.map((project, i) => (
               <ProjectRow
                 key={project.id}

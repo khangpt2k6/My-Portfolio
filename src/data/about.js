@@ -7,15 +7,13 @@
 const about = {
   image: "/profile.jpg",
 
-  name: "Kevin Phan",
-  role: "Full-Stack Developer",
-  bio: "I'm a Computer Science student at the University of South Florida who loves turning ideas into real products. From building full-stack apps to exploring AI/ML, I enjoy every part of the process.",
+  greeting: "Hi, I'm Kevin.",
+  bio: "I'm a CS student at USF who loves building apps and exploring AI/ML. I enjoy turning ideas into real projects, whether it's a web app or a small side project. When I'm not coding, you'll probably find me on a boba run or playing video games.",
 
   details: [
-    { label: "School", value: "University of South Florida", icon: "school" },
-    { label: "Major", value: "Computer Science", icon: "code" },
-    { label: "Focus", value: "Full-Stack & AI/ML", icon: "rocket" },
-    { label: "Fun Fact", value: "Boba enthusiast & tech rabbit hole diver", icon: "sparkle" },
+    { label: "School", value: "University of South Florida" },
+    { label: "Major", value: "Computer Science" },
+    { label: "Focus", value: "Full-Stack Development & AI/ML" },
   ],
 
   socialLinks: [
