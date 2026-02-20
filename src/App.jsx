@@ -18,7 +18,6 @@ const Hero = lazy(() => import("./components/Hero"))
 const Experience = lazy(() => import("./components/Experience"))
 const Projects = lazy(() => import("./components/Projects"))
 const Skills = lazy(() => import("./components/Skills"))
-const Education = lazy(() => import("./components/Education"))
 const Lab = lazy(() => import("./components/Lab"))
 
 // ── Page loading fallback ───────────────────────────────────────────────────
@@ -119,9 +118,6 @@ function AnimatedRoutes() {
           } />
           <Route path="/skills" element={
             <PageWrapper transitionStyle={transitionStyle}><Skills /></PageWrapper>
-          } />
-          <Route path="/education" element={
-            <PageWrapper transitionStyle={transitionStyle}><Education /></PageWrapper>
           } />
           <Route path="/lab" element={
             <PageWrapper transitionStyle={transitionStyle}><Lab /></PageWrapper>

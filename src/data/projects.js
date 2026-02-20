@@ -1,17 +1,15 @@
 /**
  * Projects Data
  * -------------------------------------------------------
- * Edit this file to add/remove/update project entries.
  * Each entry has:
  *   id           - Unique number
  *   title        - Project name
  *   technologies - Comma-separated tech string
  *   description  - Array of description paragraphs
- *   image        - Path to screenshot in /public
+ *   image        - Path to screenshot in /public (fallback)
  *   github       - GitHub repo URL
  *   demo         - (optional) Live demo URL
- *   livePreview  - (optional) "merge-sort" | "chat" | "job-search"
- *   category     - Category badge label
+ *   livePreview  - "chat" | "job-search" | "room-booking" | "finance"
  *   color        - Tailwind gradient classes for accent
  */
 
@@ -29,11 +27,24 @@ const projects = [
     image: "/navicv.png",
     github: "https://github.com/khangpt2k6/NaviCV",
     demo: "https://navicv.vps.phuchoang.sbs/",
-    category: "AI/ML",
     color: "from-indigo-500 to-cyan-600",
   },
   {
     id: 2,
+    title: "BullSpace",
+    livePreview: "room-booking",
+    technologies: "React Native, Node.js, Express, MongoDB, Redis, RabbitMQ, Socket.IO",
+    description: [
+      "A mobile room booking app built to solve the frustration of finding and reserving available rooms on campus.",
+      "Students can browse, book, and get real-time availability updates instead of walking floor to floor checking doors.",
+      "Uses microservice architecture with message queuing for reliable booking and real-time sync across all clients.",
+    ],
+    image: "/bullspace.png",
+    github: "https://github.com/khangpt2k6/BullSpace",
+    color: "from-emerald-500 to-green-600",
+  },
+  {
+    id: 3,
     title: "Zelo",
     livePreview: "chat",
     technologies: "TypeScript, Next.js, RabbitMQ, Cloudinary, Socket.IO, MongoDB, Docker, AWS",
@@ -44,23 +55,21 @@ const projects = [
     ],
     image: "/zelo.png",
     github: "https://github.com/khangpt2k6/Zelo",
-    category: "Full-Stack",
     color: "from-blue-500 to-cyan-600",
   },
   {
-    id: 3,
-    title: "Algovis",
-    livePreview: "merge-sort",
-    technologies: "Java, JavaFX",
+    id: 4,
+    title: "VaultX",
+    livePreview: "finance",
+    technologies: "Java, Spring Boot, PostgreSQL, H2 Database, Maven, React, Bootstrap",
     description: [
-      "Interactive algorithm visualization tool with dynamic animations for sorting algorithms.",
-      "Real-time performance analysis and comparison between different sorting techniques.",
-      "Educational interface designed to enhance understanding of algorithm complexity and behavior.",
+      "Comprehensive financial management platform combining traditional banking with advanced trading capabilities.",
+      "Built with Spring Boot backend and React frontend for managing customers, accounts, transactions, and trading portfolios.",
+      "Provides a secure, scalable solution with real-time portfolio tracking and transaction management.",
     ],
-    image: "/algovis.png",
-    github: "https://github.com/khangpt2k6/Algovis",
-    category: "Education",
-    color: "from-purple-500 to-pink-600",
+    image: "/vaultx.png",
+    github: "https://github.com/khangpt2k6/VaultX",
+    color: "from-blue-500 to-amber-500",
   },
 ];
 

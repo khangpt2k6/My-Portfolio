@@ -1,180 +1,186 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence, useMotionValue, useSpring } from "framer-motion";
-import {
-  Github,
-  ExternalLink,
-  X,
-  ArrowUpRight,
-  Code,
-  Sparkles,
-} from "lucide-react";
+import { Github, ExternalLink, X, Code, Sparkles } from "lucide-react";
 import projects from "../data/projects";
 import AnimatedHeading from "./AnimatedHeading";
-import MergeSortViz from "./MergeSortViz";
 import ChatViz from "./ChatViz";
 import NaviCVViz from "./NaviCVViz";
+import BullSpaceViz from "./BullSpaceViz";
+import VaultXViz from "./VaultXViz";
 
-/* ── 3D Tilt Wrapper ─────────────────────────────────────────────────────── */
-const Tilt3D = ({ children, className = "" }) => {
-  const ref = useRef(null);
-  const rotateX = useMotionValue(0);
-  const rotateY = useMotionValue(0);
-  const glareX = useMotionValue(50);
-  const glareY = useMotionValue(50);
-  const glareOpacity = useMotionValue(0);
-  const springX = useSpring(rotateX, { stiffness: 200, damping: 20 });
-  const springY = useSpring(rotateY, { stiffness: 200, damping: 20 });
-
-  const handleMouse = useCallback((e) => {
-    const el = ref.current;
-    if (!el) return;
-    const rect = el.getBoundingClientRect();
-    const x = (e.clientX - rect.left) / rect.width;
-    const y = (e.clientY - rect.top) / rect.height;
-    rotateX.set((y - 0.5) * -12);
-    rotateY.set((x - 0.5) * 12);
-    glareX.set(x * 100);
-    glareY.set(y * 100);
-    glareOpacity.set(0.15);
-  }, [rotateX, rotateY, glareX, glareY, glareOpacity]);
-
-  const handleLeave = useCallback(() => {
-    rotateX.set(0);
-    rotateY.set(0);
-    glareOpacity.set(0);
-  }, [rotateX, rotateY, glareOpacity]);
-
-  return (
-    <motion.div
-      ref={ref}
-      onMouseMove={handleMouse}
-      onMouseLeave={handleLeave}
-      style={{
-        rotateX: springX,
-        rotateY: springY,
-        transformStyle: "preserve-3d",
-        perspective: 1000,
-      }}
-      className={className}
-    >
-      {children}
-      {/* Specular glare overlay */}
-      <motion.div
-        className="pointer-events-none absolute inset-0 rounded-2xl z-20"
-        style={{
-          opacity: glareOpacity,
-          background: `radial-gradient(circle at ${glareX.get()}% ${glareY.get()}%, rgba(255,255,255,0.25), transparent 60%)`,
-        }}
-      />
-    </motion.div>
-  );
-};
-
-/* ── Live preview ──────────────────────────────────────────────────────────── */
+/* ── Live preview renderer ────────────────────────────────────────────────── */
 const LivePreview = ({ type, image, title, className = "" }) => {
   const bg = "bg-gradient-to-br from-gray-900 to-gray-800";
-  if (type === "merge-sort")
-    return <div className={`w-full h-full ${bg} ${className}`}><MergeSortViz /></div>;
   if (type === "chat")
     return <div className={`w-full h-full ${bg} ${className}`}><ChatViz /></div>;
   if (type === "job-search")
     return <div className={`w-full h-full ${bg} ${className}`}><NaviCVViz /></div>;
+  if (type === "room-booking")
+    return <div className={`w-full h-full ${bg} ${className}`}><BullSpaceViz /></div>;
+  if (type === "finance")
+    return <div className={`w-full h-full ${bg} ${className}`}><VaultXViz /></div>;
   return <img src={image} alt={title} className={`w-full h-full object-cover ${className}`} />;
 };
 
-/* ── Per-category accent ───────────────────────────────────────────────────── */
-const accents = {
-  "AI/ML":      { gradient: "from-indigo-600 to-cyan-500", badge: "bg-indigo-500/20 text-indigo-300 border-indigo-400/30" },
-  "Full-Stack": { gradient: "from-blue-600 to-violet-500", badge: "bg-blue-500/20 text-blue-300 border-blue-400/30" },
-  Education:    { gradient: "from-purple-600 to-pink-500", badge: "bg-purple-500/20 text-purple-300 border-purple-400/30" },
+/* ── Per-project accent color ─────────────────────────────────────────────── */
+const projectAccents = {
+  1: { line: "from-indigo-500 via-cyan-400 to-indigo-500", glow: "rgba(99,102,241,0.15)" },
+  2: { line: "from-emerald-500 via-green-400 to-emerald-500", glow: "rgba(16,185,129,0.15)" },
+  3: { line: "from-violet-500 via-blue-400 to-violet-500", glow: "rgba(139,92,246,0.15)" },
+  4: { line: "from-blue-500 via-amber-400 to-blue-500", glow: "rgba(59,130,246,0.15)" },
 };
 
-/* ── Project Card ──────────────────────────────────────────────────────────── */
-const ProjectCard = ({ project, index, onOpen, featured = false }) => {
-  const accent = accents[project.category] || accents["Full-Stack"];
+/* ── Project Showcase Row ─────────────────────────────────────────────────── */
+const ProjectRow = ({ project, index, onOpen }) => {
+  const isReversed = index % 2 !== 0;
+  const num = String(index + 1).padStart(2, "0");
+  const accent = projectAccents[project.id] || projectAccents[1];
+  const vizRef = useRef(null);
+
+  const handleGlow = useCallback((e) => {
+    const el = vizRef.current;
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    el.style.setProperty("--glow-x", `${e.clientX - rect.left}px`);
+    el.style.setProperty("--glow-y", `${e.clientY - rect.top}px`);
+  }, []);
 
   return (
     <motion.article
-      initial={{ opacity: 0, y: 40 }}
+      initial={{ opacity: 0, y: 60 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-40px" }}
-      transition={{ duration: 0.5, delay: index * 0.12, ease: [0.22, 1, 0.36, 1] }}
-      className={`group relative ${featured ? "md:col-span-2" : ""}`}
+      viewport={{ once: true, margin: "-80px" }}
+      transition={{ duration: 0.7, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+      className="group"
     >
-      <Tilt3D className="relative h-full">
-      <div
-        onClick={() => onOpen(project)}
-        onMouseMove={(e) => {
-          const rect = e.currentTarget.getBoundingClientRect();
-          e.currentTarget.style.setProperty("--glow-x", `${e.clientX - rect.left}px`);
-          e.currentTarget.style.setProperty("--glow-y", `${e.clientY - rect.top}px`);
-        }}
-        className={`relative h-full rounded-2xl overflow-hidden cursor-pointer
-          bg-[var(--color-surface)] border border-[var(--color-border)]
-          transition-all duration-500 glow-on-hover
-          hover:shadow-[0_24px_64px_-12px_rgba(0,0,0,0.25)]
-          ${featured ? "animated-border" : ""}`}
+      <div className={`flex flex-col ${isReversed ? "lg:flex-row-reverse" : "lg:flex-row"} gap-0 lg:gap-0
+        rounded-3xl overflow-hidden border border-[var(--color-border)] bg-[var(--color-surface)]
+        transition-all duration-500 hover:shadow-[0_32px_80px_-16px_rgba(0,0,0,0.2)]`}
       >
-        <div className={`relative overflow-hidden ${featured ? "h-52 sm:h-60 lg:h-72" : "h-44 sm:h-52"}`}>
+        {/* ── Viz Side ── */}
+        <div
+          ref={vizRef}
+          onMouseMove={handleGlow}
+          onClick={() => onOpen(project)}
+          className="relative w-full lg:w-[55%] h-64 sm:h-72 lg:h-[340px] cursor-pointer overflow-hidden glow-on-hover"
+        >
           <LivePreview
             type={project.livePreview}
             image={project.image}
             title={project.title}
-            className="transition-transform duration-700 ease-out group-hover:scale-105"
+            className="transition-transform duration-700 ease-out group-hover:scale-[1.03]"
           />
-          <div className={`absolute top-0 inset-x-0 h-1 bg-gradient-to-r ${accent.gradient}`} />
-          <div className="absolute bottom-0 inset-x-0 h-20 bg-gradient-to-t from-[var(--color-surface)] to-transparent pointer-events-none" />
-          <span className={`absolute top-4 left-4 inline-flex items-center px-3 py-1 rounded-full text-xs font-bold backdrop-blur-md border ${accent.badge}`}>
-            {project.category}
-          </span>
-          <div className="absolute bottom-4 right-4 flex gap-2 opacity-0 translate-y-3 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 delay-75">
-            <a href={project.github} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()}
-              className="p-2 bg-black/60 backdrop-blur-md rounded-lg text-white/80 hover:text-white hover:bg-black/80 transition-all">
-              <Github className="w-4 h-4" />
-            </a>
-            {project.demo && (
-              <a href={project.demo} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()}
-                className="p-2 bg-black/60 backdrop-blur-md rounded-lg text-white/80 hover:text-white hover:bg-black/80 transition-all">
-                <ExternalLink className="w-4 h-4" />
-              </a>
-            )}
-          </div>
+          {/* Gradient accent line along the edge */}
+          <div className={`absolute ${isReversed ? "left-0 top-0 bottom-0 w-[3px]" : "right-0 top-0 bottom-0 w-[3px]"}
+            bg-gradient-to-b ${accent.line} opacity-0 group-hover:opacity-100 transition-opacity duration-500 hidden lg:block`} />
+          {/* Bottom fade for mobile */}
+          <div className="absolute bottom-0 inset-x-0 h-12 bg-gradient-to-t from-[var(--color-surface)] to-transparent pointer-events-none lg:hidden" />
         </div>
 
-        <div className="p-5 sm:p-6">
-          <div className="flex items-center justify-between gap-3 mb-2">
-            <h3 className="text-lg sm:text-xl font-bold text-[var(--color-text)] transition-colors duration-300">
-              {project.title}
-            </h3>
-            <ArrowUpRight className="w-5 h-5 flex-shrink-0 text-[var(--color-text-muted)] opacity-0 group-hover:opacity-70 transition-all duration-300" />
-          </div>
-          <p className="text-sm text-[var(--color-text-muted)] leading-relaxed mb-4 line-clamp-2">
+        {/* ── Content Side ── */}
+        <div className="relative w-full lg:w-[45%] p-6 sm:p-8 lg:p-10 flex flex-col justify-center">
+          {/* Project number */}
+          <span
+            className="absolute top-6 right-6 lg:top-8 lg:right-8 font-bold text-[var(--color-border)] select-none pointer-events-none"
+            style={{ fontSize: "clamp(48px, 6vw, 72px)", lineHeight: 1 }}
+          >
+            {num}
+          </span>
+
+          {/* Title */}
+          <motion.h3
+            className="text-2xl sm:text-3xl lg:text-4xl font-bold text-[var(--color-text)] mb-3 relative z-10"
+            initial={{ opacity: 0, x: isReversed ? 20 : -20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+          >
+            {project.title}
+          </motion.h3>
+
+          {/* Description */}
+          <motion.p
+            className="text-[var(--color-text-muted)] leading-relaxed mb-6 text-sm sm:text-base relative z-10 max-w-md"
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+          >
             {project.description[0]}
-          </p>
-          <div className="flex flex-wrap gap-1.5">
-            {project.technologies.split(", ").slice(0, featured ? 6 : 4).map((tech) => (
-              <span key={tech} className="text-[11px] px-2 py-0.5 rounded-md font-medium bg-[var(--color-bg)] text-[var(--color-text-muted)] border border-[var(--color-border)]">
+          </motion.p>
+
+          {/* Tech stack */}
+          <motion.div
+            className="flex flex-wrap gap-2 mb-6 relative z-10"
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.4 }}
+          >
+            {project.technologies.split(", ").map((tech) => (
+              <span
+                key={tech}
+                className="text-xs px-3 py-1 rounded-full font-medium
+                  bg-[var(--color-surface2)] text-[var(--color-text-muted)]
+                  border border-[var(--color-border)] transition-colors duration-200
+                  hover:border-[var(--color-primary)]/40 hover:text-[var(--color-text)]"
+              >
                 {tech}
               </span>
             ))}
-            {project.technologies.split(", ").length > (featured ? 6 : 4) && (
-              <span className="text-[11px] px-2 py-0.5 rounded-md font-semibold bg-[var(--color-primary)]/10 text-[var(--color-primary)]">
-                +{project.technologies.split(", ").length - (featured ? 6 : 4)}
-              </span>
+          </motion.div>
+
+          {/* Actions */}
+          <motion.div
+            className="flex items-center gap-3 relative z-10"
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.5 }}
+          >
+            <a
+              href={project.github}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold
+                bg-[var(--color-surface2)] text-[var(--color-text)] border border-[var(--color-border)]
+                hover:border-[var(--color-primary)] hover:text-[var(--color-primary)] transition-all duration-200"
+            >
+              <Github className="w-4 h-4" />
+              Code
+            </a>
+            {project.demo && (
+              <a
+                href={project.demo}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white
+                  transition-all duration-200 shadow-lg hover:shadow-xl hover:brightness-110"
+                style={{ background: "linear-gradient(135deg, var(--color-primary), var(--color-secondary))" }}
+              >
+                <ExternalLink className="w-4 h-4" />
+                Live Demo
+              </a>
             )}
-          </div>
+            <button
+              onClick={() => onOpen(project)}
+              className="ml-auto text-xs text-[var(--color-text-muted)] hover:text-[var(--color-primary)]
+                transition-colors duration-200 underline underline-offset-2 decoration-[var(--color-border)]
+                hover:decoration-[var(--color-primary)]"
+            >
+              Details
+            </button>
+          </motion.div>
         </div>
       </div>
-      </Tilt3D>
     </motion.article>
   );
 };
 
-/* ── Project Detail Modal (portaled to body) ───────────────────────────────── */
+/* ── Project Detail Modal ─────────────────────────────────────────────────── */
 const ProjectModal = ({ project, onClose }) => {
   const modalRef = useRef(null);
-  const accent = accents[project.category] || accents["Full-Stack"];
 
   useEffect(() => {
     document.body.style.overflow = "hidden";
@@ -196,10 +202,8 @@ const ProjectModal = ({ project, onClose }) => {
         if (modalRef.current && !modalRef.current.contains(e.target)) onClose();
       }}
     >
-      {/* Backdrop */}
       <div className="absolute inset-0 bg-black/80 backdrop-blur-md" />
 
-      {/* Modal card */}
       <motion.div
         ref={modalRef}
         initial={{ opacity: 0, scale: 0.95, y: 20 }}
@@ -210,31 +214,22 @@ const ProjectModal = ({ project, onClose }) => {
           bg-[var(--color-surface)] border border-[var(--color-border)]
           shadow-[0_32px_80px_-12px_rgba(0,0,0,0.5)]"
       >
-        {/* ── Preview ── */}
         <div className="relative h-48 sm:h-60 overflow-hidden">
           <LivePreview type={project.livePreview} image={project.image} title={project.title} />
-          <div className={`absolute top-0 inset-x-0 h-1 bg-gradient-to-r ${accent.gradient}`} />
           <div className="absolute bottom-0 inset-x-0 h-16 bg-gradient-to-t from-[var(--color-surface)] to-transparent pointer-events-none" />
-
           <button
             onClick={onClose}
             className="absolute top-3 right-3 p-2 bg-black/50 backdrop-blur-md rounded-xl text-white/80 hover:text-white hover:bg-red-500/80 transition-all"
           >
             <X className="w-4 h-4" />
           </button>
-
-          <span className={`absolute top-3 left-4 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold backdrop-blur-md border ${accent.badge}`}>
-            {project.category}
-          </span>
         </div>
 
-        {/* ── Content ── */}
         <div className="px-6 sm:px-8 pb-6 -mt-2">
           <h3 className="text-xl sm:text-2xl font-bold text-[var(--color-text)] mb-5">
             {project.title}
           </h3>
 
-          {/* Tech stack */}
           <div className="mb-5">
             <div className="flex items-center gap-2 mb-2">
               <Code className="w-3.5 h-3.5 text-[var(--color-primary)]" />
@@ -249,7 +244,6 @@ const ProjectModal = ({ project, onClose }) => {
             </div>
           </div>
 
-          {/* Overview */}
           <div className="mb-6">
             <div className="flex items-center gap-2 mb-2">
               <Sparkles className="w-3.5 h-3.5 text-[var(--color-primary)]" />
@@ -265,7 +259,6 @@ const ProjectModal = ({ project, onClose }) => {
             </div>
           </div>
 
-          {/* Actions */}
           <div className="flex flex-wrap gap-3">
             <a href={project.github} target="_blank" rel="noopener noreferrer"
               className="inline-flex items-center gap-2 px-4 py-2 bg-[var(--color-bg)] border border-[var(--color-border)] text-[var(--color-text)] rounded-xl text-sm font-semibold hover:border-[var(--color-primary)] transition-all">
@@ -274,7 +267,7 @@ const ProjectModal = ({ project, onClose }) => {
             {project.demo && (
               <a href={project.demo} target="_blank" rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 px-4 py-2 text-white rounded-xl text-sm font-semibold transition-all shadow-lg hover:shadow-xl hover:brightness-110"
-                style={{ background: "linear-gradient(135deg, rgb(var(--color-primary-rgb)), rgb(var(--color-secondary-rgb)))" }}>
+                style={{ background: "linear-gradient(135deg, var(--color-primary), var(--color-secondary))" }}>
                 <ExternalLink className="w-4 h-4" /> Live Demo
               </a>
             )}
@@ -294,34 +287,34 @@ const Projects = () => {
     <>
       <section className="relative min-h-screen pt-24 pb-28 bg-[var(--color-bg)] dark:bg-transparent">
         <div className="relative mx-auto max-w-6xl px-4 sm:px-6">
-          <div className="text-center mb-14">
-            <AnimatedHeading>Portfolio</AnimatedHeading>
+          {/* Header */}
+          <div className="text-center mb-16">
+            <AnimatedHeading>Projects</AnimatedHeading>
             <motion.p
               initial={{ opacity: 0, y: 12 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.3, duration: 0.5 }}
-              className="text-[var(--color-text-muted)] mt-3 text-sm sm:text-base max-w-md mx-auto"
+              className="text-[var(--color-text-muted)] mt-3 text-sm sm:text-base max-w-lg mx-auto"
             >
-              A selection of projects I've built — from AI systems to real-time apps.
+              Real problems I've solved — from AI career tools to campus infrastructure.
             </motion.p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
+          {/* Project rows */}
+          <div className="space-y-10 lg:space-y-14">
             {projects.map((project, i) => (
-              <ProjectCard
+              <ProjectRow
                 key={project.id}
                 project={project}
                 index={i}
                 onOpen={setActiveProject}
-                featured={i === 0}
               />
             ))}
           </div>
         </div>
       </section>
 
-      {/* Modal portaled to body — fully independent of section layout */}
       <AnimatePresence>
         {activeProject && (
           <ProjectModal
