@@ -15,7 +15,7 @@ import {
   Minimize,
   FlipHorizontal2,
 } from "lucide-react";
-import AnimatedHeading from "./AnimatedHeading";
+import AnimatedHeading from "./ui/AnimatedHeading";
 
 /* ── Brush modes ──────────────────────────────────────────────────────────── */
 const MODES = [

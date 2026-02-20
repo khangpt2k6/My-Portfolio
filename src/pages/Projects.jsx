@@ -3,11 +3,11 @@ import { createPortal } from "react-dom";
 import { motion, AnimatePresence, useMotionValue, useSpring } from "framer-motion";
 import { Github, ExternalLink, X, Code, Sparkles } from "lucide-react";
 import projects from "../data/projects";
-import AnimatedHeading from "./AnimatedHeading";
-import ChatViz from "./ChatViz";
-import NaviCVViz from "./NaviCVViz";
-import BullSpaceViz from "./BullSpaceViz";
-import VaultXViz from "./VaultXViz";
+import AnimatedHeading from "../components/ui/AnimatedHeading";
+import ChatViz from "../components/viz/ChatViz";
+import NaviCVViz from "../components/viz/NaviCVViz";
+import BullSpaceViz from "../components/viz/BullSpaceViz";
+import VaultXViz from "../components/viz/VaultXViz";
 
 /* ── Live preview renderer ────────────────────────────────────────────────── */
 const LivePreview = ({ type, image, title, className = "" }) => {

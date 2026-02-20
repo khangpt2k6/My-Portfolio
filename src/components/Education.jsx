@@ -4,8 +4,8 @@ import { useInView, useMotionValue, useTransform, animate } from "framer-motion"
 import Tilt from "react-parallax-tilt";
 import { Award, MapPin, GraduationCap } from "lucide-react";
 import education from "../data/education";
-import FadeInView from "./FadeInView";
-import AnimatedHeading from "./AnimatedHeading";
+import FadeInView from "./ui/FadeInView";
+import AnimatedHeading from "./ui/AnimatedHeading";
 
 const isTouchDevice =
   typeof window !== "undefined" && "ontouchstart" in window;
