@@ -56,7 +56,22 @@ const AuroraBg = () => {
     window.addEventListener("mousemove", onMove);
 
     let t = 0;
+    let paused = false;
+
+    /* Pause when tab is hidden */
+    const onVisibilityChange = () => {
+      if (document.hidden) {
+        paused = true;
+        cancelAnimationFrame(animRef.current);
+      } else {
+        paused = false;
+        animRef.current = requestAnimationFrame(animate);
+      }
+    };
+    document.addEventListener("visibilitychange", onVisibilityChange);
+
     const animate = () => {
+      if (paused) return;
       t += 1;
       const w = canvas.width;
       const h = canvas.height;
@@ -99,8 +114,10 @@ const AuroraBg = () => {
     animRef.current = requestAnimationFrame(animate);
 
     return () => {
+      paused = true;
       window.removeEventListener("resize", resize);
       window.removeEventListener("mousemove", onMove);
+      document.removeEventListener("visibilitychange", onVisibilityChange);
       if (animRef.current) cancelAnimationFrame(animRef.current);
     };
   }, [isLight]);

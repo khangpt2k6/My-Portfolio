@@ -34,7 +34,7 @@ const StarfieldBg = () => {
   /* ── Three.js scene ── */
   useEffect(() => {
     const container = mountRef.current;
-    if (!container) return;
+    if (!container || !isDark) return; // Skip entire WebGL pipeline in light mode
 
     /* Respect reduced-motion preference */
     const prefersReduced =
@@ -242,8 +242,23 @@ const StarfieldBg = () => {
     let animationId;
     const clock = new THREE.Clock();
     let elapsed = 0;
+    let paused = false;
+
+    /* Pause when tab is hidden to save GPU cycles */
+    const onVisibilityChange = () => {
+      if (document.hidden) {
+        paused = true;
+        cancelAnimationFrame(animationId);
+      } else {
+        paused = false;
+        clock.getDelta(); // flush stale delta
+        animate();
+      }
+    };
+    document.addEventListener("visibilitychange", onVisibilityChange);
 
     const animate = () => {
+      if (paused) return;
       animationId = requestAnimationFrame(animate);
       const delta = clock.getDelta();
       elapsed += delta;
@@ -324,7 +339,9 @@ const StarfieldBg = () => {
        CLEANUP
        ================================================================ */
     return () => {
+      paused = true;
       cancelAnimationFrame(animationId);
+      document.removeEventListener("visibilitychange", onVisibilityChange);
       window.removeEventListener("mousemove", onMouseMove);
       window.removeEventListener("resize", onResize);
 

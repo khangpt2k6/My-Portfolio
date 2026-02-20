@@ -29,23 +29,27 @@ const TrailCursor = () => {
     resize();
     window.addEventListener("resize", resize);
 
+    let movePending = false;
     const onMove = (e) => {
       mouseRef.current = { x: e.clientX, y: e.clientY };
-      // Spawn trail points
-      for (let i = 0; i < 2; i++) {
+      if (movePending) return;
+      movePending = true;
+      requestAnimationFrame(() => {
+        movePending = false;
+        const { x, y } = mouseRef.current;
         pointsRef.current.push({
-          x: e.clientX + (Math.random() - 0.5) * 4,
-          y: e.clientY + (Math.random() - 0.5) * 4,
+          x: x + (Math.random() - 0.5) * 4,
+          y: y + (Math.random() - 0.5) * 4,
           vx: (Math.random() - 0.5) * 1.5,
           vy: (Math.random() - 0.5) * 1.5 - 0.5,
           life: 1,
           size: Math.random() * 4 + 2,
-          hue: Math.random() * 60 + 230, // indigo-cyan range
+          hue: Math.random() * 60 + 230,
         });
-      }
-      if (pointsRef.current.length > 300) {
-        pointsRef.current.splice(0, pointsRef.current.length - 300);
-      }
+        if (pointsRef.current.length > 150) {
+          pointsRef.current.splice(0, pointsRef.current.length - 150);
+        }
+      });
     };
     window.addEventListener("mousemove", onMove);
 

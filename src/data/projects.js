@@ -26,7 +26,6 @@ const projects = [
     ],
     image: "/navicv.png",
     github: "https://github.com/khangpt2k6/NaviCV",
-    demo: "https://navicv.vps.phuchoang.sbs/",
     color: "from-indigo-500 to-cyan-600",
   },
   {
