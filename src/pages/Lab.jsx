@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, BarChart3, Grid3X3, GitBranch } from "lucide-react";
+import { Paintbrush, BarChart3, Grid3X3, GitBranch } from "lucide-react";
 import Playground from "../components/Playground";
 import { SortingVisualizer, PathfindingVisualizer, TreeVisualizer } from "../components/AlgoVisualizer";
 
 // ── Tabs ────────────────────────────────────────────────────────────────────
 const TABS = [
-  { id: "playground", label: "Playground", icon: Sparkles, desc: "Draw with particles & physics" },
+  { id: "playground", label: "Artpad", icon: Paintbrush, desc: "Draw, paint & create — like Paint" },
   { id: "sorting", label: "Sorting", icon: BarChart3, desc: "Watch algorithms race to sort" },
   { id: "pathfinding", label: "Pathfinding", icon: Grid3X3, desc: "Find the shortest path" },
   { id: "tree", label: "Binary Tree", icon: GitBranch, desc: "Explore tree structures" },
@@ -28,7 +28,7 @@ const Lab = () => {
           Interactive <span style={{ color: "var(--color-primary)" }}>Lab</span>
         </h1>
         <p className="text-[var(--color-text-muted)] text-sm max-w-lg mx-auto">
-          Explore creative particle physics, sorting algorithms, pathfinding, and data structures — all interactive.
+          Paint, draw & create art, explore sorting algorithms, pathfinding, and data structures — all interactive.
         </p>
       </motion.div>
 
