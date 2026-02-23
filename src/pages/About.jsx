@@ -1,6 +1,7 @@
 "use client";
-// test_8  co-authored with Claude
+// test_1  co-authored with Claude
 
+// About page — co-authored with Claude
 import { useRef } from "react";
 import { motion, useScroll, useTransform, useSpring } from "framer-motion";
 import { FaGithub, FaLinkedin, FaEnvelope } from "react-icons/fa";
