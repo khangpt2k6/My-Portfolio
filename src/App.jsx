@@ -13,7 +13,7 @@ import CustomCursor from "./components/ui/CustomCursor"
 import MiniPlayer from "./components/ui/MiniPlayer"
 import ContactChat from "./components/ui/ContactChat"
 
-// ── Lazy-loaded page components (code splitting) ────────────────────────────
+// ── Lazy-loaded page components (code-splitting) ────────────────────────────
 const Hero = lazy(() => import("./pages/Hero"))
 const About = lazy(() => import("./pages/About"))
 const Experience = lazy(() => import("./pages/Experience"))

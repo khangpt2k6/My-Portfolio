@@ -1,7 +1,7 @@
 /**
  * Hero / About Data
  * -------------------------------------------------------
- * Edit this file to update your bio, titles, and social links.
+ * Edit this file to update bio, titles, and social links.
  */
 
 const hero = {
