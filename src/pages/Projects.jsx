@@ -4,24 +4,10 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Github, ExternalLink, X, Code, Sparkles } from "lucide-react";
 import projects from "../data/projects";
 import AnimatedHeading from "../components/ui/AnimatedHeading";
-import ChatViz from "../components/viz/ChatViz";
-import NaviCVViz from "../components/viz/NaviCVViz";
-import BullSpaceViz from "../components/viz/BullSpaceViz";
-import VaultXViz from "../components/viz/VaultXViz";
-
-/* ── Live preview renderer ────────────────────────────────────────────────── */
-const LivePreview = ({ type, image, title, className = "" }) => {
-  const bg = "bg-gradient-to-br from-gray-900 to-gray-800";
-  if (type === "chat")
-    return <div className={`w-full h-full ${bg} ${className}`}><ChatViz /></div>;
-  if (type === "job-search")
-    return <div className={`w-full h-full ${bg} ${className}`}><NaviCVViz /></div>;
-  if (type === "room-booking")
-    return <div className={`w-full h-full ${bg} ${className}`}><BullSpaceViz /></div>;
-  if (type === "finance")
-    return <div className={`w-full h-full ${bg} ${className}`}><VaultXViz /></div>;
-  return <img src={image} alt={title} className={`w-full h-full object-cover ${className}`} />;
-};
+/* ── Project image renderer ────────────────────────────────────────────────── */
+const ProjectImage = ({ image, title, className = "" }) => (
+  <img src={image} alt={title} className={`w-full h-full object-cover ${className}`} />
+);
 
 /* ── Per-project accent ───────────────────────────────────────────────────── */
 const projectAccents = {
@@ -119,8 +105,7 @@ const ProjectRow = ({ project, index, onOpen }) => {
               onClick={() => onOpen(project)}
               className="relative h-64 sm:h-72 lg:h-[360px] cursor-pointer overflow-hidden"
             >
-              <LivePreview
-                type={project.livePreview}
+              <ProjectImage
                 image={project.image}
                 title={project.title}
                 className="transition-transform duration-700 ease-out group-hover:scale-[1.04]"
@@ -315,7 +300,7 @@ const ProjectModal = ({ project, onClose }) => {
         />
 
         <div className="relative h-48 sm:h-60 overflow-hidden">
-          <LivePreview type={project.livePreview} image={project.image} title={project.title} />
+          <ProjectImage image={project.image} title={project.title} />
           <div className="absolute bottom-0 inset-x-0 h-16 bg-gradient-to-t from-[var(--color-surface)] to-transparent pointer-events-none" />
           <button
             onClick={onClose}
