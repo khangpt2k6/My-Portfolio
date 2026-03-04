@@ -8,7 +8,7 @@
  *   description  - Array of description paragraphs
  *   image        - Path to screenshot in /public (fallback)
  *   github       - GitHub repo URL
- *   demo         - (optional) Live demo URL
+ *   demo         - (Optional) Live demo URL
  *   livePreview  - "chat" | "job-search" | "room-booking" | "finance"
  *   color        - Tailwind gradient classes for accent
  */
@@ -24,7 +24,7 @@ const projects = [
       "Leverages machine learning, semantic search, and vector embeddings to deliver highly relevant career opportunities.",
       "Features automated deployment pipeline with Docker containerization and CI/CD integration.",
     ],
-    image: "/navicv.png",
+    image: "/navi-cv.png",
     github: "https://github.com/khangpt2k6/NaviCV",
     color: "from-indigo-500 to-cyan-600",
   },
@@ -38,7 +38,7 @@ const projects = [
       "Students can browse, book, and get real-time availability updates instead of walking floor to floor checking doors.",
       "Uses microservice architecture with message queuing for reliable booking and real-time sync across all clients.",
     ],
-    image: "/bullspace.png",
+    image: "/bull_space.jpg",
     github: "https://github.com/khangpt2k6/BullSpace",
     color: "from-emerald-500 to-green-600",
   },
@@ -52,7 +52,7 @@ const projects = [
       "Implements message queuing with RabbitMQ and WebSocket connections for instant communication.",
       "Features media sharing via Cloudinary integration and cloud deployment on AWS infrastructure.",
     ],
-    image: "/zelo.png",
+    image: "/campusconnect.jpg",
     github: "https://github.com/khangpt2k6/CampusConnect",
     color: "from-blue-500 to-cyan-600",
   },
@@ -66,7 +66,7 @@ const projects = [
       "Built with Spring Boot backend and React frontend for managing customers, accounts, transactions, and trading portfolios.",
       "Provides a secure, scalable solution with real-time portfolio tracking and transaction management.",
     ],
-    image: "/vaultx.png",
+    image: "/vaultX.png",
     github: "https://github.com/khangpt2k6/VaultX",
     color: "from-blue-500 to-amber-500",
   },
