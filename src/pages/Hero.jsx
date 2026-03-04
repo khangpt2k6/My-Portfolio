@@ -7,6 +7,7 @@ import {
   useScroll,
 } from "framer-motion";
 import { TypeAnimation } from "react-type-animation";
+import { Terminal } from "lucide-react";
 import hero from "../data/hero";
 
 const buildSequence = (titles) => titles.flatMap((t) => [t, 2200]);
@@ -357,12 +358,25 @@ const Hero = () => {
           className="mb-5"
         >
           <span
-            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold tracking-widest uppercase
-                       bg-[var(--color-primary)]/10 text-[var(--color-primary)] border border-[var(--color-primary)]/20"
-            style={{ fontFamily: "var(--font-display)" }}
+            className="group/tag relative inline-flex items-center gap-3 px-5 py-2.5 rounded-2xl text-sm font-bold
+                       bg-[var(--color-surface)]/80 backdrop-blur-xl text-[var(--color-text)]
+                       border border-[var(--color-border)] shadow-lg
+                       hover:border-[var(--color-primary)]/40 hover:shadow-[0_0_24px_rgba(99,102,241,0.15)]
+                       transition-all duration-500 cursor-default overflow-hidden"
           >
-            <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-primary)] animate-pulse" />
-            {hero.tagline}
+            {/* Animated gradient bg on hover */}
+            <span className="absolute inset-0 bg-gradient-to-r from-[var(--color-primary)]/5 via-transparent to-[var(--color-primary)]/5 opacity-0 group-hover/tag:opacity-100 transition-opacity duration-500" />
+
+            {/* Terminal icon */}
+            <Terminal className="relative w-4 h-4 text-[var(--color-primary)]" />
+
+            {/* Text */}
+            <span className="relative tracking-wide" style={{ fontFamily: "var(--font-display)" }}>
+              {hero.tagline}
+            </span>
+
+            {/* Blinking cursor */}
+            <span className="relative w-[2px] h-4 bg-[var(--color-primary)] rounded-full animate-pulse" />
           </span>
         </motion.div>
 
