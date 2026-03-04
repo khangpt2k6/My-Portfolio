@@ -1,9 +1,15 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   BarChart3, GitBranch, Grid3X3, Play, Pause, RotateCcw,
   Shuffle, ChevronDown, Zap, Minus, Plus
 } from "lucide-react";
+import useAlgoPlayer from "./algo/useAlgoPlayer";
+import AlgoControls from "./algo/AlgoControls";
+import StepInfo from "./algo/StepInfo";
+import { SORTING_GENERATORS } from "./algo/algorithms/sorting";
+import { generatePathSteps, CELL } from "./algo/algorithms/pathfinding";
+import { generateTraversalSteps } from "./algo/algorithms/tree";
 
 // ── Tabs ────────────────────────────────────────────────────────────────────
 const TABS = [
@@ -23,40 +29,55 @@ function generateArray(size) {
 
 function SortingVisualizer() {
   const [array, setArray] = useState(() => generateArray(50));
-  const [sorting, setSorting] = useState(false);
   const [algo, setAlgo] = useState("Quick Sort");
-  const [speed, setSpeed] = useState(20);
-  const [comparisons, setComparisons] = useState(0);
-  const [swaps, setSwaps] = useState(0);
-  const [highlighted, setHighlighted] = useState([]);
-  const [sorted, setSorted] = useState([]);
-  const [pivot, setPivot] = useState(-1);
-  const stopRef = useRef(false);
+  const [arraySize, setArraySize] = useState(50);
+  const [steps, setSteps] = useState([]);
   const canvasRef = useRef(null);
+  const player = useAlgoPlayer(steps);
 
-  const delay = useCallback(() => new Promise(r => setTimeout(r, Math.max(1, 100 - speed * 2))), [speed]);
-
-  const reset = () => {
-    stopRef.current = true;
-    setTimeout(() => {
-      stopRef.current = false;
-      setArray(generateArray(50));
-      setComparisons(0);
-      setSwaps(0);
-      setHighlighted([]);
-      setSorted([]);
-      setPivot(-1);
-      setSorting(false);
-    }, 50);
+  const handleSizeChange = (size) => {
+    setArraySize(size);
+    const newArr = generateArray(size);
+    setArray(newArr);
+    setSteps([]);
   };
 
   const shuffle = () => {
-    if (sorting) return;
-    setArray(generateArray(50));
-    setComparisons(0);
-    setSwaps(0);
-    setSorted([]);
+    const newArr = generateArray(arraySize);
+    setArray(newArr);
+    setSteps([]);
   };
+
+  const generate = () => {
+    const gen = SORTING_GENERATORS[algo];
+    if (!gen) return;
+    const newSteps = gen(array);
+    setSteps(newSteps);
+  };
+
+  // Get current visual state from step
+  const visual = useMemo(() => {
+    const step = player.currentStepData;
+    if (!step) return { array, highlighted: [], sorted: [], pivot: -1 };
+    return {
+      array: step.array,
+      highlighted: step.indices || [],
+      sorted: step.sorted || [],
+      pivot: step.pivot ?? -1,
+    };
+  }, [player.currentStepData, array]);
+
+  // Derive stats from steps up to current
+  const stats = useMemo(() => {
+    if (steps.length === 0) return [];
+    const upTo = steps.slice(0, player.currentStep + 1);
+    const comparisons = upTo.filter(s => s.type === "compare").length;
+    const swaps = upTo.filter(s => s.type === "swap").length;
+    return [
+      { label: "Comparisons", value: comparisons },
+      { label: "Swaps", value: swaps },
+    ];
+  }, [steps, player.currentStep]);
 
   // ── Draw bars on canvas ──────────────────────────────────────────────────
   useEffect(() => {
@@ -71,29 +92,29 @@ function SortingVisualizer() {
 
     const w = rect.width;
     const h = rect.height;
-    const barW = w / array.length;
+    const arr = visual.array;
+    const barW = w / arr.length;
     const maxVal = 100;
 
     ctx.clearRect(0, 0, w, h);
 
-    array.forEach((val, i) => {
+    arr.forEach((val, i) => {
       const barH = (val / maxVal) * (h - 10);
       const x = i * barW;
       const y = h - barH;
 
       let color;
-      if (sorted.includes(i)) {
-        color = "#34d399"; // green for sorted
-      } else if (i === pivot) {
-        color = "#f59e0b"; // amber for pivot
-      } else if (highlighted.includes(i)) {
-        color = "#f43f5e"; // red for comparing
+      if (visual.sorted.includes(i)) {
+        color = "#34d399";
+      } else if (i === visual.pivot) {
+        color = "#f59e0b";
+      } else if (visual.highlighted.includes(i)) {
+        color = "#f43f5e";
       } else {
-        // gradient based on value
         const t = val / maxVal;
         const r = Math.round(99 + t * 60);
         const g = Math.round(102 + t * 80);
-        const b = Math.round(241);
+        const b = 241;
         color = `rgb(${r}, ${g}, ${b})`;
       }
 
@@ -111,154 +132,49 @@ function SortingVisualizer() {
       ctx.fillStyle = color;
       ctx.fill();
 
-      // subtle glow for highlighted
-      if (highlighted.includes(i) || i === pivot) {
+      // Glow for highlighted/pivot
+      if (visual.highlighted.includes(i) || i === visual.pivot) {
         ctx.shadowColor = color;
         ctx.shadowBlur = 12;
         ctx.fill();
         ctx.shadowBlur = 0;
       }
-    });
-  }, [array, highlighted, sorted, pivot]);
 
-  // ── Sorting algorithms ───────────────────────────────────────────────────
-  const sort = async () => {
-    setSorting(true);
-    setComparisons(0);
-    setSwaps(0);
-    setSorted([]);
-    setPivot(-1);
-    stopRef.current = false;
-
-    const arr = [...array];
-    let compCount = 0;
-    let swapCount = 0;
-
-    const update = (h = [], p = -1) => {
-      if (stopRef.current) throw new Error("stopped");
-      setArray([...arr]);
-      setHighlighted(h);
-      setPivot(p);
-      setComparisons(compCount);
-      setSwaps(swapCount);
-    };
-
-    const swap = (i, j) => { [arr[i], arr[j]] = [arr[j], arr[i]]; swapCount++; };
-
-    try {
-      switch (algo) {
-        case "Bubble Sort": {
-          for (let i = 0; i < arr.length; i++) {
-            for (let j = 0; j < arr.length - i - 1; j++) {
-              compCount++;
-              update([j, j + 1]);
-              if (arr[j] > arr[j + 1]) { swap(j, j + 1); update([j, j + 1]); }
-              await delay();
-            }
-            setSorted(prev => [...prev, arr.length - i - 1]);
-          }
-          break;
-        }
-        case "Selection Sort": {
-          for (let i = 0; i < arr.length; i++) {
-            let minIdx = i;
-            for (let j = i + 1; j < arr.length; j++) {
-              compCount++;
-              update([j, minIdx], i);
-              if (arr[j] < arr[minIdx]) minIdx = j;
-              await delay();
-            }
-            if (minIdx !== i) { swap(i, minIdx); update([i, minIdx]); }
-            setSorted(prev => [...prev, i]);
-            await delay();
-          }
-          break;
-        }
-        case "Insertion Sort": {
-          setSorted([0]);
-          for (let i = 1; i < arr.length; i++) {
-            let j = i;
-            while (j > 0 && arr[j - 1] > arr[j]) {
-              compCount++;
-              swap(j, j - 1);
-              update([j, j - 1]);
-              j--;
-              await delay();
-            }
-            compCount++;
-            setSorted(prev => [...prev, i]);
-          }
-          break;
-        }
-        case "Quick Sort": {
-          const qs = async (lo, hi) => {
-            if (lo >= hi || stopRef.current) return;
-            const pivotVal = arr[hi];
-            update([], hi);
-            let i = lo;
-            for (let j = lo; j < hi; j++) {
-              compCount++;
-              update([j, i], hi);
-              if (arr[j] < pivotVal) { swap(i, j); update([j, i], hi); i++; }
-              await delay();
-            }
-            swap(i, hi);
-            update([i], -1);
-            setSorted(prev => [...prev, i]);
-            await delay();
-            await qs(lo, i - 1);
-            await qs(i + 1, hi);
-          };
-          await qs(0, arr.length - 1);
-          break;
-        }
-        case "Merge Sort": {
-          const ms = async (lo, hi) => {
-            if (lo >= hi || stopRef.current) return;
-            const mid = Math.floor((lo + hi) / 2);
-            await ms(lo, mid);
-            await ms(mid + 1, hi);
-            // merge
-            const left = arr.slice(lo, mid + 1);
-            const right = arr.slice(mid + 1, hi + 1);
-            let i = 0, j = 0, k = lo;
-            while (i < left.length && j < right.length) {
-              compCount++;
-              update([k], -1);
-              if (left[i] <= right[j]) { arr[k] = left[i]; i++; }
-              else { arr[k] = right[j]; j++; }
-              k++;
-              swapCount++;
-              update([k - 1]);
-              await delay();
-            }
-            while (i < left.length) { arr[k] = left[i]; i++; k++; update([k - 1]); await delay(); }
-            while (j < right.length) { arr[k] = right[j]; j++; k++; update([k - 1]); await delay(); }
-          };
-          await ms(0, arr.length - 1);
-          break;
-        }
+      // Show values on bars when array is small enough
+      if (arr.length <= 30) {
+        ctx.fillStyle = barH > 20 ? "#fff" : "var(--color-text)";
+        ctx.font = `bold ${Math.min(11, barW * 0.5)}px system-ui`;
+        ctx.textAlign = "center";
+        ctx.textBaseline = barH > 20 ? "top" : "bottom";
+        ctx.fillText(val, x + barW / 2, barH > 20 ? y + 4 : y - 2);
       }
+    });
+  }, [visual]);
 
-      // Mark all as sorted
-      setSorted(arr.map((_, i) => i));
-      setHighlighted([]);
-      setPivot(-1);
-    } catch {
-      // stopped
-    }
-    setSorting(false);
-  };
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handle = (e) => {
+      if (e.target.tagName === "INPUT" || e.target.tagName === "SELECT") return;
+      if (steps.length === 0) return;
+      switch (e.key) {
+        case " ": e.preventDefault(); player.isPlaying ? player.pause() : player.play(); break;
+        case "ArrowRight": e.preventDefault(); player.stepForward(); break;
+        case "ArrowLeft": e.preventDefault(); player.stepBack(); break;
+      }
+    };
+    window.addEventListener("keydown", handle);
+    return () => window.removeEventListener("keydown", handle);
+  }, [player, steps.length]);
 
   return (
     <div className="space-y-4">
-      {/* Controls */}
+      {/* Top controls */}
       <div className="flex flex-wrap items-center gap-3">
         <div className="relative">
           <select
             value={algo}
             onChange={e => setAlgo(e.target.value)}
-            disabled={sorting}
+            disabled={player.isPlaying}
             className="appearance-none pl-3 pr-8 py-2 rounded-xl text-sm font-medium bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 border border-[var(--color-border)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] cursor-pointer disabled:opacity-50 [&>option]:bg-white [&>option]:dark:bg-zinc-800 [&>option]:text-zinc-900 [&>option]:dark:text-zinc-100"
           >
             {SORT_ALGOS.map(a => <option key={a} value={a}>{a}</option>)}
@@ -267,40 +183,35 @@ function SortingVisualizer() {
         </div>
 
         <button
-          onClick={sorting ? () => { stopRef.current = true; } : sort}
-          className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold text-white transition-all duration-200"
-          style={{ backgroundColor: sorting ? "#f43f5e" : "var(--color-primary)" }}
+          onClick={generate}
+          disabled={player.isPlaying}
+          className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold text-white transition-all duration-200 disabled:opacity-50"
+          style={{ backgroundColor: "var(--color-primary)" }}
         >
-          {sorting ? <><Pause size={14} /> Stop</> : <><Play size={14} /> Sort</>}
+          <Play size={14} /> Visualize
         </button>
 
-        <button onClick={shuffle} disabled={sorting}
+        <button onClick={shuffle} disabled={player.isPlaying}
           className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium bg-[var(--color-surface2)] text-[var(--color-text)] border border-[var(--color-border)] hover:border-[var(--color-primary)] transition-colors disabled:opacity-50">
           <Shuffle size={14} /> Randomize
         </button>
 
-        <button onClick={reset} disabled={!sorting}
-          className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium bg-[var(--color-surface2)] text-[var(--color-text)] border border-[var(--color-border)] hover:border-[var(--color-primary)] transition-colors disabled:opacity-50">
-          <RotateCcw size={14} /> Reset
-        </button>
-
+        {/* Array size */}
         <div className="flex items-center gap-2 ml-auto">
-          <span className="text-xs text-[var(--color-text-muted)]">Speed</span>
-          <input type="range" min="1" max="50" value={speed} onChange={e => setSpeed(+e.target.value)}
+          <span className="text-xs text-[var(--color-text-muted)]">Size</span>
+          <input type="range" min="10" max="100" value={arraySize}
+            onChange={e => handleSizeChange(+e.target.value)}
+            disabled={player.isPlaying}
             className="w-20 accent-[var(--color-primary)]" />
-          <Zap size={12} className="text-[var(--color-primary)]" />
+          <span className="text-xs font-mono text-[var(--color-text-muted)] w-6">{arraySize}</span>
         </div>
       </div>
 
-      {/* Stats */}
-      <div className="flex gap-4 text-xs font-mono">
-        <span className="px-3 py-1 rounded-lg bg-[var(--color-surface2)] text-[var(--color-text-muted)]">
-          Comparisons: <span className="text-[var(--color-primary)] font-bold">{comparisons}</span>
-        </span>
-        <span className="px-3 py-1 rounded-lg bg-[var(--color-surface2)] text-[var(--color-text-muted)]">
-          Swaps: <span className="text-[var(--color-primary)] font-bold">{swaps}</span>
-        </span>
-      </div>
+      {/* Playback controls */}
+      <AlgoControls player={player} />
+
+      {/* Step info + stats */}
+      <StepInfo algo={algo} stepData={player.currentStepData} stats={stats} />
 
       {/* Canvas */}
       <div className="relative rounded-2xl overflow-hidden border border-[var(--color-border)] bg-[var(--color-surface)] p-2">
@@ -308,7 +219,7 @@ function SortingVisualizer() {
       </div>
 
       {/* Legend */}
-      <div className="flex gap-4 text-[11px] text-[var(--color-text-muted)]">
+      <div className="flex flex-wrap gap-4 text-[11px] text-[var(--color-text-muted)]">
         <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-sm" style={{ background: "rgb(130, 142, 241)" }} /> Unsorted</span>
         <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-sm bg-rose-500" /> Comparing</span>
         <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-sm bg-amber-500" /> Pivot</span>
@@ -323,46 +234,33 @@ function SortingVisualizer() {
 // ═══════════════════════════════════════════════════════════════════════════════
 const PF_ALGOS = ["A* Search", "Dijkstra", "BFS", "DFS"];
 
-const CELL = { EMPTY: 0, WALL: 1, START: 2, END: 3, VISITED: 4, PATH: 5, FRONTIER: 6 };
-
 function PathfindingVisualizer() {
   const ROWS = 21;
   const COLS = 41;
-  const [grid, setGrid] = useState(() => makeGrid(ROWS, COLS));
+
+  function makeGrid() {
+    return Array.from({ length: ROWS }, () => Array.from({ length: COLS }, () => CELL.EMPTY));
+  }
+
+  const [wallGrid, setWallGrid] = useState(() => makeGrid());
   const [algo, setAlgo] = useState("A* Search");
-  const [running, setRunning] = useState(false);
   const [startPos, setStartPos] = useState([10, 5]);
   const [endPos, setEndPos] = useState([10, 35]);
   const [mouseDown, setMouseDown] = useState(false);
-  const [dragging, setDragging] = useState(null); // "start" | "end" | null
-  const [stats, setStats] = useState({ visited: 0, pathLen: 0 });
-  const stopRef = useRef(false);
-
-  function makeGrid(rows, cols) {
-    return Array.from({ length: rows }, () => Array.from({ length: cols }, () => CELL.EMPTY));
-  }
+  const [dragging, setDragging] = useState(null);
+  const [steps, setSteps] = useState([]);
+  const player = useAlgoPlayer(steps);
 
   const resetGrid = () => {
-    stopRef.current = true;
-    setTimeout(() => {
-      stopRef.current = false;
-      setGrid(makeGrid(ROWS, COLS));
-      setStartPos([10, 5]);
-      setEndPos([10, 35]);
-      setStats({ visited: 0, pathLen: 0 });
-      setRunning(false);
-    }, 50);
-  };
-
-  const clearPath = () => {
-    setGrid(g => g.map(row => row.map(c => c === CELL.VISITED || c === CELL.PATH || c === CELL.FRONTIER ? CELL.EMPTY : c)));
-    setStats({ visited: 0, pathLen: 0 });
+    setWallGrid(makeGrid());
+    setStartPos([10, 5]);
+    setEndPos([10, 35]);
+    setSteps([]);
   };
 
   const generateMaze = () => {
-    if (running) return;
-    const g = makeGrid(ROWS, COLS);
-    // Recursive backtracker maze
+    if (player.isPlaying) return;
+    const g = makeGrid();
     for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) g[r][c] = CELL.WALL;
     const stack = [[1, 1]];
     g[1][1] = CELL.EMPTY;
@@ -378,17 +276,14 @@ function PathfindingVisualizer() {
       g[nr][nc] = CELL.EMPTY;
       stack.push([nr, nc]);
     }
-    // Ensure start and end are clear
-    const [sr, sc] = [1, 1];
-    const [er, ec] = [ROWS - 2, COLS - 2];
-    g[sr][sc] = CELL.EMPTY; g[er][ec] = CELL.EMPTY;
-    setStartPos([sr, sc]); setEndPos([er, ec]);
-    setGrid(g);
-    setStats({ visited: 0, pathLen: 0 });
+    g[1][1] = CELL.EMPTY; g[ROWS - 2][COLS - 2] = CELL.EMPTY;
+    setStartPos([1, 1]); setEndPos([ROWS - 2, COLS - 2]);
+    setWallGrid(g);
+    setSteps([]);
   };
 
   const handleCellEvent = (r, c, isDown = false) => {
-    if (running) return;
+    if (player.isPlaying || steps.length > 0) return;
     if (isDown) {
       if (r === startPos[0] && c === startPos[1]) { setDragging("start"); return; }
       if (r === endPos[0] && c === endPos[1]) { setDragging("end"); return; }
@@ -397,7 +292,7 @@ function PathfindingVisualizer() {
     if (dragging === "start") { setStartPos([r, c]); return; }
     if (dragging === "end") { setEndPos([r, c]); return; }
     if (!mouseDown && !isDown) return;
-    setGrid(g => {
+    setWallGrid(g => {
       const ng = g.map(row => [...row]);
       if (r === startPos[0] && c === startPos[1]) return ng;
       if (r === endPos[0] && c === endPos[1]) return ng;
@@ -406,125 +301,27 @@ function PathfindingVisualizer() {
     });
   };
 
-  const run = async () => {
-    clearPath();
-    setRunning(true);
-    stopRef.current = false;
-
-    const g = grid.map(row => row.map(c => c === CELL.WALL ? CELL.WALL : CELL.EMPTY));
-    const [sr, sc] = startPos;
-    const [er, ec] = endPos;
-
-    const delay = () => new Promise(r => setTimeout(r, 12));
-    const dirs4 = [[0, 1], [1, 0], [0, -1], [-1, 0]];
-    const inBounds = (r, c) => r >= 0 && r < ROWS && c >= 0 && c < COLS;
-    const heuristic = (r, c) => Math.abs(r - er) + Math.abs(c - ec);
-
-    const parent = {};
-    let visitCount = 0;
-
-    const markVisited = (r, c) => {
-      if (stopRef.current) throw new Error("stopped");
-      if (!(r === sr && c === sc) && !(r === er && c === ec)) {
-        g[r][c] = CELL.VISITED;
-      }
-      visitCount++;
-    };
-
-    const markFrontier = (r, c) => {
-      if (!(r === sr && c === sc) && !(r === er && c === ec) && g[r][c] === CELL.EMPTY) {
-        g[r][c] = CELL.FRONTIER;
-      }
-    };
-
-    const batchUpdate = () => {
-      setGrid(g.map(row => [...row]));
-      setStats(s => ({ ...s, visited: visitCount }));
-    };
-
-    try {
-      if (algo === "BFS") {
-        const queue = [[sr, sc]];
-        const visited = new Set([`${sr},${sc}`]);
-        let steps = 0;
-        while (queue.length > 0) {
-          const [cr, cc] = queue.shift();
-          markVisited(cr, cc);
-          if (cr === er && cc === ec) break;
-          for (const [dr, dc] of dirs4) {
-            const nr = cr + dr, nc = cc + dc;
-            if (inBounds(nr, nc) && !visited.has(`${nr},${nc}`) && g[nr][nc] !== CELL.WALL && g[nr][nc] !== CELL.VISITED) {
-              visited.add(`${nr},${nc}`);
-              parent[`${nr},${nc}`] = [cr, cc];
-              markFrontier(nr, nc);
-              queue.push([nr, nc]);
-            }
-          }
-          if (++steps % 3 === 0) { batchUpdate(); await delay(); }
-        }
-      } else if (algo === "DFS") {
-        const stack = [[sr, sc]];
-        const visited = new Set([`${sr},${sc}`]);
-        let steps = 0;
-        while (stack.length > 0) {
-          const [cr, cc] = stack.pop();
-          markVisited(cr, cc);
-          if (cr === er && cc === ec) break;
-          for (const [dr, dc] of dirs4) {
-            const nr = cr + dr, nc = cc + dc;
-            if (inBounds(nr, nc) && !visited.has(`${nr},${nc}`) && g[nr][nc] !== CELL.WALL && g[nr][nc] !== CELL.VISITED) {
-              visited.add(`${nr},${nc}`);
-              parent[`${nr},${nc}`] = [cr, cc];
-              markFrontier(nr, nc);
-              stack.push([nr, nc]);
-            }
-          }
-          if (++steps % 2 === 0) { batchUpdate(); await delay(); }
-        }
-      } else {
-        // A* / Dijkstra
-        const open = [[sr, sc, 0, heuristic(sr, sc)]];
-        const gScore = { [`${sr},${sc}`]: 0 };
-        let steps = 0;
-        while (open.length > 0) {
-          open.sort((a, b) => (algo === "Dijkstra" ? a[2] - b[2] : (a[2] + a[3]) - (b[2] + b[3])));
-          const [cr, cc, dist] = open.shift();
-          if (g[cr][cc] === CELL.VISITED) continue;
-          markVisited(cr, cc);
-          if (cr === er && cc === ec) break;
-          for (const [dr, dc] of dirs4) {
-            const nr = cr + dr, nc = cc + dc;
-            if (!inBounds(nr, nc) || g[nr][nc] === CELL.WALL || g[nr][nc] === CELL.VISITED) continue;
-            const nd = dist + 1;
-            const key = `${nr},${nc}`;
-            if (gScore[key] === undefined || nd < gScore[key]) {
-              gScore[key] = nd;
-              parent[key] = [cr, cc];
-              markFrontier(nr, nc);
-              open.push([nr, nc, nd, heuristic(nr, nc)]);
-            }
-          }
-          if (++steps % 3 === 0) { batchUpdate(); await delay(); }
-        }
-      }
-
-      // Trace path
-      let pathLen = 0;
-      let cur = `${er},${ec}`;
-      while (parent[cur]) {
-        const [pr, pc] = parent[cur];
-        if (!(pr === sr && pc === sc)) g[pr][pc] = CELL.PATH;
-        cur = `${pr},${pc}`;
-        pathLen++;
-        if (pathLen % 2 === 0) { batchUpdate(); await delay(); }
-      }
-      setStats({ visited: visitCount, pathLen });
-      batchUpdate();
-    } catch {
-      // stopped
-    }
-    setRunning(false);
+  const run = () => {
+    setSteps([]);
+    const newSteps = generatePathSteps(wallGrid, startPos, endPos, algo);
+    setSteps(newSteps);
   };
+
+  // Get current grid from step or base wall grid
+  const displayGrid = useMemo(() => {
+    const step = player.currentStepData;
+    if (!step) return wallGrid;
+    return step.grid;
+  }, [player.currentStepData, wallGrid]);
+
+  const currentStats = useMemo(() => {
+    const step = player.currentStepData;
+    if (!step?.stats) return [];
+    return [
+      { label: "Visited", value: step.stats.visited },
+      { label: "Path", value: step.stats.pathLen, color: "#facc15" },
+    ];
+  }, [player.currentStepData]);
 
   const cellColor = (c, r, col) => {
     if (r === startPos[0] && col === startPos[1]) return "var(--color-primary)";
@@ -538,25 +335,40 @@ function PathfindingVisualizer() {
     }
   };
 
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handle = (e) => {
+      if (e.target.tagName === "INPUT" || e.target.tagName === "SELECT") return;
+      if (steps.length === 0) return;
+      switch (e.key) {
+        case " ": e.preventDefault(); player.isPlaying ? player.pause() : player.play(); break;
+        case "ArrowRight": e.preventDefault(); player.stepForward(); break;
+        case "ArrowLeft": e.preventDefault(); player.stepBack(); break;
+      }
+    };
+    window.addEventListener("keydown", handle);
+    return () => window.removeEventListener("keydown", handle);
+  }, [player, steps.length]);
+
   return (
     <div className="space-y-4">
       {/* Controls */}
       <div className="flex flex-wrap items-center gap-3">
         <div className="relative">
-          <select value={algo} onChange={e => setAlgo(e.target.value)} disabled={running}
+          <select value={algo} onChange={e => setAlgo(e.target.value)} disabled={player.isPlaying}
             className="appearance-none pl-3 pr-8 py-2 rounded-xl text-sm font-medium bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 border border-[var(--color-border)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] cursor-pointer disabled:opacity-50 [&>option]:bg-white [&>option]:dark:bg-zinc-800 [&>option]:text-zinc-900 [&>option]:dark:text-zinc-100">
             {PF_ALGOS.map(a => <option key={a} value={a}>{a}</option>)}
           </select>
           <ChevronDown size={14} className="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-[var(--color-text-muted)]" />
         </div>
 
-        <button onClick={running ? () => { stopRef.current = true; } : run}
-          className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold text-white transition-all duration-200"
-          style={{ backgroundColor: running ? "#f43f5e" : "var(--color-primary)" }}>
-          {running ? <><Pause size={14} /> Stop</> : <><Play size={14} /> Find Path</>}
+        <button onClick={run} disabled={player.isPlaying}
+          className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold text-white transition-all duration-200 disabled:opacity-50"
+          style={{ backgroundColor: "var(--color-primary)" }}>
+          <Play size={14} /> Find Path
         </button>
 
-        <button onClick={generateMaze} disabled={running}
+        <button onClick={generateMaze} disabled={player.isPlaying}
           className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium bg-[var(--color-surface2)] text-[var(--color-text)] border border-[var(--color-border)] hover:border-[var(--color-primary)] transition-colors disabled:opacity-50">
           <Grid3X3 size={14} /> Generate Maze
         </button>
@@ -567,15 +379,11 @@ function PathfindingVisualizer() {
         </button>
       </div>
 
-      {/* Stats */}
-      <div className="flex gap-4 text-xs font-mono">
-        <span className="px-3 py-1 rounded-lg bg-[var(--color-surface2)] text-[var(--color-text-muted)]">
-          Visited: <span className="text-[var(--color-primary)] font-bold">{stats.visited}</span>
-        </span>
-        <span className="px-3 py-1 rounded-lg bg-[var(--color-surface2)] text-[var(--color-text-muted)]">
-          Path: <span className="text-yellow-400 font-bold">{stats.pathLen}</span>
-        </span>
-      </div>
+      {/* Playback controls */}
+      <AlgoControls player={player} />
+
+      {/* Step info */}
+      <StepInfo algo={algo} stepData={player.currentStepData} stats={currentStats} />
 
       {/* Grid */}
       <div className="rounded-2xl overflow-hidden border border-[var(--color-border)] bg-[var(--color-surface)] p-2"
@@ -585,7 +393,7 @@ function PathfindingVisualizer() {
           gridTemplateColumns: `repeat(${COLS}, 1fr)`,
           aspectRatio: `${COLS}/${ROWS}`,
         }}>
-          {grid.map((row, r) =>
+          {displayGrid.map((row, r) =>
             row.map((cell, c) => (
               <div
                 key={`${r}-${c}`}
@@ -596,7 +404,7 @@ function PathfindingVisualizer() {
                   backgroundColor: cellColor(cell, r, c),
                   borderColor: cell === CELL.WALL ? "transparent" : undefined,
                   borderWidth: "0.5px",
-                  cursor: running ? "default" : "pointer",
+                  cursor: (player.isPlaying || steps.length > 0) ? "default" : "pointer",
                   borderRadius: (r === startPos[0] && c === startPos[1]) || (r === endPos[0] && c === endPos[1]) ? "50%" : "1px",
                 }}
               />
@@ -651,123 +459,65 @@ function treeToLayout(node, depth = 0, pos = 0, spread = 1, nodes = [], edges = 
 
 const TRAVERSALS = ["In-Order", "Pre-Order", "Post-Order", "Level-Order"];
 
+function cloneTree(node) {
+  if (!node) return null;
+  const n = new TreeNode(node.val);
+  n.left = cloneTree(node.left);
+  n.right = cloneTree(node.right);
+  return n;
+}
+
 function TreeVisualizer() {
   const [root, setRoot] = useState(null);
   const [inputVal, setInputVal] = useState("");
-  const [highlighted, setHighlighted] = useState(new Set());
-  const [current, setCurrent] = useState(null);
   const [traversal, setTraversal] = useState("In-Order");
-  const [traversing, setTraversing] = useState(false);
-  const [traversalOrder, setTraversalOrder] = useState([]);
+  const [steps, setSteps] = useState([]);
   const canvasRef = useRef(null);
-  const stopRef = useRef(false);
+  const player = useAlgoPlayer(steps);
 
   const insert = () => {
     const val = parseInt(inputVal);
-    if (isNaN(val)) return;
-    setRoot(r => insertBST(r ? JSON.parse(JSON.stringify(r, (_, v) => v === undefined ? null : v)) : null, val) || new TreeNode(val));
+    if (isNaN(val) || val < 1 || val > 99) return;
+    setRoot(r => insertBST(cloneTree(r), val));
     setInputVal("");
-    setHighlighted(new Set());
-    setCurrent(null);
-    setTraversalOrder([]);
+    setSteps([]);
   };
-
-  // Deep clone for BST insert (since we use class instances)
-  useEffect(() => {
-    // Re-clone root from scratch for clean state after re-renders
-  }, []);
 
   const insertRandom = () => {
     const val = Math.floor(Math.random() * 99) + 1;
-    setRoot(r => {
-      const clone = cloneTree(r);
-      return insertBST(clone, val);
-    });
-    setHighlighted(new Set());
-    setCurrent(null);
-    setTraversalOrder([]);
-  };
-
-  const cloneTree = (node) => {
-    if (!node) return null;
-    const n = new TreeNode(node.val);
-    n.left = cloneTree(node.left);
-    n.right = cloneTree(node.right);
-    return n;
+    setRoot(r => insertBST(cloneTree(r), val));
+    setSteps([]);
   };
 
   const clear = () => {
-    stopRef.current = true;
-    setTimeout(() => {
-      stopRef.current = false;
-      setRoot(null);
-      setHighlighted(new Set());
-      setCurrent(null);
-      setTraversalOrder([]);
-      setTraversing(false);
-    }, 50);
+    setRoot(null);
+    setSteps([]);
   };
 
   const buildDefault = () => {
     let tree = null;
     [50, 30, 70, 20, 40, 60, 80, 10, 25, 35, 45].forEach(v => { tree = insertBST(tree, v); });
     setRoot(tree);
-    setHighlighted(new Set());
-    setCurrent(null);
-    setTraversalOrder([]);
+    setSteps([]);
   };
 
-  const runTraversal = async () => {
+  const runTraversal = () => {
     if (!root) return;
-    setTraversing(true);
-    stopRef.current = false;
-    setHighlighted(new Set());
-    setTraversalOrder([]);
-
-    const order = [];
-    const delay = () => new Promise(r => setTimeout(r, 500));
-
-    const visit = async (val) => {
-      if (stopRef.current) throw new Error("stopped");
-      setCurrent(val);
-      await delay();
-      order.push(val);
-      setTraversalOrder([...order]);
-      setHighlighted(new Set(order));
-      setCurrent(null);
-    };
-
-    try {
-      switch (traversal) {
-        case "In-Order": {
-          const go = async (n) => { if (!n || stopRef.current) return; await go(n.left); await visit(n.val); await go(n.right); };
-          await go(root);
-          break;
-        }
-        case "Pre-Order": {
-          const go = async (n) => { if (!n || stopRef.current) return; await visit(n.val); await go(n.left); await go(n.right); };
-          await go(root);
-          break;
-        }
-        case "Post-Order": {
-          const go = async (n) => { if (!n || stopRef.current) return; await go(n.left); await go(n.right); await visit(n.val); };
-          await go(root);
-          break;
-        }
-        case "Level-Order": {
-          const queue = [root];
-          while (queue.length > 0 && !stopRef.current) {
-            const node = queue.shift();
-            await visit(node.val);
-            if (node.left) queue.push(node.left);
-            if (node.right) queue.push(node.right);
-          }
-          break;
-        }
-      }
-    } catch { /* stopped */ }
-    setTraversing(false);
+    const newSteps = generateTraversalSteps(root, traversal);
+    setSteps(newSteps);
   };
+
+  // Get visual state from step
+  const visual = useMemo(() => {
+    const step = player.currentStepData;
+    if (!step) return { highlighted: new Set(), current: null, traversalOrder: [], dataStructure: null };
+    return {
+      highlighted: new Set(step.highlighted || []),
+      current: step.current,
+      traversalOrder: step.traversalOrder || [],
+      dataStructure: step.dataStructure || null,
+    };
+  }, [player.currentStepData]);
 
   // ── Draw tree on canvas ──────────────────────────────────────────────────
   useEffect(() => {
@@ -793,7 +543,6 @@ function TreeVisualizer() {
     const { nodes, edges } = treeToLayout(root, 0, 0, 4);
     if (nodes.length === 0) return;
 
-    // Calculate bounds
     const minX = Math.min(...nodes.map(n => n.x));
     const maxX = Math.max(...nodes.map(n => n.x));
     const maxY = Math.max(...nodes.map(n => n.y));
@@ -805,11 +554,9 @@ function TreeVisualizer() {
 
     const nodeRadius = Math.min(22, w / (nodes.length + 4));
 
-    // Get computed styles
     const cs = getComputedStyle(document.documentElement);
     const primaryColor = cs.getPropertyValue("--color-primary").trim() || "#6366F1";
     const textColor = cs.getPropertyValue("--color-text").trim() || "#333";
-    const mutedColor = cs.getPropertyValue("--color-text-muted").trim() || "#999";
     const isDark = document.documentElement.classList.contains("dark");
 
     // Draw edges
@@ -825,16 +572,14 @@ function TreeVisualizer() {
     // Draw nodes
     nodes.forEach(n => {
       const cx = mapX(n.x), cy = mapY(n.y);
-      const isHighlighted = highlighted.has(n.val);
-      const isCurrent = current === n.val;
+      const isHighlighted = visual.highlighted.has(n.val);
+      const isCurrent = visual.current === n.val;
 
-      // Glow for current
       if (isCurrent) {
-        ctx.shadowColor = primaryColor;
+        ctx.shadowColor = "#f43f5e";
         ctx.shadowBlur = 20;
       }
 
-      // Circle
       ctx.beginPath();
       ctx.arc(cx, cy, nodeRadius, 0, Math.PI * 2);
       if (isCurrent) {
@@ -847,19 +592,32 @@ function TreeVisualizer() {
       ctx.fill();
       ctx.shadowBlur = 0;
 
-      // Border
       ctx.strokeStyle = isCurrent ? "#f43f5e" : isHighlighted ? primaryColor : (isDark ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.15)");
       ctx.lineWidth = 2;
       ctx.stroke();
 
-      // Text
       ctx.fillStyle = (isCurrent || isHighlighted) ? "#fff" : textColor;
       ctx.font = `bold ${Math.min(14, nodeRadius * 0.8)}px system-ui`;
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
       ctx.fillText(n.val, cx, cy);
     });
-  }, [root, highlighted, current]);
+  }, [root, visual.highlighted, visual.current]);
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handle = (e) => {
+      if (e.target.tagName === "INPUT" || e.target.tagName === "SELECT") return;
+      if (steps.length === 0) return;
+      switch (e.key) {
+        case " ": e.preventDefault(); player.isPlaying ? player.pause() : player.play(); break;
+        case "ArrowRight": e.preventDefault(); player.stepForward(); break;
+        case "ArrowLeft": e.preventDefault(); player.stepBack(); break;
+      }
+    };
+    window.addEventListener("keydown", handle);
+    return () => window.removeEventListener("keydown", handle);
+  }, [player, steps.length]);
 
   return (
     <div className="space-y-4">
@@ -899,28 +657,48 @@ function TreeVisualizer() {
 
         <div className="ml-auto flex items-center gap-2">
           <div className="relative">
-            <select value={traversal} onChange={e => setTraversal(e.target.value)} disabled={traversing}
+            <select value={traversal} onChange={e => setTraversal(e.target.value)} disabled={player.isPlaying}
               className="appearance-none pl-3 pr-8 py-2 rounded-xl text-sm font-medium bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 border border-[var(--color-border)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] cursor-pointer disabled:opacity-50 [&>option]:bg-white [&>option]:dark:bg-zinc-800 [&>option]:text-zinc-900 [&>option]:dark:text-zinc-100">
               {TRAVERSALS.map(t => <option key={t} value={t}>{t}</option>)}
             </select>
             <ChevronDown size={14} className="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-[var(--color-text-muted)]" />
           </div>
-          <button onClick={traversing ? () => { stopRef.current = true; } : runTraversal} disabled={!root}
+          <button onClick={runTraversal} disabled={!root || player.isPlaying}
             className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold text-white transition-all disabled:opacity-50"
-            style={{ backgroundColor: traversing ? "#f43f5e" : "var(--color-primary)" }}>
-            {traversing ? <><Pause size={14} /> Stop</> : <><Play size={14} /> Traverse</>}
+            style={{ backgroundColor: "var(--color-primary)" }}>
+            <Play size={14} /> Traverse
           </button>
         </div>
       </div>
 
-      {/* Traversal output */}
-      {traversalOrder.length > 0 && (
+      {/* Playback controls */}
+      <AlgoControls player={player} />
+
+      {/* Step info */}
+      <StepInfo algo={traversal} stepData={player.currentStepData} />
+
+      {/* Data structure visualization (stack/queue) */}
+      {visual.dataStructure && visual.dataStructure.items.length > 0 && (
+        <div className="px-3 py-2 rounded-xl bg-[var(--color-surface2)] border border-[var(--color-border)]">
+          <span className="text-[11px] font-semibold text-[var(--color-text-muted)] uppercase tracking-wider">{visual.dataStructure.label}</span>
+          <div className="flex flex-wrap gap-1.5 mt-1.5">
+            {visual.dataStructure.items.map((item, i) => (
+              <span key={i} className="px-2 py-0.5 rounded-md text-xs font-mono bg-[var(--color-primary)]/10 text-[var(--color-primary)] border border-[var(--color-primary)]/20">
+                {item}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Traversal result */}
+      {visual.traversalOrder.length > 0 && (
         <div className="px-3 py-2 rounded-xl bg-[var(--color-surface2)] border border-[var(--color-border)] text-sm font-mono">
-          <span className="text-[var(--color-text-muted)]">Traversal: </span>
-          {traversalOrder.map((v, i) => (
+          <span className="text-[var(--color-text-muted)]">Result: </span>
+          {visual.traversalOrder.map((v, i) => (
             <span key={i}>
               <span className="text-[var(--color-primary)] font-bold">{v}</span>
-              {i < traversalOrder.length - 1 && <span className="text-[var(--color-text-muted)]"> → </span>}
+              {i < visual.traversalOrder.length - 1 && <span className="text-[var(--color-text-muted)]"> → </span>}
             </span>
           ))}
         </div>
@@ -929,6 +707,13 @@ function TreeVisualizer() {
       {/* Canvas */}
       <div className="relative rounded-2xl overflow-hidden border border-[var(--color-border)] bg-[var(--color-surface)] p-2">
         <canvas ref={canvasRef} className="w-full" style={{ height: "clamp(280px, 45vh, 500px)" }} />
+      </div>
+
+      {/* Legend */}
+      <div className="flex flex-wrap gap-4 text-[11px] text-[var(--color-text-muted)]">
+        <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-full" style={{ background: "var(--color-primary)" }} /> Visited</span>
+        <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-full bg-rose-500" /> Current</span>
+        <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-full" style={{ background: "var(--color-surface2)", border: "1px solid var(--color-border)" }} /> Unvisited</span>
       </div>
     </div>
   );
@@ -953,7 +738,7 @@ const AlgoVisualizer = () => {
           Algorithm <span style={{ color: "var(--color-primary)" }}>Visualizer</span>
         </h1>
         <p className="text-[var(--color-text-muted)] text-sm max-w-md mx-auto">
-          Interactive visualizations of sorting algorithms, pathfinding, and data structures.
+          Interactive step-by-step visualizations. Use <kbd className="px-1.5 py-0.5 rounded bg-[var(--color-surface2)] border border-[var(--color-border)] text-[10px] font-mono">Space</kbd> to play/pause, <kbd className="px-1.5 py-0.5 rounded bg-[var(--color-surface2)] border border-[var(--color-border)] text-[10px] font-mono">←→</kbd> to step.
         </p>
       </motion.div>
 

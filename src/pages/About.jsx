@@ -1,6 +1,4 @@
 "use client";
-// test_2  co-authored with Claude
-
 // About page — co-authored with Claude
 import { useRef } from "react";
 import { motion, useScroll, useTransform, useSpring } from "framer-motion";
