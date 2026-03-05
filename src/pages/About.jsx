@@ -154,11 +154,11 @@ const SocialButton = ({ type, href, index }) => {
         onMouseLeave={(e) => { e.currentTarget.style.background = ""; }}
       >
         <Icon
-          className="w-3.5 h-3.5 transition-all duration-300 group-hover:text-white"
+          className="w-3.5 h-3.5 transition-all duration-300 group-hover:!text-white"
           style={{ color }}
         />
         <span
-          className="text-xs font-semibold transition-colors duration-300 group-hover:text-white"
+          className="text-xs font-semibold transition-colors duration-300 group-hover:!text-white"
           style={{ color }}
         >
           {label}
