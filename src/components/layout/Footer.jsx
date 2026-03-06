@@ -162,7 +162,7 @@ const Footer = () => {
                       className="inline-flex cursor-pointer"
                       aria-label="Back to top"
                     >
-                      <div className="w-10 h-10 glass backdrop-blur-xl rounded-full bg-[var(--color-primary)] text-white flex items-center justify-center transition-shadow duration-300 hover:shadow-lg">
+                      <div className="w-10 h-10 rounded-full bg-[var(--color-primary)] text-white flex items-center justify-center transition-shadow duration-300 hover:shadow-lg shadow-md hover:shadow-xl">
                         <ArrowUp size={18} />
                       </div>
                     </button>

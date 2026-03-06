@@ -390,14 +390,19 @@ const Hero = () => {
           {hero.bio}
         </motion.p>
 
-        {/* ── Scroll indicator ── */}
+        {/* ── Scroll indicator (click to scroll down) ── */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 2.2, duration: 1 }}
           className="mt-14"
         >
-          <motion.div
+          <motion.button
+            type="button"
+            onClick={() =>
+              document.getElementById("about")?.scrollIntoView({ behavior: "smooth" })
+            }
+            aria-label="Scroll to content"
             animate={{ y: [0, 8, 0] }}
             transition={{
               duration: 2,
@@ -405,7 +410,8 @@ const Hero = () => {
               ease: "easeInOut",
             }}
             className="w-6 h-10 rounded-full border-2 border-[var(--color-text-muted)]/30
-                       flex items-start justify-center p-1.5"
+                       flex items-start justify-center p-1.5 cursor-pointer
+                       hover:border-[var(--color-primary)]/50 hover:scale-105 transition-all duration-200"
           >
             <motion.div
               className="w-1.5 h-1.5 rounded-full bg-[var(--color-primary)]"
@@ -416,7 +422,7 @@ const Hero = () => {
                 ease: "easeInOut",
               }}
             />
-          </motion.div>
+          </motion.button>
         </motion.div>
       </motion.div>
     </section>
