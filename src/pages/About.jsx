@@ -6,7 +6,6 @@ import { FaGithub, FaLinkedin, FaEnvelope } from "react-icons/fa";
 import Tilt from "react-parallax-tilt";
 import about from "../data/about";
 import AnimatedHeading from "../components/ui/AnimatedHeading";
-import ConstellationNetwork from "../components/backgrounds/ConstellationNetwork";
 
 /* ── Social icon config ── */
 const socialConfig = {
@@ -219,15 +218,6 @@ const About = () => {
       id="about"
       className="relative bg-[var(--color-surface)] dark:bg-transparent pb-16 md:pb-28 px-4 overflow-hidden noise-overlay gradient-mesh"
     >
-      {/* Constellation network */}
-      <ConstellationNetwork
-        particleCount={45}
-        connectionDistance={120}
-        mouseConnectionDistance={160}
-        mouseAttractionStrength={0.01}
-        particleSpeed={0.2}
-        opacity={0.35}
-      />
 
       {/* Decorative floating dots */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">

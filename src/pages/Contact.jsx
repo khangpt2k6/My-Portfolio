@@ -18,7 +18,6 @@ import {
   Linkedin,
 } from "lucide-react";
 import AnimatedHeading from "../components/ui/AnimatedHeading";
-import ConstellationNetwork from "../components/backgrounds/ConstellationNetwork";
 
 
 const WEB3FORMS_KEY = "YOUR_ACCESS_KEY_HERE";
@@ -417,15 +416,6 @@ const Contact = () => {
       id="contact"
       className="relative py-24 md:py-32 px-4 bg-[var(--color-surface)] dark:bg-transparent overflow-hidden"
     >
-      {/* Constellation network */}
-      <ConstellationNetwork
-        particleCount={35}
-        connectionDistance={110}
-        mouseConnectionDistance={150}
-        mouseAttractionStrength={0.008}
-        particleSpeed={0.15}
-        opacity={0.3}
-      />
 
       <div className="max-w-6xl mx-auto relative z-10">
         {/* Header */}

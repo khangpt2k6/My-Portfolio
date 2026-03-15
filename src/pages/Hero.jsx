@@ -6,7 +6,6 @@ import {
 } from "framer-motion";
 import { TypeAnimation } from "react-type-animation";
 import hero from "../data/hero";
-import ConstellationNetwork from "../components/backgrounds/ConstellationNetwork";
 import {
   SiReact, SiTypescript, SiPython, SiNextdotjs, SiNodedotjs,
   SiAmazonwebservices, SiDocker, SiKubernetes, SiGraphql,
@@ -153,14 +152,6 @@ const Hero = () => {
       {/* ── Background layers ── */}
       <GridBackground />
       <FloatingParticles />
-      <ConstellationNetwork
-        particleCount={80}
-        connectionDistance={150}
-        mouseConnectionDistance={200}
-        mouseAttractionStrength={0.015}
-        particleSpeed={0.3}
-        opacity={0.7}
-      />
 
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <FloatingOrb
