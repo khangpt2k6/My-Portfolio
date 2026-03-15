@@ -40,7 +40,7 @@ const applyAccentColor = (colorObj) => {
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [theme, setTheme] = useState("light");
+  const [theme, setTheme] = useState(() => localStorage.getItem("theme") || "dark");
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [selectedColor, setSelectedColor] = useState("Indigo");
   const [selectedTransition, setSelectedTransition] = useState("Fade");
