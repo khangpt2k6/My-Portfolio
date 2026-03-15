@@ -73,7 +73,7 @@ const Footer = () => {
   };
 
   return (
-    <footer className="bg-[var(--color-surface2)] dark:bg-transparent">
+    <footer className="relative bg-[var(--color-surface2)] dark:bg-transparent overflow-hidden">
       <div className="max-w-6xl mx-auto px-6 py-5">
         {/* Three-column grid */}
         <FadeInView direction="up">
@@ -191,10 +191,15 @@ const Footer = () => {
         </FadeInView>
 
         {/* Bottom bar */}
-        <div className="mt-4 pt-3">
-          <div className="flex justify-center items-center">
+        <div className="mt-4 pt-3 border-t border-[var(--color-border)]">
+          <div className="flex justify-center items-center gap-2">
             <span className="text-sm text-[var(--color-text-muted)]">
               &copy; {currentYear} {footerData.copyright}. All rights reserved.
+            </span>
+            <span className="text-[var(--color-text-muted)]/30">•</span>
+            <span className="text-xs text-[var(--color-text-muted)]/50">
+              Crafted with{" "}
+              <span className="text-[var(--color-primary)]">passion</span>
             </span>
           </div>
         </div>

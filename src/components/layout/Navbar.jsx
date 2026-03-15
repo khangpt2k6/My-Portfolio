@@ -14,6 +14,7 @@ const navLinks = [
   { name: "Experience", to: "/", hash: "#experience" },
   { name: "Projects", to: "/", hash: "#projects" },
   { name: "Skills", to: "/", hash: "#skills" },
+  { name: "Contact", to: "/", hash: "#contact" },
   { name: "Lab", to: "/lab" },
 ];
 
@@ -28,6 +29,94 @@ const ACCENT_COLORS = [
 ];
 
 const TRANSITIONS = ["Fade", "Slide", "Zoom"];
+
+/* ── Desktop nav with sliding indicator ── */
+const DesktopNav = ({ navLinks, getIsActive, handleNavClick }) => {
+  const containerRef = useRef(null);
+  const linkRefs = useRef({});
+  const pillRef = useRef(null);
+  const underlineRef = useRef(null);
+
+  // Find active link name to use as dependency
+  const activeName = navLinks.find((l) => getIsActive(l))?.name || "";
+
+  // Measure active link and move indicator via refs (no state, no re-render loop)
+  useEffect(() => {
+    const el = linkRefs.current[activeName];
+    const container = containerRef.current;
+    if (!el || !container) {
+      if (pillRef.current) pillRef.current.style.opacity = "0";
+      if (underlineRef.current) underlineRef.current.style.opacity = "0";
+      return;
+    }
+    const cRect = container.getBoundingClientRect();
+    const lRect = el.getBoundingClientRect();
+    const left = lRect.left - cRect.left;
+    const width = lRect.width;
+
+    if (pillRef.current) {
+      pillRef.current.style.opacity = "0.12";
+      pillRef.current.style.left = `${left}px`;
+      pillRef.current.style.width = `${width}px`;
+    }
+    if (underlineRef.current) {
+      underlineRef.current.style.opacity = "1";
+      underlineRef.current.style.left = `${left + width * 0.15}px`;
+      underlineRef.current.style.width = `${width * 0.7}px`;
+    }
+  }, [activeName]);
+
+  return (
+    <div ref={containerRef} className="hidden md:flex items-center gap-0.5 relative">
+      {/* Sliding pill background */}
+      <div
+        ref={pillRef}
+        className="absolute top-0 bottom-0 rounded-full pointer-events-none"
+        style={{
+          backgroundColor: "var(--color-primary)",
+          opacity: 0,
+          boxShadow: "0 0 20px rgba(var(--color-primary-rgb), 0.15)",
+          transition: "left 0.35s cubic-bezier(0.25, 1, 0.5, 1), width 0.35s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.2s ease",
+        }}
+      />
+
+      {/* Sliding underline */}
+      <div
+        ref={underlineRef}
+        className="absolute -bottom-0.5 h-[2px] rounded-full pointer-events-none"
+        style={{
+          background: "linear-gradient(90deg, transparent, var(--color-primary), transparent)",
+          boxShadow: "0 1px 8px rgba(var(--color-primary-rgb), 0.4)",
+          opacity: 0,
+          transition: "left 0.35s cubic-bezier(0.25, 1, 0.5, 1), width 0.35s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.2s ease",
+        }}
+      />
+
+      {navLinks.map((link) => {
+        const isActive = getIsActive(link);
+        return (
+          <NavLink
+            key={link.name}
+            ref={(el) => { linkRefs.current[link.name] = el; }}
+            to={link.hash ? "/" : link.to}
+            onClick={(e) => handleNavClick(link, e)}
+            className="relative px-4 py-2 text-sm font-medium cursor-pointer select-none rounded-full transition-colors duration-200 group"
+            style={{ color: isActive ? "var(--color-primary)" : "var(--color-text-muted)" }}
+            onMouseEnter={(e) => { if (!isActive) e.currentTarget.style.color = "var(--color-text)"; }}
+            onMouseLeave={(e) => { if (!isActive) e.currentTarget.style.color = "var(--color-text-muted)"; }}
+          >
+            {/* Hover underline (non-active) */}
+            <span
+              className="absolute bottom-0.5 left-1/2 -translate-x-1/2 h-[1.5px] bg-[var(--color-text-muted)]/30 rounded-full transition-all duration-300 w-0 group-hover:w-3/5"
+              style={{ display: isActive ? "none" : "block" }}
+            />
+            <span className="relative z-10">{link.name}</span>
+          </NavLink>
+        );
+      })}
+    </div>
+  );
+};
 
 const isDarkMode = () => document.documentElement.classList.contains("dark");
 
@@ -211,57 +300,7 @@ const Navbar = () => {
           </NavLink>
 
           {/* Desktop links */}
-          <div className="hidden md:flex items-center gap-0.5 relative">
-            {navLinks.map((link) => {
-              const isActive = getIsActive(link);
-              return (
-                <NavLink
-                  key={link.name}
-                  to={link.hash ? "/" : link.to}
-                  onClick={(e) => handleNavClick(link, e)}
-                  className="relative px-4 py-2 text-sm font-medium cursor-pointer select-none rounded-full transition-all duration-300 group"
-                  style={{ color: isActive ? "var(--color-primary)" : "var(--color-text-muted)" }}
-                  onMouseEnter={(e) => { if (!isActive) e.currentTarget.style.color = "var(--color-text)"; }}
-                  onMouseLeave={(e) => { if (!isActive) e.currentTarget.style.color = "var(--color-text-muted)"; }}
-                >
-                  {/* Background pill — slides between items */}
-                  {isActive && (
-                    <motion.div
-                      layoutId="nav-pill"
-                      className="absolute inset-0 rounded-full"
-                      style={{
-                        backgroundColor: "var(--color-primary)",
-                        opacity: 0.12,
-                        boxShadow: "0 0 20px rgba(var(--color-primary-rgb), 0.15)",
-                      }}
-                      transition={{ type: "spring", stiffness: 400, damping: 28, mass: 0.8 }}
-                    />
-                  )}
-
-                  {/* Glowing underline dot */}
-                  {isActive && (
-                    <motion.div
-                      layoutId="nav-dot"
-                      className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full"
-                      style={{
-                        backgroundColor: "var(--color-primary)",
-                        boxShadow: "0 0 8px 2px rgba(var(--color-primary-rgb), 0.5)",
-                      }}
-                      transition={{ type: "spring", stiffness: 400, damping: 28, mass: 0.8 }}
-                    />
-                  )}
-
-                  {/* Hover underline (non-active) */}
-                  <span
-                    className="absolute bottom-0.5 left-1/2 -translate-x-1/2 h-[1.5px] bg-[var(--color-text-muted)]/30 rounded-full transition-all duration-300 w-0 group-hover:w-3/5"
-                    style={{ display: isActive ? "none" : "block" }}
-                  />
-
-                  <span className="relative z-10">{link.name}</span>
-                </NavLink>
-              );
-            })}
-          </div>
+          <DesktopNav navLinks={navLinks} getIsActive={getIsActive} handleNavClick={handleNavClick} />
 
           {/* Right-side actions */}
           <div className="flex items-center gap-1.5">

@@ -26,6 +26,7 @@ const footer = {
     { to: "/", hash: "#experience", label: "Experience" },
     { to: "/", hash: "#projects",   label: "Projects" },
     { to: "/", hash: "#skills",     label: "Skills" },
+    { to: "/", hash: "#contact",    label: "Contact" },
     { to: "/lab",                    label: "Lab" },
   ],
 };

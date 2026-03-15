@@ -444,20 +444,48 @@ const Projects = () => {
 
   return (
     <>
-      <section id="projects" className="relative min-h-screen pt-24 pb-28 bg-[var(--color-bg)] dark:bg-transparent">
+      <section id="projects" className="relative min-h-screen pt-24 pb-28 bg-[var(--color-bg)] dark:bg-transparent noise-overlay">
+        {/* Decorative floating elements */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <motion.div
+            className="absolute w-64 h-64 rounded-full"
+            style={{ top: "5%", left: "-5%", background: "radial-gradient(circle, rgba(var(--color-primary-rgb), 0.04), transparent 70%)" }}
+            animate={{ scale: [1, 1.15, 1], x: [0, 20, 0] }}
+            transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
+          />
+          <motion.div
+            className="absolute w-48 h-48 rounded-full"
+            style={{ bottom: "10%", right: "-3%", background: "radial-gradient(circle, rgba(var(--color-secondary-rgb), 0.03), transparent 70%)" }}
+            animate={{ scale: [1, 1.2, 1], y: [0, -25, 0] }}
+            transition={{ duration: 12, repeat: Infinity, ease: "easeInOut", delay: 3 }}
+          />
+          {/* Decorative crosses */}
+          <motion.svg
+            width="24" height="24" viewBox="0 0 24 24"
+            className="absolute text-[var(--color-primary)]/10"
+            style={{ top: "15%", right: "10%" }}
+            animate={{ rotate: [0, 90, 0], opacity: [0.15, 0.3, 0.15] }}
+            transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+          >
+            <line x1="12" y1="2" x2="12" y2="22" stroke="currentColor" strokeWidth="1.5" />
+            <line x1="2" y1="12" x2="22" y2="12" stroke="currentColor" strokeWidth="1.5" />
+          </motion.svg>
+          <motion.svg
+            width="16" height="16" viewBox="0 0 16 16"
+            className="absolute text-[var(--color-secondary)]/10"
+            style={{ bottom: "30%", left: "6%" }}
+            animate={{ rotate: [45, 135, 45], opacity: [0.1, 0.25, 0.1] }}
+            transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 4 }}
+          >
+            <line x1="8" y1="1" x2="8" y2="15" stroke="currentColor" strokeWidth="1.5" />
+            <line x1="1" y1="8" x2="15" y2="8" stroke="currentColor" strokeWidth="1.5" />
+          </motion.svg>
+        </div>
+
         <div className="relative mx-auto max-w-6xl px-4 sm:px-6">
           {/* Header */}
-          <div className="text-center mb-16">
+          <div className="text-center mb-8">
             <AnimatedHeading>Projects</AnimatedHeading>
-            <motion.p
-              initial={{ opacity: 0, y: 12 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.3, duration: 0.5 }}
-              className="text-[var(--color-text-muted)] mt-3 text-sm sm:text-base max-w-lg mx-auto"
-            >
-              Real problems I've solved, from AI career tools to campus apps.
-            </motion.p>
           </div>
 
           {/* Project rows */}

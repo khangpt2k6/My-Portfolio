@@ -216,9 +216,31 @@ const About = () => {
   return (
     <section
       id="about"
-      className="bg-[var(--color-surface)] dark:bg-transparent pb-16 md:pb-28 px-4 overflow-hidden"
+      className="relative bg-[var(--color-surface)] dark:bg-transparent pb-16 md:pb-28 px-4 overflow-hidden noise-overlay gradient-mesh"
     >
-      <div className="max-w-5xl mx-auto">
+      {/* Decorative floating dots */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <motion.div
+          className="absolute w-2 h-2 rounded-full bg-[var(--color-primary)]/15"
+          style={{ top: "20%", right: "15%" }}
+          animate={{ y: [0, -12, 0], opacity: [0.2, 0.5, 0.2] }}
+          transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+        />
+        <motion.div
+          className="absolute w-3 h-3 rounded-full bg-[var(--color-secondary)]/10"
+          style={{ bottom: "30%", left: "8%" }}
+          animate={{ y: [0, 10, 0], x: [0, 8, 0] }}
+          transition={{ duration: 7, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+        />
+        <motion.div
+          className="absolute w-16 h-16 rounded-xl border border-[var(--color-primary)]/5 rotate-45"
+          style={{ top: "10%", left: "5%" }}
+          animate={{ rotate: [45, 55, 45] }}
+          transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
+        />
+      </div>
+
+      <div className="relative max-w-5xl mx-auto">
         <SectionHeading />
 
         {/* macOS Window */}

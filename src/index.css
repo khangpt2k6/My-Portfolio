@@ -328,3 +328,131 @@ html {
 .animated-border-spin {
   animation: rotate-border 4s linear infinite;
 }
+
+/* ══════════════════════════════════════════════════════════
+   CREATIVE POLISH — Textures, patterns, decorative utilities
+   ══════════════════════════════════════════════════════════ */
+
+/* ── Noise texture overlay ── */
+.noise-overlay::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 0;
+  mix-blend-mode: overlay;
+}
+
+.dark .noise-overlay::before {
+  opacity: 0.04;
+}
+
+/* ── Dot grid pattern ── */
+.dot-grid {
+  background-image: radial-gradient(rgba(var(--color-primary-rgb), 0.08) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+.dark .dot-grid {
+  background-image: radial-gradient(rgba(var(--color-primary-rgb), 0.12) 1px, transparent 1px);
+}
+
+/* ── Gradient mesh (ambient background for sections) ── */
+.gradient-mesh {
+  background:
+    radial-gradient(at 20% 80%, rgba(var(--color-primary-rgb), 0.06) 0%, transparent 50%),
+    radial-gradient(at 80% 20%, rgba(var(--color-secondary-rgb), 0.04) 0%, transparent 50%),
+    radial-gradient(at 50% 50%, rgba(var(--color-primary-rgb), 0.02) 0%, transparent 70%);
+}
+
+/* ── Glowing line (horizontal decorative divider) ── */
+.glow-line {
+  height: 1px;
+  background: linear-gradient(90deg,
+    transparent,
+    rgba(var(--color-primary-rgb), 0.4),
+    rgba(var(--color-secondary-rgb), 0.3),
+    rgba(var(--color-primary-rgb), 0.4),
+    transparent
+  );
+  position: relative;
+}
+
+.glow-line::after {
+  content: '';
+  position: absolute;
+  inset: -4px 0;
+  background: linear-gradient(90deg,
+    transparent,
+    rgba(var(--color-primary-rgb), 0.15),
+    rgba(var(--color-secondary-rgb), 0.1),
+    rgba(var(--color-primary-rgb), 0.15),
+    transparent
+  );
+  filter: blur(8px);
+}
+
+/* ── Floating tag pill (for decorative labels) ── */
+.float-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  border-radius: 9999px;
+  background: rgba(var(--color-primary-rgb), 0.08);
+  border: 1px solid rgba(var(--color-primary-rgb), 0.15);
+  color: rgb(var(--color-primary-rgb));
+  backdrop-filter: blur(8px);
+}
+
+/* ── Subtle pulse animation for decorative elements ── */
+@keyframes subtle-pulse {
+  0%, 100% { opacity: 0.4; transform: scale(1); }
+  50%      { opacity: 0.7; transform: scale(1.05); }
+}
+
+.animate-subtle-pulse {
+  animation: subtle-pulse 4s ease-in-out infinite;
+}
+
+/* ── Floating animation ── */
+@keyframes gentle-float {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  33%      { transform: translateY(-8px) rotate(1deg); }
+  66%      { transform: translateY(4px) rotate(-1deg); }
+}
+
+.animate-float {
+  animation: gentle-float 6s ease-in-out infinite;
+}
+
+/* ── Section divider wave ── */
+.section-wave {
+  position: relative;
+  overflow: hidden;
+}
+
+.section-wave::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -1px;
+  height: 60px;
+  background: var(--color-surface);
+  mask-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 1200 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 60V20C200 0 400 40 600 20S1000 0 1200 20V60H0Z' fill='white'/%3E%3C/svg%3E");
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 1200 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 60V20C200 0 400 40 600 20S1000 0 1200 20V60H0Z' fill='white'/%3E%3C/svg%3E");
+  mask-size: 100% 100%;
+  -webkit-mask-size: 100% 100%;
+  z-index: 1;
+}
+
+.dark .section-wave::before {
+  background: transparent;
+  opacity: 0;
+}

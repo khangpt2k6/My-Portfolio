@@ -385,24 +385,42 @@ const Experience = () => {
   return (
     <section
       id="experience"
-      className="min-h-screen bg-[var(--color-surface)] dark:bg-transparent pt-24 pb-16 md:pb-28 px-4"
+      className="relative min-h-screen bg-[var(--color-surface)] dark:bg-transparent pt-24 pb-16 md:pb-28 px-4 noise-overlay"
     >
-      <div className="max-w-6xl mx-auto">
+      {/* Decorative floating geometric shapes */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <motion.div
+          className="absolute w-20 h-20 rounded-2xl border border-[var(--color-primary)]/10 rotate-12"
+          style={{ top: "8%", right: "8%" }}
+          animate={{ rotate: [12, 20, 12], y: [0, -15, 0] }}
+          transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
+        />
+        <motion.div
+          className="absolute w-32 h-32 rounded-full"
+          style={{ bottom: "12%", left: "4%", background: "radial-gradient(circle, rgba(var(--color-primary-rgb), 0.04), transparent 70%)" }}
+          animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.6, 0.3] }}
+          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+        />
+        <motion.div
+          className="absolute w-3 h-3 rounded-full bg-[var(--color-secondary)]/20"
+          style={{ top: "25%", left: "12%" }}
+          animate={{ y: [0, -20, 0], x: [0, 10, 0] }}
+          transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
+        />
+        <motion.div
+          className="absolute w-2 h-2 rounded-full bg-[var(--color-primary)]/15"
+          style={{ top: "60%", right: "15%" }}
+          animate={{ y: [0, 15, 0], x: [0, -8, 0] }}
+          transition={{ duration: 9, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+        />
+      </div>
+
+      <div className="relative max-w-6xl mx-auto">
         {/* Section header */}
         <div className="text-center mb-6">
           <AnimatedHeading>Experience</AnimatedHeading>
         </div>
 
-        {/* Subtitle */}
-        <motion.p
-          className="text-center text-[var(--color-text-muted)] text-sm md:text-base max-w-lg mx-auto mb-16"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.3 }}
-        >
-          A timeline of my professional journey and the impact I've made.
-        </motion.p>
 
         {/* Tab switcher */}
         {showTabs && (

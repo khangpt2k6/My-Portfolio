@@ -30,10 +30,13 @@ const Skills = () => {
   const theme = isDark ? "dark" : "light";
 
   return (
-    <section id="skills" className="min-h-screen pt-24 pb-28 bg-[var(--color-surface)] dark:bg-transparent">
+    <section id="skills" className="relative min-h-screen pt-24 pb-28 bg-[var(--color-surface)] dark:bg-transparent noise-overlay">
       {/* Section Header — constrained width */}
-      <div className="max-w-6xl mx-auto px-4 md:px-6 text-center mb-16">
+      <div className="max-w-6xl mx-auto px-4 md:px-6 text-center mb-8">
         <AnimatedHeading>Technical Skills</AnimatedHeading>
+
+        {/* Decorative glow line */}
+        <div className="glow-line mx-auto mt-6" style={{ maxWidth: 140 }} />
       </div>
 
       {/* Marquee Rows — full width */}
