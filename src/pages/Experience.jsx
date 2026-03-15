@@ -10,7 +10,16 @@ import AnimatedHeading from "../components/ui/AnimatedHeading";
 const isTouchDevice =
   typeof window !== "undefined" && "ontouchstart" in window;
 
-/* ── Glowing timeline node ── */
+/* ── Blob border-radius keyframes for smooth organic morphing ── */
+const blobRadii = [
+  "50%",                                    // circle
+  "60% 40% 55% 45% / 45% 60% 40% 55%",    // blob 1
+  "40% 60% 45% 55% / 55% 40% 60% 45%",    // blob 2
+  "55% 45% 60% 40% / 40% 55% 45% 60%",    // blob 3
+  "50%",                                    // back to circle
+];
+
+/* ── Glowing timeline node with smooth blob morph ── */
 const TimelineNode = ({ index, image }) => (
   <motion.div
     className="absolute left-1/2 -translate-x-1/2 z-20 hidden md:flex"
@@ -25,45 +34,57 @@ const TimelineNode = ({ index, image }) => (
       delay: index * 0.12,
     }}
   >
-    {/* Outer pulse ring */}
-    <motion.div
-      className="absolute inset-0 rounded-full"
-      style={{
-        background:
-          "radial-gradient(circle, rgba(var(--color-primary-rgb),0.4) 0%, transparent 70%)",
-        filter: "blur(8px)",
-      }}
-      animate={{
-        scale: [1, 1.8, 1],
-        opacity: [0.6, 0, 0.6],
-      }}
-      transition={{
-        duration: 3,
-        repeat: Infinity,
-        delay: index * 0.3,
-      }}
-    />
+    <div className="relative w-12 h-12">
+      {/* Outer glow pulse — morphs with the blob */}
+      <motion.div
+        className="absolute -inset-1 pointer-events-none"
+        style={{
+          background: "rgba(var(--color-primary-rgb), 0.25)",
+          filter: "blur(10px)",
+        }}
+        animate={{
+          borderRadius: blobRadii,
+          scale: [1, 1.4, 1.2, 1.3, 1],
+          opacity: [0.5, 0.2, 0.4, 0.2, 0.5],
+        }}
+        transition={{
+          duration: 6,
+          repeat: Infinity,
+          ease: "easeInOut",
+          delay: index * 0.8,
+        }}
+      />
 
-    {/* Node circle */}
-    <div
-      className="relative w-12 h-12 rounded-full border-[3px] border-[var(--color-primary)]
-                 bg-[var(--color-bg)] dark:bg-[#0a0a1a] flex items-center justify-center
-                 shadow-[0_0_20px_rgba(var(--color-primary-rgb),0.4)]"
-    >
-      {image ? (
-        <img
-          src={image}
-          alt=""
-          className="w-8 h-8 rounded-full object-cover"
-        />
-      ) : (
-        <Briefcase className="w-5 h-5 text-[var(--color-primary)]" />
-      )}
+      {/* Main node — morphing blob border */}
+      <motion.div
+        className="relative w-12 h-12 border-[3px] border-[var(--color-primary)]
+                   bg-[var(--color-bg)] dark:bg-[#0a0a1a] flex items-center justify-center
+                   overflow-hidden"
+        style={{
+          boxShadow: "0 0 20px rgba(var(--color-primary-rgb), 0.4)",
+        }}
+        animate={{
+          borderRadius: blobRadii,
+          rotate: [0, 5, -3, 4, 0],
+        }}
+        transition={{
+          duration: 6,
+          repeat: Infinity,
+          ease: "easeInOut",
+          delay: index * 0.8,
+        }}
+      >
+        {image ? (
+          <img src={image} alt="" className="w-8 h-8 rounded-full object-cover" />
+        ) : (
+          <Briefcase className="w-5 h-5 text-[var(--color-primary)]" />
+        )}
+      </motion.div>
     </div>
   </motion.div>
 );
 
-/* ── Mobile timeline node (left-aligned) ── */
+/* ── Mobile timeline node (left-aligned) with blob morph ── */
 const MobileTimelineNode = ({ index, image }) => (
   <motion.div
     className="absolute left-0 -translate-x-1/2 z-20 md:hidden"
@@ -78,21 +99,30 @@ const MobileTimelineNode = ({ index, image }) => (
       delay: index * 0.12,
     }}
   >
-    <div
-      className="relative w-10 h-10 rounded-full border-2 border-[var(--color-primary)]
+    <motion.div
+      className="relative w-10 h-10 border-2 border-[var(--color-primary)]
                  bg-[var(--color-bg)] dark:bg-[#0a0a1a] flex items-center justify-center
-                 shadow-[0_0_16px_rgba(var(--color-primary-rgb),0.35)]"
+                 overflow-hidden"
+      style={{
+        boxShadow: "0 0 16px rgba(var(--color-primary-rgb), 0.35)",
+      }}
+      animate={{
+        borderRadius: blobRadii,
+        rotate: [0, 4, -2, 3, 0],
+      }}
+      transition={{
+        duration: 6,
+        repeat: Infinity,
+        ease: "easeInOut",
+        delay: index * 0.8,
+      }}
     >
       {image ? (
-        <img
-          src={image}
-          alt=""
-          className="w-6 h-6 rounded-full object-cover"
-        />
+        <img src={image} alt="" className="w-6 h-6 rounded-full object-cover" />
       ) : (
         <Briefcase className="w-4 h-4 text-[var(--color-primary)]" />
       )}
-    </div>
+    </motion.div>
   </motion.div>
 );
 

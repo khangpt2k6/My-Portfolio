@@ -1,9 +1,85 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { createPortal } from "react-dom";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useMotionValue, useTransform } from "framer-motion";
 import { Github, ExternalLink, X, Code, Sparkles } from "lucide-react";
 import projects from "../data/projects";
 import AnimatedHeading from "../components/ui/AnimatedHeading";
+
+/* ── SVG tracing border for project cards ── */
+const TracingBorder = ({ color, isHovered }) => {
+  const [size, setSize] = useState({ w: 0, h: 0 });
+  const ref = useRef(null);
+
+  useEffect(() => {
+    const el = ref.current?.parentElement;
+    if (!el) return;
+    const ro = new ResizeObserver(([entry]) => {
+      setSize({ w: entry.contentRect.width, h: entry.contentRect.height });
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
+  const { w, h } = size;
+  if (!w || !h) return <div ref={ref} className="absolute inset-0 pointer-events-none" />;
+
+  const r = 24; // border-radius matching rounded-3xl
+  // Rounded rect path (clockwise from top-left + r)
+  const d = `M${r},0 L${w - r},0 Q${w},0 ${w},${r} L${w},${h - r} Q${w},${h} ${w - r},${h} L${r},${h} Q0,${h} 0,${h - r} L0,${r} Q0,0 ${r},0 Z`;
+
+  return (
+    <svg
+      ref={ref}
+      className="absolute inset-0 pointer-events-none z-10"
+      width={w}
+      height={h}
+      viewBox={`0 0 ${w} ${h}`}
+      fill="none"
+    >
+      <defs>
+        <filter id={`traceGlow-${color.replace(/[^a-z0-9]/gi, "")}`}>
+          <feGaussianBlur stdDeviation="3" result="blur" />
+          <feMerge>
+            <feMergeNode in="blur" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
+      </defs>
+      {/* Faint static border */}
+      <motion.path
+        d={d}
+        stroke={color}
+        strokeWidth="1"
+        strokeOpacity="0.1"
+        animate={{ strokeOpacity: isHovered ? 0.2 : 0.05 }}
+        transition={{ duration: 0.4 }}
+      />
+      {/* Tracing glow segment */}
+      <motion.path
+        d={d}
+        stroke={color}
+        strokeWidth="2"
+        strokeLinecap="round"
+        filter={`url(#traceGlow-${color.replace(/[^a-z0-9]/gi, "")})`}
+        initial={{ pathLength: 0, pathOffset: 0, opacity: 0 }}
+        animate={
+          isHovered
+            ? {
+                pathLength: [0, 0.25, 0.25, 0],
+                pathOffset: [0, 0.25, 0.75, 1],
+                opacity: [0.6, 1, 1, 0.6],
+              }
+            : { pathLength: 0, pathOffset: 0, opacity: 0 }
+        }
+        transition={
+          isHovered
+            ? { duration: 3, repeat: Infinity, ease: "easeInOut", times: [0, 0.3, 0.7, 1] }
+            : { duration: 0.3 }
+        }
+      />
+    </svg>
+  );
+};
 /* ── Project image renderer ────────────────────────────────────────────────── */
 const ProjectImage = ({ image, title, className = "" }) => (
   <img src={image} alt={title} className={`w-full h-full object-cover ${className}`} />
@@ -43,6 +119,7 @@ const ProjectRow = ({ project, index, onOpen }) => {
   const num = String(index + 1).padStart(2, "0");
   const accent = projectAccents[project.id] || projectAccents[1];
   const cardRef = useRef(null);
+  const [isHovered, setIsHovered] = useState(false);
 
   const handleGlow = useCallback((e) => {
     const el = cardRef.current;
@@ -73,18 +150,12 @@ const ProjectRow = ({ project, index, onOpen }) => {
       <div
         ref={cardRef}
         onMouseMove={handleGlow}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
         className="relative rounded-3xl glow-on-hover"
       >
-        {/* Spinning gradient border — visible on hover */}
-        <div
-          className="absolute -inset-[1px] rounded-3xl z-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 animated-border-spin"
-          style={{
-            background: `conic-gradient(from var(--border-angle, 0deg), ${accent.solid}, transparent, ${accent.solid})`,
-            mask: "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
-            maskComposite: "exclude",
-            padding: "1.5px",
-          }}
-        />
+        {/* SVG tracing border — glowing segment races around card on hover */}
+        <TracingBorder color={accent.solid} isHovered={isHovered} />
 
         <div
           className={`relative flex flex-col ${isReversed ? "lg:flex-row-reverse" : "lg:flex-row"}

@@ -116,7 +116,7 @@ const GradientName = ({ text, delay = 0, reverse = false }) => (
         }}
         className="inline-block"
         style={{
-          background: "linear-gradient(135deg, var(--color-primary), var(--color-secondary), var(--color-primary))",
+          background: "linear-gradient(135deg, #6366F1, #06B6D4, #6366F1)",
           backgroundSize: "200% 200%",
           WebkitBackgroundClip: "text",
           WebkitTextFillColor: "transparent",
