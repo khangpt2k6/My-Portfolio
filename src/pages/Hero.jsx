@@ -380,15 +380,6 @@ const Hero = () => {
           </span>
         </motion.div>
 
-        {/* ── Bio ── */}
-        <motion.p
-          initial={{ opacity: 0, y: 15, filter: "blur(6px)" }}
-          animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-          transition={{ duration: 0.7, delay: 1.6 }}
-          className="max-w-xl mx-auto text-base md:text-lg text-[var(--color-text-muted)] leading-relaxed"
-        >
-          {hero.bio}
-        </motion.p>
 
         {/* ── Scroll indicator (click to scroll down) ── */}
         <motion.div
