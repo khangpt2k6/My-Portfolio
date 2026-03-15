@@ -408,7 +408,7 @@ const Contact = () => {
   };
 
   const inputClass =
-    "w-full px-4 py-3 text-sm rounded-xl bg-[var(--color-surface2)] border border-[var(--color-border)] text-[var(--color-text)] placeholder:text-[var(--color-text-muted)]/50 focus:outline-none focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/20 transition-all duration-300";
+    "w-full px-4 py-3 text-sm rounded-xl bg-[var(--color-bg)] dark:bg-[#0d0d1a] border border-[var(--color-border)] text-[var(--color-text)] placeholder:text-[var(--color-text-muted)]/50 focus:outline-none focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/20 transition-all duration-300";
 
   return (
     <section
@@ -497,7 +497,7 @@ const Contact = () => {
                     Message
                   </label>
                   <textarea
-                    placeholder="Tell me about your project..."
+                    placeholder="Do you have any feedback / questions / ideas? Let me know!"
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
                     rows={5}

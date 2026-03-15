@@ -153,7 +153,7 @@ const Navbar = () => {
   // ── Scroll spy for active section ────────────────────────────────────────
   useEffect(() => {
     if (location.pathname !== "/") return;
-    const sectionIds = ["skills", "projects", "experience", "about"];
+    const sectionIds = ["contact", "skills", "projects", "experience", "about"];
     const onScroll = () => {
       const scrollY = window.scrollY + 200;
       for (const id of sectionIds) {
