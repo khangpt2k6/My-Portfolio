@@ -152,23 +152,23 @@ const StarfieldBg = () => {
         positions[i * 3 + 1] = (Math.random() - 0.5) * spread;
         positions[i * 3 + 2] = (Math.random() - 0.5) * spread;
 
-        // Varied sizes — mostly tiny, some medium, rare big
+        // Varied sizes — good distribution
         const sizeRoll = Math.random();
-        if (sizeRoll < 0.65) {
-          sizes[i] = minSize + Math.random() * (maxSize - minSize) * 0.3;
-        } else if (sizeRoll < 0.9) {
-          sizes[i] = minSize + (maxSize - minSize) * (0.3 + Math.random() * 0.4);
+        if (sizeRoll < 0.5) {
+          sizes[i] = minSize + Math.random() * (maxSize - minSize) * 0.35;
+        } else if (sizeRoll < 0.82) {
+          sizes[i] = minSize + (maxSize - minSize) * (0.35 + Math.random() * 0.35);
         } else {
           sizes[i] = minSize + (maxSize - minSize) * (0.7 + Math.random() * 0.3);
         }
 
         // Individual twinkle timing
         twinklePhase[i] = Math.random() * Math.PI * 2;
-        twinkleSpeed[i] = 0.5 + Math.random() * 2.5; // each star sparkles at different speed
-        baseBrightness[i] = 0.3 + Math.random() * 0.7;
+        twinkleSpeed[i] = 0.4 + Math.random() * 3.0;
+        baseBrightness[i] = 0.5 + Math.random() * 0.5;
 
-        // Slow drift velocity
-        const driftSpeed = 0.02 + Math.random() * 0.08;
+        // Drift velocity — visible movement
+        const driftSpeed = 0.08 + Math.random() * 0.25;
         const angle1 = Math.random() * Math.PI * 2;
         const angle2 = Math.random() * Math.PI * 2;
         velocities[i * 3] = Math.cos(angle1) * Math.cos(angle2) * driftSpeed;
@@ -205,7 +205,7 @@ const StarfieldBg = () => {
             vColor = color;
             vSize = size;
             vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
-            gl_PointSize = size * uPixelRatio * (300.0 / -mvPosition.z);
+            gl_PointSize = size * uPixelRatio * (450.0 / -mvPosition.z);
             gl_Position = projectionMatrix * mvPosition;
           }
         `,
@@ -242,11 +242,11 @@ const StarfieldBg = () => {
       };
     };
 
-    // Multiple layers with different size ranges
-    const starLayer1 = createSparkleStars(Math.floor(6000 * m), 0.3, 1.2, 2200);  // Tiny distant
-    const starLayer2 = createSparkleStars(Math.floor(2500 * m), 0.8, 2.5, 1500);  // Medium
-    const starLayer3 = createSparkleStars(Math.floor(600 * m), 1.5, 4.0, 1000);   // Close, larger
-    const starLayer4 = createSparkleStars(Math.floor(150 * m), 2.5, 6.0, 800);    // Big bright ones
+    // Multiple layers — closer to camera, bigger, more visible
+    const starLayer1 = createSparkleStars(Math.floor(8000 * m), 0.5, 1.8, 1800);  // Many small
+    const starLayer2 = createSparkleStars(Math.floor(4000 * m), 1.2, 3.5, 1200);  // Medium
+    const starLayer3 = createSparkleStars(Math.floor(1200 * m), 2.0, 5.5, 800);   // Larger, close
+    const starLayer4 = createSparkleStars(Math.floor(300 * m), 3.5, 8.0, 600);    // Big bright ones
 
     const allStarLayers = [starLayer1, starLayer2, starLayer3, starLayer4];
     allStarLayers.forEach((l) => scene.add(l.points));
@@ -416,10 +416,10 @@ const StarfieldBg = () => {
             }
           }
 
-          // Per-star sparkle — size pulsation
+          // Per-star sparkle — size pulsation (dramatic twinkle)
           const sparkle = Math.sin(elapsed * layer.twinkleSpeed[i] + layer.twinklePhase[i]);
-          const brightness = layer.baseBrightness[i] + sparkle * 0.3;
-          sizeAttr.array[i] = layer.baseSizes[i] * Math.max(0.15, brightness);
+          const brightness = layer.baseBrightness[i] + sparkle * 0.45;
+          sizeAttr.array[i] = layer.baseSizes[i] * Math.max(0.1, brightness);
         }
 
         posAttr.needsUpdate = true;
@@ -429,7 +429,7 @@ const StarfieldBg = () => {
         layer.points.material.uniforms.uTime.value = elapsed;
 
         // Slow overall rotation per layer
-        const rotSpeed = [0.003, 0.005, 0.008, 0.012][layerIdx] || 0.005;
+        const rotSpeed = [0.005, 0.008, 0.013, 0.02][layerIdx] || 0.008;
         layer.points.rotation.y = elapsed * rotSpeed;
         layer.points.rotation.x = elapsed * rotSpeed * 0.4 * (layerIdx % 2 === 0 ? 1 : -1);
       });
