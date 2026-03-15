@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
-import { NavLink, useLocation } from "react-router-dom";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, Palette, Check, MousePointer } from "lucide-react";
 import { CURSOR_STYLES } from "../ui/CustomCursor";
@@ -9,10 +9,10 @@ import ThemeToggle from "../ui/ThemeToggle";
 
 // ── Navigation links ────────────────────────────────────────────────────────
 const navLinks = [
-  { name: "About", to: "/" },
-  { name: "Experience", to: "/experience" },
-  { name: "Projects", to: "/projects" },
-  { name: "Skills", to: "/skills" },
+  { name: "About", to: "/", hash: "#about" },
+  { name: "Experience", to: "/", hash: "#experience" },
+  { name: "Projects", to: "/", hash: "#projects" },
+  { name: "Skills", to: "/", hash: "#skills" },
   { name: "Lab", to: "/lab" },
 ];
 
@@ -46,9 +46,12 @@ const Navbar = () => {
   const [selectedTransition, setSelectedTransition] = useState("Fade");
   const [selectedCursor, setSelectedCursor] = useState("ring");
 
+  const [activeSection, setActiveSection] = useState("about");
+
   const paletteRef = useRef(null);
   const paletteBtnRef = useRef(null);
   const location = useLocation();
+  const navigate = useNavigate();
 
   // ── Scroll detection ──────────────────────────────────────────────────────
   useEffect(() => {
@@ -56,6 +59,26 @@ const Navbar = () => {
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  // ── Scroll spy for active section ────────────────────────────────────────
+  useEffect(() => {
+    if (location.pathname !== "/") return;
+    const sectionIds = ["skills", "projects", "experience", "about"];
+    const onScroll = () => {
+      const scrollY = window.scrollY + 200;
+      for (const id of sectionIds) {
+        const el = document.getElementById(id);
+        if (el && el.offsetTop <= scrollY) {
+          setActiveSection(id);
+          return;
+        }
+      }
+      setActiveSection("about");
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [location.pathname]);
 
   // ── Theme: init ───────────────────────────────────────────────────────────
   useEffect(() => {
@@ -134,6 +157,29 @@ const Navbar = () => {
     return () => window.removeEventListener("resize", onResize);
   }, []);
 
+  const handleNavClick = useCallback((link, e) => {
+    if (link.hash) {
+      e.preventDefault();
+      if (location.pathname !== "/") {
+        navigate("/");
+        setTimeout(() => {
+          const el = document.querySelector(link.hash);
+          el?.scrollIntoView({ behavior: "smooth" });
+        }, 100);
+      } else {
+        const el = document.querySelector(link.hash);
+        el?.scrollIntoView({ behavior: "smooth" });
+      }
+    }
+  }, [location.pathname, navigate]);
+
+  const getIsActive = (link) => {
+    if (link.hash) {
+      return location.pathname === "/" && activeSection === link.hash.slice(1);
+    }
+    return location.pathname === link.to;
+  };
+
   const isDark = theme === "dark";
   const glassBg = isDark
     ? scrolled ? "rgba(0, 0, 0, 0.6)" : "rgba(0, 0, 0, 0.3)"
@@ -163,11 +209,12 @@ const Navbar = () => {
           {/* Desktop links */}
           <div className="hidden md:flex items-center gap-1">
             {navLinks.map((link) => {
-              const isActive = location.pathname === link.to;
+              const isActive = getIsActive(link);
               return (
                 <NavLink
                   key={link.name}
-                  to={link.to}
+                  to={link.hash ? "/" : link.to}
+                  onClick={(e) => handleNavClick(link, e)}
                   className="relative px-4 py-2 text-sm font-medium cursor-pointer select-none rounded-full transition-colors duration-200"
                   style={{ color: isActive ? "var(--color-primary)" : "var(--color-text-muted)" }}
                   onMouseEnter={(e) => { if (!isActive) e.currentTarget.style.color = "var(--color-text)"; }}
@@ -331,12 +378,12 @@ const Navbar = () => {
             >
               <div className="flex flex-col gap-1 px-4 pb-4 pt-1 backdrop-blur-xl">
                 {navLinks.map((link) => {
-                  const isActive = location.pathname === link.to;
+                  const isActive = getIsActive(link);
                   return (
                     <NavLink
                       key={link.name}
-                      to={link.to}
-                      onClick={() => setIsOpen(false)}
+                      to={link.hash ? "/" : link.to}
+                      onClick={(e) => { handleNavClick(link, e); setIsOpen(false); }}
                       className="relative px-4 py-2.5 text-sm font-medium cursor-pointer select-none rounded-xl transition-colors duration-200"
                       style={{ color: isActive ? "var(--color-primary)" : "var(--color-text-muted)" }}
                     >

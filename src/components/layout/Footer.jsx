@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaGithub, FaLinkedin } from "react-icons/fa";
 import { Mail, Phone, MapPin, ArrowUp } from "lucide-react";
@@ -22,6 +22,22 @@ const Footer = () => {
   const [showTopBtn, setShowTopBtn] = useState(false);
   const [isDark, setIsDark] = useState(false);
   const currentYear = new Date().getFullYear();
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const handleNavClick = (link, e) => {
+    if (link.hash) {
+      e.preventDefault();
+      if (location.pathname !== "/") {
+        navigate("/");
+        setTimeout(() => {
+          document.querySelector(link.hash)?.scrollIntoView({ behavior: "smooth" });
+        }, 100);
+      } else {
+        document.querySelector(link.hash)?.scrollIntoView({ behavior: "smooth" });
+      }
+    }
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -58,12 +74,12 @@ const Footer = () => {
 
   return (
     <footer className="bg-[var(--color-surface2)] dark:bg-transparent">
-      <div className="max-w-6xl mx-auto px-6 py-8">
+      <div className="max-w-6xl mx-auto px-6 py-5">
         {/* Three-column grid */}
         <FadeInView direction="up">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
             {/* Left column — Branding & Socials */}
-            <div className="space-y-5">
+            <div className="space-y-3">
               <h2 className="text-xl font-bold text-[var(--color-text)]">
                 {footerData.name}
               </h2>
@@ -105,7 +121,7 @@ const Footer = () => {
             </div>
 
             {/* Center column — Overview nav */}
-            <div className="space-y-5">
+            <div className="space-y-3">
               <h3 className="text-sm font-semibold uppercase tracking-wider text-[var(--color-text)]">
                 Overview
               </h3>
@@ -114,6 +130,7 @@ const Footer = () => {
                   <Link
                     key={index}
                     to={link.to}
+                    onClick={(e) => handleNavClick(link, e)}
                     className="text-sm text-[var(--color-text-muted)] hover:text-[var(--color-primary)] transition-colors cursor-pointer"
                   >
                     {link.label}
@@ -123,11 +140,11 @@ const Footer = () => {
             </div>
 
             {/* Right column — Contact + Back-to-top */}
-            <div className="space-y-5">
+            <div className="space-y-3">
               <h3 className="text-sm font-semibold uppercase tracking-wider text-[var(--color-text)]">
                 Contact
               </h3>
-              <ul className="space-y-3">
+              <ul className="space-y-2">
                 <li className="flex items-center gap-3">
                   <Mail size={16} className="text-[var(--color-primary)] shrink-0" />
                   <span className="text-sm text-[var(--color-text-muted)]">
@@ -174,7 +191,7 @@ const Footer = () => {
         </FadeInView>
 
         {/* Bottom bar */}
-        <div className="mt-6 pt-4">
+        <div className="mt-4 pt-3">
           <div className="flex justify-center items-center">
             <span className="text-sm text-[var(--color-text-muted)]">
               &copy; {currentYear} {footerData.copyright}. All rights reserved.

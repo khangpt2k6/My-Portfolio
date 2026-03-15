@@ -22,11 +22,11 @@ const footer = {
   },
 
   navLinks: [
-    { to: "/",           label: "About" },
-    { to: "/experience", label: "Experience" },
-    { to: "/projects",   label: "Projects" },
-    { to: "/skills",     label: "Skills" },
-    { to: "/education",  label: "Education" },
+    { to: "/", hash: "#about",      label: "About" },
+    { to: "/", hash: "#experience", label: "Experience" },
+    { to: "/", hash: "#projects",   label: "Projects" },
+    { to: "/", hash: "#skills",     label: "Skills" },
+    { to: "/lab",                    label: "Lab" },
   ],
 };
 

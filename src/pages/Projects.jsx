@@ -373,7 +373,7 @@ const Projects = () => {
 
   return (
     <>
-      <section className="relative min-h-screen pt-24 pb-28 bg-[var(--color-bg)] dark:bg-transparent">
+      <section id="projects" className="relative min-h-screen pt-24 pb-28 bg-[var(--color-bg)] dark:bg-transparent">
         <div className="relative mx-auto max-w-6xl px-4 sm:px-6">
           {/* Header */}
           <div className="text-center mb-16">

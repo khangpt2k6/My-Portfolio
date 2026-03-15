@@ -78,14 +78,12 @@ function AnimatedRoutes() {
       setTransitionStyle(saved)
     }
 
-    // Listen for changes (from SettingsPanel)
     const handleStorage = () => {
       const val = localStorage.getItem("page-transition")
       if (val && transitionPresets[val]) setTransitionStyle(val)
     }
     window.addEventListener("storage", handleStorage)
 
-    // Also poll for same-tab changes
     const interval = setInterval(() => {
       const val = localStorage.getItem("page-transition")
       if (val && val !== transitionStyle && transitionPresets[val]) {
@@ -99,9 +97,11 @@ function AnimatedRoutes() {
     }
   }, [transitionStyle])
 
-  // Scroll to top on route change
+  // Scroll to top on route change (only for Lab)
   useEffect(() => {
-    window.scrollTo(0, 0)
+    if (location.pathname !== "/") {
+      window.scrollTo(0, 0)
+    }
   }, [location.pathname])
 
   return (
@@ -109,16 +109,13 @@ function AnimatedRoutes() {
       <AnimatePresence mode="wait">
         <Routes location={location} key={location.pathname}>
           <Route path="/" element={
-            <PageWrapper transitionStyle={transitionStyle}><Hero /><About /></PageWrapper>
-          } />
-          <Route path="/experience" element={
-            <PageWrapper transitionStyle={transitionStyle}><Experience /></PageWrapper>
-          } />
-          <Route path="/projects" element={
-            <PageWrapper transitionStyle={transitionStyle}><Projects /></PageWrapper>
-          } />
-          <Route path="/skills" element={
-            <PageWrapper transitionStyle={transitionStyle}><Skills /></PageWrapper>
+            <PageWrapper transitionStyle={transitionStyle}>
+              <Hero />
+              <About />
+              <Experience />
+              <Projects />
+              <Skills />
+            </PageWrapper>
           } />
           <Route path="/lab" element={
             <PageWrapper transitionStyle={transitionStyle}><Lab /></PageWrapper>
