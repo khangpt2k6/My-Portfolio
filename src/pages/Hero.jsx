@@ -1,8 +1,6 @@
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 import {
   motion,
-  useMotionValue,
-  useSpring,
   useTransform,
   useScroll,
 } from "framer-motion";
@@ -96,31 +94,40 @@ const GridBackground = () => (
   </div>
 );
 
-/* ── Gradient Name Line — clip-path wipe reveal ── */
-const GradientName = ({ text, gradient, delay = 0 }) => (
-  <motion.h1
-    initial={{ clipPath: "inset(0 100% 0 0)", opacity: 0.5 }}
-    animate={{ clipPath: "inset(0 0% 0 0)", opacity: 1 }}
-    transition={{ duration: 1.0, delay, ease: [0.22, 1, 0.36, 1] }}
-    className={`text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-extrabold uppercase leading-[1.1] tracking-[0.04em] ${gradient}`}
-    style={{
-      fontFamily: "var(--font-display)",
-      WebkitBackgroundClip: "text",
-      WebkitTextFillColor: "transparent",
-      backgroundClip: "text",
-    }}
+/* ── Gradient Name Line — per-character stagger reveal ── */
+const GradientName = ({ text, delay = 0, reverse = false }) => (
+  <h1
+    className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-extrabold uppercase leading-[1.1] tracking-[0.04em] flex justify-center overflow-hidden"
+    style={{ fontFamily: "var(--font-display)" }}
   >
-    {text}
-  </motion.h1>
+    {text.split("").map((char, i) => (
+      <motion.span
+        key={i}
+        initial={{ y: "120%", opacity: 0, rotateX: 90 }}
+        animate={{ y: "0%", opacity: 1, rotateX: 0 }}
+        transition={{
+          duration: 0.7,
+          delay: delay + (reverse ? (text.length - 1 - i) : i) * 0.06,
+          ease: [0.22, 1, 0.36, 1],
+        }}
+        className="inline-block"
+        style={{
+          background: "linear-gradient(135deg, var(--color-primary), var(--color-secondary), var(--color-primary))",
+          backgroundSize: "200% 200%",
+          WebkitBackgroundClip: "text",
+          WebkitTextFillColor: "transparent",
+          backgroundClip: "text",
+        }}
+      >
+        {char}
+      </motion.span>
+    ))}
+  </h1>
 );
 
 /* ── Hero Component ── */
 const Hero = () => {
   const sectionRef = useRef(null);
-  const mouseX = useMotionValue(0);
-  const mouseY = useMotionValue(0);
-  const smoothX = useSpring(mouseX, { stiffness: 40, damping: 20 });
-  const smoothY = useSpring(mouseY, { stiffness: 40, damping: 20 });
 
   /* Scroll-based parallax depth */
   const { scrollYProgress } = useScroll({
@@ -130,21 +137,6 @@ const Hero = () => {
   const nameY = useTransform(scrollYProgress, [0, 1], [0, -120]);
   const nameScale = useTransform(scrollYProgress, [0, 0.5], [1, 0.92]);
   const nameOpacity = useTransform(scrollYProgress, [0, 0.7], [1, 0]);
-
-  /* Parallax for outline layers */
-  const bg1X = useTransform(smoothX, [-0.5, 0.5], [-25, 25]);
-  const bg1Y = useTransform(smoothY, [-0.5, 0.5], [-15, 15]);
-  const bg2X = useTransform(smoothX, [-0.5, 0.5], [12, -12]);
-  const bg2Y = useTransform(smoothY, [-0.5, 0.5], [8, -8]);
-
-  useEffect(() => {
-    const handleMouseMove = (e) => {
-      mouseX.set(e.clientX / window.innerWidth - 0.5);
-      mouseY.set(e.clientY / window.innerHeight - 0.5);
-    };
-    window.addEventListener("mousemove", handleMouseMove);
-    return () => window.removeEventListener("mousemove", handleMouseMove);
-  }, [mouseX, mouseY]);
 
   return (
     <section
@@ -212,88 +204,29 @@ const Hero = () => {
           <div className="h-px w-8 bg-[var(--color-primary)]/50" />
         </motion.div>
 
-        {/* ── Layered Name ── */}
+        {/* ── Name ── */}
         <div className="relative mb-6">
-          {/* Ghost outline layer 1 — parallax */}
+          {/* Light streak across name */}
           <motion.div
-            style={{ x: bg1X, y: bg1Y }}
-            className="absolute inset-0 flex flex-col items-center justify-center select-none pointer-events-none"
+            className="absolute inset-0 pointer-events-none overflow-hidden z-10"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1.5 }}
           >
-            {[hero.firstName, hero.lastName].map((name, i) => (
-              <motion.span
-                key={i}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 2.0 + i * 0.2, duration: 1.5 }}
-                className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-extrabold uppercase leading-[1.1] tracking-[0.04em] opacity-[0.03] dark:opacity-[0.05]"
-                style={{
-                  fontFamily: "var(--font-display)",
-                  WebkitTextStroke:
-                    "1.5px rgba(var(--color-primary-rgb), 0.5)",
-                  WebkitTextFillColor: "transparent",
-                }}
-              >
-                {name}
-              </motion.span>
-            ))}
-          </motion.div>
-
-          {/* Ghost outline layer 2 — opposite parallax */}
-          <motion.div
-            style={{ x: bg2X, y: bg2Y }}
-            className="absolute inset-0 flex flex-col items-center justify-center select-none pointer-events-none"
-          >
-            {[hero.firstName, hero.lastName].map((name, i) => (
-              <motion.span
-                key={i}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 2.4 + i * 0.2, duration: 1.5 }}
-                className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-extrabold uppercase leading-[1.1] tracking-[0.04em] opacity-[0.02] dark:opacity-[0.04]"
-                style={{
-                  fontFamily: "var(--font-display)",
-                  WebkitTextStroke:
-                    "1px rgba(var(--color-secondary-rgb), 0.4)",
-                  WebkitTextFillColor: "transparent",
-                }}
-              >
-                {name}
-              </motion.span>
-            ))}
-          </motion.div>
-
-          {/* ── Main Name ── */}
-          <div className="relative">
-            {/* Light streak across name */}
             <motion.div
-              className="absolute inset-0 pointer-events-none overflow-hidden z-10"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 1.5 }}
-            >
-              <motion.div
-                className="absolute inset-y-0 w-32"
-                style={{
-                  background:
-                    "linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent)",
-                }}
-                initial={{ x: "-100%" }}
-                animate={{ x: "600%" }}
-                transition={{ delay: 1.6, duration: 1.0, ease: "easeOut" }}
-              />
-            </motion.div>
+              className="absolute inset-y-0 w-32"
+              style={{
+                background:
+                  "linear-gradient(90deg, transparent, rgba(255,255,255,0.18), transparent)",
+              }}
+              initial={{ x: "-100%" }}
+              animate={{ x: "600%" }}
+              transition={{ delay: 1.8, duration: 1.0, ease: "easeOut" }}
+            />
+          </motion.div>
 
-            <GradientName
-              text={hero.firstName}
-              gradient="bg-gradient-to-r from-indigo-600 via-indigo-400 to-cyan-400"
-              delay={0.3}
-            />
-            <GradientName
-              text={hero.lastName}
-              gradient="bg-gradient-to-r from-cyan-400 via-indigo-400 to-indigo-600"
-              delay={0.6}
-            />
-          </div>
+          <GradientName text={hero.firstName} delay={0.3} />
+          <GradientName text={hero.lastName} delay={0.7} reverse />
         </div>
 
         {/* ── Animated underline glow ── */}

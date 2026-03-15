@@ -1,6 +1,6 @@
 "use client";
 // About page — co-authored with Claude
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { motion, useScroll, useTransform, useSpring } from "framer-motion";
 import { FaGithub, FaLinkedin, FaEnvelope } from "react-icons/fa";
 import Tilt from "react-parallax-tilt";
@@ -35,9 +35,10 @@ const SectionHeading = () => (
   </div>
 );
 
-/* ── 3D Profile Image ── */
+/* ── 3D Profile Image — coin-flip between real photo & notion avatar ── */
 const ProfileImage = () => {
   const imgRef = useRef(null);
+  const [flipped, setFlipped] = useState(false);
   const { scrollYProgress } = useScroll({
     target: imgRef,
     offset: ["start end", "end start"],
@@ -67,8 +68,9 @@ const ProfileImage = () => {
       />
 
       <motion.div
-        className="relative rounded-2xl overflow-hidden h-full"
-        style={{ y: smoothY }}
+        className="relative rounded-2xl overflow-hidden h-full cursor-pointer"
+        style={{ y: smoothY, perspective: 800 }}
+        onClick={() => setFlipped((f) => !f)}
       >
         {/* Light sweep */}
         <motion.div className="absolute inset-0 z-20 pointer-events-none overflow-hidden">
@@ -88,11 +90,52 @@ const ProfileImage = () => {
           />
         </motion.div>
 
-        <img
-          src={about.image}
-          alt="Kevin Phan"
-          className="relative z-[1] w-full h-full object-cover object-top rounded-2xl"
-        />
+        {/* Coin-flip container */}
+        <motion.div
+          className="relative w-full h-full"
+          style={{ transformStyle: "preserve-3d" }}
+          animate={{ rotateY: flipped ? 180 : 0 }}
+          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+        >
+          {/* Front — real photo */}
+          <img
+            src={about.image}
+            alt="Kevin Phan"
+            className="absolute inset-0 z-[1] w-full h-full object-cover object-top rounded-2xl"
+            style={{ backfaceVisibility: "hidden" }}
+          />
+          {/* Back — notion avatar */}
+          <img
+            src="/notion_avatar.png"
+            alt="Kevin Phan — Notion Avatar"
+            className="absolute inset-0 z-[1] w-full h-full object-cover object-center rounded-2xl
+                       bg-[var(--color-surface)]"
+            style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}
+          />
+        </motion.div>
+
+        {/* Flip hint — visible on hover */}
+        <div className="absolute inset-0 z-30 flex items-center justify-center
+                        rounded-2xl bg-black/0 hover:bg-black/30
+                        opacity-0 hover:opacity-100 transition-all duration-300">
+          <div className="flex flex-col items-center gap-2 text-white">
+            <motion.svg
+              width="28"
+              height="28"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              animate={{ rotateY: [0, 180, 360] }}
+              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+            >
+              <path d="M21 12a9 9 0 0 1-9 9m9-9a9 9 0 0 0-9-9m9 9H3m9 9a9 9 0 0 1-9-9m9 9c1.66 0 3-4.03 3-9s-1.34-9-3-9m0 18c-1.66 0-3-4.03-3-9s1.34-9 3-9m-9 9a9 9 0 0 1 9-9" />
+            </motion.svg>
+            <span className="text-xs font-medium tracking-wide">Click to flip</span>
+          </div>
+        </div>
       </motion.div>
     </motion.div>
   );
