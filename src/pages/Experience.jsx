@@ -295,11 +295,11 @@ const ExperienceCard = ({ exp, index, isLeft }) => {
 const ScrollProgressLine = ({ containerRef }) => {
   const { scrollYProgress } = useScroll({
     target: containerRef,
-    offset: ["start center", "end center"],
+    offset: ["start end", "end end"],
   });
   const smoothProgress = useSpring(scrollYProgress, {
-    stiffness: 80,
-    damping: 30,
+    stiffness: 120,
+    damping: 20,
   });
   const scaleY = useTransform(smoothProgress, [0, 1], [0, 1]);
 
@@ -345,11 +345,11 @@ const ScrollProgressLine = ({ containerRef }) => {
 const MobileScrollLine = ({ containerRef }) => {
   const { scrollYProgress } = useScroll({
     target: containerRef,
-    offset: ["start center", "end center"],
+    offset: ["start end", "end end"],
   });
   const smoothProgress = useSpring(scrollYProgress, {
-    stiffness: 80,
-    damping: 30,
+    stiffness: 120,
+    damping: 20,
   });
   const scaleY = useTransform(smoothProgress, [0, 1], [0, 1]);
 

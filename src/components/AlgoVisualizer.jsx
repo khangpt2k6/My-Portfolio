@@ -11,12 +11,96 @@ import { SORTING_GENERATORS } from "./algo/algorithms/sorting";
 import { generatePathSteps, CELL } from "./algo/algorithms/pathfinding";
 import { generateTraversalSteps } from "./algo/algorithms/tree";
 
-// ── Tabs ────────────────────────────────────────────────────────────────────
-const TABS = [
-  { id: "sorting", label: "Sorting", icon: BarChart3, desc: "Watch algorithms race to sort" },
-  { id: "pathfinding", label: "Pathfinding", icon: Grid3X3, desc: "Find the shortest path" },
-  { id: "tree", label: "Binary Tree", icon: GitBranch, desc: "Explore tree structures" },
-];
+// ── Shared styled select ────────────────────────────────────────────────────
+function StyledSelect({ value, onChange, options, disabled }) {
+  return (
+    <div className="relative">
+      <select
+        value={value}
+        onChange={onChange}
+        disabled={disabled}
+        className="appearance-none pl-3 pr-8 py-2 rounded-xl text-sm font-medium bg-[var(--color-surface)] text-[var(--color-text)] border border-[var(--color-border)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]/40 focus:border-[var(--color-primary)] cursor-pointer disabled:opacity-50 transition-all duration-200 hover:border-[var(--color-primary)]/40"
+      >
+        {options.map(a => (
+          <option key={a} value={a} className="bg-[var(--color-surface)] text-[var(--color-text)]">
+            {a}
+          </option>
+        ))}
+      </select>
+      <ChevronDown size={14} className="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-[var(--color-text-muted)]" />
+    </div>
+  );
+}
+
+// ── Shared action button ────────────────────────────────────────────────────
+function ActionButton({ onClick, disabled, variant = "primary", icon: Icon, children }) {
+  const base = "flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed";
+
+  if (variant === "primary") {
+    return (
+      <motion.button
+        onClick={onClick}
+        disabled={disabled}
+        whileTap={{ scale: 0.95 }}
+        className={`${base} text-white`}
+        style={{
+          backgroundColor: "var(--color-primary)",
+          boxShadow: "0 4px 16px rgba(var(--color-primary-rgb), 0.3)",
+        }}
+      >
+        {Icon && <Icon size={14} />}
+        {children}
+      </motion.button>
+    );
+  }
+
+  return (
+    <motion.button
+      onClick={onClick}
+      disabled={disabled}
+      whileTap={{ scale: 0.95 }}
+      className={`${base} bg-[var(--color-surface2)] text-[var(--color-text)] border border-[var(--color-border)] hover:border-[var(--color-primary)]/40 hover:bg-[var(--color-surface2)]/80`}
+    >
+      {Icon && <Icon size={14} />}
+      {children}
+    </motion.button>
+  );
+}
+
+// ── Legend item ──────────────────────────────────────────────────────────────
+function Legend({ items }) {
+  return (
+    <div className="flex flex-wrap gap-3 text-[11px] text-[var(--color-text-muted)]">
+      {items.map(({ label, color, rounded }) => (
+        <span key={label} className="flex items-center gap-1.5">
+          <span
+            className={`w-3 h-3 ${rounded ? "rounded-full" : "rounded-sm"}`}
+            style={{ background: color, border: color === "transparent" ? "1px solid var(--color-border)" : undefined }}
+          />
+          {label}
+        </span>
+      ))}
+    </div>
+  );
+}
+
+// ── Canvas wrapper with glow border ─────────────────────────────────────────
+function CanvasPanel({ children, accent, className = "" }) {
+  return (
+    <div className={`relative rounded-2xl overflow-hidden ${className}`}>
+      {/* Glow effect at top */}
+      <div
+        className="absolute top-0 inset-x-0 h-px"
+        style={{
+          background: `linear-gradient(90deg, transparent, ${accent || "var(--color-primary)"}50, transparent)`,
+        }}
+      />
+      <div className="border border-[var(--color-border)] rounded-2xl bg-[var(--color-surface)] p-2 overflow-hidden">
+        {children}
+      </div>
+    </div>
+  );
+}
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // SORTING VISUALIZER
@@ -55,7 +139,6 @@ function SortingVisualizer() {
     setSteps(newSteps);
   };
 
-  // Get current visual state from step
   const visual = useMemo(() => {
     const step = player.currentStepData;
     if (!step) return { array, highlighted: [], sorted: [], pivot: -1 };
@@ -67,15 +150,14 @@ function SortingVisualizer() {
     };
   }, [player.currentStepData, array]);
 
-  // Derive stats from steps up to current
   const stats = useMemo(() => {
     if (steps.length === 0) return [];
     const upTo = steps.slice(0, player.currentStep + 1);
     const comparisons = upTo.filter(s => s.type === "compare").length;
     const swaps = upTo.filter(s => s.type === "swap").length;
     return [
-      { label: "Comparisons", value: comparisons },
-      { label: "Swaps", value: swaps },
+      { label: "Comparisons", value: comparisons, color: "#6366f1" },
+      { label: "Swaps", value: swaps, color: "#f43f5e" },
     ];
   }, [steps, player.currentStep]);
 
@@ -93,14 +175,15 @@ function SortingVisualizer() {
     const w = rect.width;
     const h = rect.height;
     const arr = visual.array;
-    const barW = w / arr.length;
+    const gap = 1.5;
+    const barW = (w - gap * (arr.length - 1)) / arr.length;
     const maxVal = 100;
 
     ctx.clearRect(0, 0, w, h);
 
     arr.forEach((val, i) => {
-      const barH = (val / maxVal) * (h - 10);
-      const x = i * barW;
+      const barH = (val / maxVal) * (h - 16);
+      const x = i * (barW + gap);
       const y = h - barH;
 
       let color;
@@ -111,42 +194,53 @@ function SortingVisualizer() {
       } else if (visual.highlighted.includes(i)) {
         color = "#f43f5e";
       } else {
+        // Gradient blue based on value
         const t = val / maxVal;
-        const r = Math.round(99 + t * 60);
-        const g = Math.round(102 + t * 80);
+        const r = Math.round(99 + t * 40);
+        const g = Math.round(102 + t * 60);
         const b = 241;
         color = `rgb(${r}, ${g}, ${b})`;
       }
 
       // Draw bar with rounded top
-      const radius = Math.min(barW * 0.3, 4);
+      const radius = Math.min(barW * 0.3, 5);
       ctx.beginPath();
-      ctx.moveTo(x + 1, y + radius);
-      ctx.quadraticCurveTo(x + 1, y, x + 1 + radius, y);
-      ctx.lineTo(x + barW - 1 - radius, y);
-      ctx.quadraticCurveTo(x + barW - 1, y, x + barW - 1, y + radius);
-      ctx.lineTo(x + barW - 1, h);
-      ctx.lineTo(x + 1, h);
+      ctx.moveTo(x, y + radius);
+      ctx.quadraticCurveTo(x, y, x + radius, y);
+      ctx.lineTo(x + barW - radius, y);
+      ctx.quadraticCurveTo(x + barW, y, x + barW, y + radius);
+      ctx.lineTo(x + barW, h);
+      ctx.lineTo(x, h);
       ctx.closePath();
 
-      ctx.fillStyle = color;
+      // Gradient fill for unsorted bars
+      if (!visual.sorted.includes(i) && !visual.highlighted.includes(i) && i !== visual.pivot) {
+        const grad = ctx.createLinearGradient(x, y, x, h);
+        grad.addColorStop(0, color);
+        grad.addColorStop(1, `rgba(${99 + (val / maxVal) * 40}, ${102 + (val / maxVal) * 60}, 241, 0.6)`);
+        ctx.fillStyle = grad;
+      } else {
+        ctx.fillStyle = color;
+      }
       ctx.fill();
 
       // Glow for highlighted/pivot
       if (visual.highlighted.includes(i) || i === visual.pivot) {
         ctx.shadowColor = color;
-        ctx.shadowBlur = 12;
+        ctx.shadowBlur = 16;
         ctx.fill();
         ctx.shadowBlur = 0;
       }
 
-      // Show values on bars when array is small enough
+      // Value labels for small arrays
       if (arr.length <= 30) {
-        ctx.fillStyle = barH > 20 ? "#fff" : "var(--color-text)";
+        const cs = getComputedStyle(document.documentElement);
+        const textColor = cs.getPropertyValue("--color-text").trim() || "#0F172A";
+        ctx.fillStyle = barH > 20 ? "#fff" : textColor;
         ctx.font = `bold ${Math.min(11, barW * 0.5)}px system-ui`;
         ctx.textAlign = "center";
         ctx.textBaseline = barH > 20 ? "top" : "bottom";
-        ctx.fillText(val, x + barW / 2, barH > 20 ? y + 4 : y - 2);
+        ctx.fillText(val, x + barW / 2, barH > 20 ? y + 5 : y - 3);
       }
     });
   }, [visual]);
@@ -170,40 +264,18 @@ function SortingVisualizer() {
     <div className="space-y-4">
       {/* Top controls */}
       <div className="flex flex-wrap items-center gap-3">
-        <div className="relative">
-          <select
-            value={algo}
-            onChange={e => setAlgo(e.target.value)}
-            disabled={player.isPlaying}
-            className="appearance-none pl-3 pr-8 py-2 rounded-xl text-sm font-medium bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 border border-[var(--color-border)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] cursor-pointer disabled:opacity-50 [&>option]:bg-white [&>option]:dark:bg-zinc-800 [&>option]:text-zinc-900 [&>option]:dark:text-zinc-100"
-          >
-            {SORT_ALGOS.map(a => <option key={a} value={a}>{a}</option>)}
-          </select>
-          <ChevronDown size={14} className="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-[var(--color-text-muted)]" />
-        </div>
-
-        <button
-          onClick={generate}
-          disabled={player.isPlaying}
-          className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold text-white transition-all duration-200 disabled:opacity-50"
-          style={{ backgroundColor: "var(--color-primary)" }}
-        >
-          <Play size={14} /> Visualize
-        </button>
-
-        <button onClick={shuffle} disabled={player.isPlaying}
-          className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium bg-[var(--color-surface2)] text-[var(--color-text)] border border-[var(--color-border)] hover:border-[var(--color-primary)] transition-colors disabled:opacity-50">
-          <Shuffle size={14} /> Randomize
-        </button>
+        <StyledSelect value={algo} onChange={e => setAlgo(e.target.value)} options={SORT_ALGOS} disabled={player.isPlaying} />
+        <ActionButton onClick={generate} disabled={player.isPlaying} icon={Play}>Visualize</ActionButton>
+        <ActionButton onClick={shuffle} disabled={player.isPlaying} variant="secondary" icon={Shuffle}>Randomize</ActionButton>
 
         {/* Array size */}
-        <div className="flex items-center gap-2 ml-auto">
-          <span className="text-xs text-[var(--color-text-muted)]">Size</span>
+        <div className="flex items-center gap-2 ml-auto px-3 py-1.5 rounded-xl bg-[var(--color-surface2)] border border-[var(--color-border)]">
+          <span className="text-[10px] text-[var(--color-text-muted)] font-medium uppercase tracking-wider">Size</span>
           <input type="range" min="10" max="100" value={arraySize}
             onChange={e => handleSizeChange(+e.target.value)}
             disabled={player.isPlaying}
-            className="w-20 accent-[var(--color-primary)]" />
-          <span className="text-xs font-mono text-[var(--color-text-muted)] w-6">{arraySize}</span>
+            className="w-20 accent-[var(--color-primary)] h-1" />
+          <span className="text-xs font-mono text-[var(--color-primary)] font-bold w-6 tabular-nums">{arraySize}</span>
         </div>
       </div>
 
@@ -214,17 +286,17 @@ function SortingVisualizer() {
       <StepInfo algo={algo} stepData={player.currentStepData} stats={stats} />
 
       {/* Canvas */}
-      <div className="relative rounded-2xl overflow-hidden border border-[var(--color-border)] bg-[var(--color-surface)] p-2">
+      <CanvasPanel accent="#6366f1">
         <canvas ref={canvasRef} className="w-full" style={{ height: "clamp(250px, 40vh, 420px)" }} />
-      </div>
+      </CanvasPanel>
 
       {/* Legend */}
-      <div className="flex flex-wrap gap-4 text-[11px] text-[var(--color-text-muted)]">
-        <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-sm" style={{ background: "rgb(130, 142, 241)" }} /> Unsorted</span>
-        <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-sm bg-rose-500" /> Comparing</span>
-        <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-sm bg-amber-500" /> Pivot</span>
-        <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-sm bg-emerald-400" /> Sorted</span>
-      </div>
+      <Legend items={[
+        { label: "Unsorted", color: "rgb(130, 142, 241)" },
+        { label: "Comparing", color: "#f43f5e" },
+        { label: "Pivot", color: "#f59e0b" },
+        { label: "Sorted", color: "#34d399" },
+      ]} />
     </div>
   );
 }
@@ -307,7 +379,6 @@ function PathfindingVisualizer() {
     setSteps(newSteps);
   };
 
-  // Get current grid from step or base wall grid
   const displayGrid = useMemo(() => {
     const step = player.currentStepData;
     if (!step) return wallGrid;
@@ -318,7 +389,7 @@ function PathfindingVisualizer() {
     const step = player.currentStepData;
     if (!step?.stats) return [];
     return [
-      { label: "Visited", value: step.stats.visited },
+      { label: "Visited", value: step.stats.visited, color: "#10b981" },
       { label: "Path", value: step.stats.pathLen, color: "#facc15" },
     ];
   }, [player.currentStepData]);
@@ -354,29 +425,10 @@ function PathfindingVisualizer() {
     <div className="space-y-4">
       {/* Controls */}
       <div className="flex flex-wrap items-center gap-3">
-        <div className="relative">
-          <select value={algo} onChange={e => setAlgo(e.target.value)} disabled={player.isPlaying}
-            className="appearance-none pl-3 pr-8 py-2 rounded-xl text-sm font-medium bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 border border-[var(--color-border)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] cursor-pointer disabled:opacity-50 [&>option]:bg-white [&>option]:dark:bg-zinc-800 [&>option]:text-zinc-900 [&>option]:dark:text-zinc-100">
-            {PF_ALGOS.map(a => <option key={a} value={a}>{a}</option>)}
-          </select>
-          <ChevronDown size={14} className="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-[var(--color-text-muted)]" />
-        </div>
-
-        <button onClick={run} disabled={player.isPlaying}
-          className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold text-white transition-all duration-200 disabled:opacity-50"
-          style={{ backgroundColor: "var(--color-primary)" }}>
-          <Play size={14} /> Find Path
-        </button>
-
-        <button onClick={generateMaze} disabled={player.isPlaying}
-          className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium bg-[var(--color-surface2)] text-[var(--color-text)] border border-[var(--color-border)] hover:border-[var(--color-primary)] transition-colors disabled:opacity-50">
-          <Grid3X3 size={14} /> Generate Maze
-        </button>
-
-        <button onClick={resetGrid}
-          className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium bg-[var(--color-surface2)] text-[var(--color-text)] border border-[var(--color-border)] hover:border-[var(--color-primary)] transition-colors">
-          <RotateCcw size={14} /> Clear
-        </button>
+        <StyledSelect value={algo} onChange={e => setAlgo(e.target.value)} options={PF_ALGOS} disabled={player.isPlaying} />
+        <ActionButton onClick={run} disabled={player.isPlaying} icon={Play}>Find Path</ActionButton>
+        <ActionButton onClick={generateMaze} disabled={player.isPlaying} variant="secondary" icon={Grid3X3}>Maze</ActionButton>
+        <ActionButton onClick={resetGrid} variant="secondary" icon={RotateCcw}>Clear</ActionButton>
       </div>
 
       {/* Playback controls */}
@@ -386,41 +438,59 @@ function PathfindingVisualizer() {
       <StepInfo algo={algo} stepData={player.currentStepData} stats={currentStats} />
 
       {/* Grid */}
-      <div className="rounded-2xl overflow-hidden border border-[var(--color-border)] bg-[var(--color-surface)] p-2"
-        onMouseLeave={() => { setMouseDown(false); setDragging(null); }}
-        onMouseUp={() => { setMouseDown(false); setDragging(null); }}>
-        <div className="grid gap-0 select-none" style={{
-          gridTemplateColumns: `repeat(${COLS}, 1fr)`,
-          aspectRatio: `${COLS}/${ROWS}`,
-        }}>
-          {displayGrid.map((row, r) =>
-            row.map((cell, c) => (
-              <div
-                key={`${r}-${c}`}
-                onMouseDown={() => handleCellEvent(r, c, true)}
-                onMouseEnter={() => handleCellEvent(r, c)}
-                className="aspect-square border border-[var(--color-border)] transition-colors duration-100"
-                style={{
-                  backgroundColor: cellColor(cell, r, c),
-                  borderColor: cell === CELL.WALL ? "transparent" : undefined,
-                  borderWidth: "0.5px",
-                  cursor: (player.isPlaying || steps.length > 0) ? "default" : "pointer",
-                  borderRadius: (r === startPos[0] && c === startPos[1]) || (r === endPos[0] && c === endPos[1]) ? "50%" : "1px",
-                }}
-              />
-            ))
-          )}
+      <CanvasPanel accent="#10b981">
+        <div
+          className="select-none"
+          onMouseLeave={() => { setMouseDown(false); setDragging(null); }}
+          onMouseUp={() => { setMouseDown(false); setDragging(null); }}
+        >
+          <div className="grid gap-0" style={{
+            gridTemplateColumns: `repeat(${COLS}, 1fr)`,
+            aspectRatio: `${COLS}/${ROWS}`,
+          }}>
+            {displayGrid.map((row, r) =>
+              row.map((cell, c) => {
+                const isStart = r === startPos[0] && c === startPos[1];
+                const isEnd = r === endPos[0] && c === endPos[1];
+                const isPath = cell === CELL.PATH;
+
+                return (
+                  <div
+                    key={`${r}-${c}`}
+                    onMouseDown={() => handleCellEvent(r, c, true)}
+                    onMouseEnter={() => handleCellEvent(r, c)}
+                    className="aspect-square transition-colors duration-75"
+                    style={{
+                      backgroundColor: cellColor(cell, r, c),
+                      borderColor: cell === CELL.WALL ? "transparent" : "var(--color-border)",
+                      borderWidth: "0.5px",
+                      borderStyle: "solid",
+                      cursor: (player.isPlaying || steps.length > 0) ? "default" : "pointer",
+                      borderRadius: isStart || isEnd ? "50%" : "1px",
+                      boxShadow: isStart
+                        ? "0 0 8px var(--color-primary)"
+                        : isEnd
+                          ? "0 0 8px #f43f5e"
+                          : isPath
+                            ? "0 0 4px rgba(250, 204, 21, 0.4)"
+                            : "none",
+                    }}
+                  />
+                );
+              })
+            )}
+          </div>
         </div>
-      </div>
+      </CanvasPanel>
 
       {/* Legend */}
-      <div className="flex flex-wrap gap-4 text-[11px] text-[var(--color-text-muted)]">
-        <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-full" style={{ background: "var(--color-primary)" }} /> Start (drag)</span>
-        <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-full bg-rose-500" /> End (drag)</span>
-        <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-sm" style={{ background: "var(--color-text)" }} /> Wall (click)</span>
-        <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-sm" style={{ background: "rgba(var(--color-primary-rgb), 0.35)" }} /> Visited</span>
-        <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-sm bg-yellow-400" /> Path</span>
-      </div>
+      <Legend items={[
+        { label: "Start (drag)", color: "var(--color-primary)", rounded: true },
+        { label: "End (drag)", color: "#f43f5e", rounded: true },
+        { label: "Wall (click)", color: "var(--color-text)" },
+        { label: "Visited", color: "rgba(var(--color-primary-rgb), 0.35)" },
+        { label: "Path", color: "#facc15" },
+      ]} />
     </div>
   );
 }
@@ -507,7 +577,6 @@ function TreeVisualizer() {
     setSteps(newSteps);
   };
 
-  // Get visual state from step
   const visual = useMemo(() => {
     const step = player.currentStepData;
     if (!step) return { highlighted: new Set(), current: null, traversalOrder: [], dataStructure: null };
@@ -533,7 +602,8 @@ function TreeVisualizer() {
     ctx.clearRect(0, 0, w, h);
 
     if (!root) {
-      ctx.fillStyle = "var(--color-text-muted)";
+      const cs = getComputedStyle(document.documentElement);
+      ctx.fillStyle = cs.getPropertyValue("--color-text-muted").trim() || "#94A3B8";
       ctx.font = "14px system-ui";
       ctx.textAlign = "center";
       ctx.fillText("Insert values to build a tree", w / 2, h / 2);
@@ -559,12 +629,18 @@ function TreeVisualizer() {
     const textColor = cs.getPropertyValue("--color-text").trim() || "#333";
     const isDark = document.documentElement.classList.contains("dark");
 
-    // Draw edges
+    // Draw edges with gradient
     edges.forEach(({ from, to }) => {
+      const x1 = mapX(from.x), y1 = mapY(from.y);
+      const x2 = mapX(to.x), y2 = mapY(to.y);
+      const grad = ctx.createLinearGradient(x1, y1, x2, y2);
+      grad.addColorStop(0, isDark ? "rgba(255,255,255,0.12)" : "rgba(0,0,0,0.08)");
+      grad.addColorStop(1, isDark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.04)");
+
       ctx.beginPath();
-      ctx.moveTo(mapX(from.x), mapY(from.y));
-      ctx.lineTo(mapX(to.x), mapY(to.y));
-      ctx.strokeStyle = isDark ? "rgba(255,255,255,0.15)" : "rgba(0,0,0,0.1)";
+      ctx.moveTo(x1, y1);
+      ctx.lineTo(x2, y2);
+      ctx.strokeStyle = grad;
       ctx.lineWidth = 2;
       ctx.stroke();
     });
@@ -575,25 +651,36 @@ function TreeVisualizer() {
       const isHighlighted = visual.highlighted.has(n.val);
       const isCurrent = visual.current === n.val;
 
+      // Glow for current node
       if (isCurrent) {
         ctx.shadowColor = "#f43f5e";
-        ctx.shadowBlur = 20;
+        ctx.shadowBlur = 24;
+      } else if (isHighlighted) {
+        ctx.shadowColor = primaryColor;
+        ctx.shadowBlur = 16;
       }
 
       ctx.beginPath();
       ctx.arc(cx, cy, nodeRadius, 0, Math.PI * 2);
+
       if (isCurrent) {
-        ctx.fillStyle = "#f43f5e";
+        const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, nodeRadius);
+        grad.addColorStop(0, "#fb7185");
+        grad.addColorStop(1, "#f43f5e");
+        ctx.fillStyle = grad;
       } else if (isHighlighted) {
-        ctx.fillStyle = primaryColor;
+        const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, nodeRadius);
+        grad.addColorStop(0, `${primaryColor}cc`);
+        grad.addColorStop(1, primaryColor);
+        ctx.fillStyle = grad;
       } else {
-        ctx.fillStyle = isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.04)";
+        ctx.fillStyle = isDark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.03)";
       }
       ctx.fill();
       ctx.shadowBlur = 0;
 
-      ctx.strokeStyle = isCurrent ? "#f43f5e" : isHighlighted ? primaryColor : (isDark ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.15)");
-      ctx.lineWidth = 2;
+      ctx.strokeStyle = isCurrent ? "#f43f5e" : isHighlighted ? primaryColor : (isDark ? "rgba(255,255,255,0.15)" : "rgba(0,0,0,0.1)");
+      ctx.lineWidth = isCurrent || isHighlighted ? 2.5 : 1.5;
       ctx.stroke();
 
       ctx.fillStyle = (isCurrent || isHighlighted) ? "#fff" : textColor;
@@ -621,53 +708,30 @@ function TreeVisualizer() {
 
   return (
     <div className="space-y-4">
-      {/* Controls */}
+      {/* Controls — split into build + traverse sections */}
       <div className="flex flex-wrap items-center gap-3">
+        {/* Build section */}
         <div className="flex items-center gap-1.5">
           <input
             type="number"
             value={inputVal}
             onChange={e => setInputVal(e.target.value)}
             onKeyDown={e => e.key === "Enter" && insert()}
-            placeholder="Value (1-99)"
+            placeholder="1–99"
             min="1" max="99"
-            className="w-28 px-3 py-2 rounded-xl text-sm bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 border border-[var(--color-border)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] placeholder:text-zinc-400 dark:placeholder:text-zinc-500"
+            className="w-20 px-3 py-2 rounded-xl text-sm bg-[var(--color-surface)] text-[var(--color-text)] border border-[var(--color-border)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]/40 focus:border-[var(--color-primary)] placeholder:text-[var(--color-text-muted)]/50 transition-all duration-200"
           />
-          <button onClick={insert}
-            className="flex items-center gap-1 px-3 py-2 rounded-xl text-sm font-semibold text-white transition-all"
-            style={{ backgroundColor: "var(--color-primary)" }}>
-            <Plus size={14} /> Insert
-          </button>
+          <ActionButton onClick={insert} icon={Plus}>Insert</ActionButton>
         </div>
 
-        <button onClick={insertRandom}
-          className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium bg-[var(--color-surface2)] text-[var(--color-text)] border border-[var(--color-border)] hover:border-[var(--color-primary)] transition-colors">
-          <Shuffle size={14} /> Random
-        </button>
+        <ActionButton onClick={insertRandom} variant="secondary" icon={Shuffle}>Random</ActionButton>
+        <ActionButton onClick={buildDefault} variant="secondary" icon={GitBranch}>Sample</ActionButton>
+        <ActionButton onClick={clear} variant="secondary" icon={RotateCcw}>Clear</ActionButton>
 
-        <button onClick={buildDefault}
-          className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium bg-[var(--color-surface2)] text-[var(--color-text)] border border-[var(--color-border)] hover:border-[var(--color-primary)] transition-colors">
-          <GitBranch size={14} /> Sample Tree
-        </button>
-
-        <button onClick={clear}
-          className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium bg-[var(--color-surface2)] text-[var(--color-text)] border border-[var(--color-border)] hover:border-[var(--color-primary)] transition-colors">
-          <RotateCcw size={14} /> Clear
-        </button>
-
+        {/* Traverse section */}
         <div className="ml-auto flex items-center gap-2">
-          <div className="relative">
-            <select value={traversal} onChange={e => setTraversal(e.target.value)} disabled={player.isPlaying}
-              className="appearance-none pl-3 pr-8 py-2 rounded-xl text-sm font-medium bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 border border-[var(--color-border)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] cursor-pointer disabled:opacity-50 [&>option]:bg-white [&>option]:dark:bg-zinc-800 [&>option]:text-zinc-900 [&>option]:dark:text-zinc-100">
-              {TRAVERSALS.map(t => <option key={t} value={t}>{t}</option>)}
-            </select>
-            <ChevronDown size={14} className="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-[var(--color-text-muted)]" />
-          </div>
-          <button onClick={runTraversal} disabled={!root || player.isPlaying}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold text-white transition-all disabled:opacity-50"
-            style={{ backgroundColor: "var(--color-primary)" }}>
-            <Play size={14} /> Traverse
-          </button>
+          <StyledSelect value={traversal} onChange={e => setTraversal(e.target.value)} options={TRAVERSALS} disabled={player.isPlaying} />
+          <ActionButton onClick={runTraversal} disabled={!root || player.isPlaying} icon={Play}>Traverse</ActionButton>
         </div>
       </div>
 
@@ -678,118 +742,93 @@ function TreeVisualizer() {
       <StepInfo algo={traversal} stepData={player.currentStepData} />
 
       {/* Data structure visualization (stack/queue) */}
-      {visual.dataStructure && visual.dataStructure.items.length > 0 && (
-        <div className="px-3 py-2 rounded-xl bg-[var(--color-surface2)] border border-[var(--color-border)]">
-          <span className="text-[11px] font-semibold text-[var(--color-text-muted)] uppercase tracking-wider">{visual.dataStructure.label}</span>
-          <div className="flex flex-wrap gap-1.5 mt-1.5">
-            {visual.dataStructure.items.map((item, i) => (
-              <span key={i} className="px-2 py-0.5 rounded-md text-xs font-mono bg-[var(--color-primary)]/10 text-[var(--color-primary)] border border-[var(--color-primary)]/20">
-                {item}
+      <AnimatePresence>
+        {visual.dataStructure && visual.dataStructure.items.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            className="overflow-hidden"
+          >
+            <div className="px-3.5 py-2.5 rounded-xl bg-[var(--color-surface2)] border border-[var(--color-border)]">
+              <span className="text-[10px] font-bold text-[var(--color-text-muted)] uppercase tracking-widest">
+                {visual.dataStructure.label}
               </span>
-            ))}
-          </div>
-        </div>
-      )}
+              <div className="flex flex-wrap gap-1.5 mt-2">
+                {visual.dataStructure.items.map((item, i) => (
+                  <motion.span
+                    key={`${item}-${i}`}
+                    initial={{ scale: 0.8, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ delay: i * 0.02 }}
+                    className="px-2.5 py-1 rounded-lg text-xs font-mono font-bold"
+                    style={{
+                      background: "linear-gradient(135deg, rgba(var(--color-primary-rgb), 0.12), rgba(var(--color-primary-rgb), 0.06))",
+                      color: "var(--color-primary)",
+                      border: "1px solid rgba(var(--color-primary-rgb), 0.2)",
+                    }}
+                  >
+                    {item}
+                  </motion.span>
+                ))}
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Traversal result */}
-      {visual.traversalOrder.length > 0 && (
-        <div className="px-3 py-2 rounded-xl bg-[var(--color-surface2)] border border-[var(--color-border)] text-sm font-mono">
-          <span className="text-[var(--color-text-muted)]">Result: </span>
-          {visual.traversalOrder.map((v, i) => (
-            <span key={i}>
-              <span className="text-[var(--color-primary)] font-bold">{v}</span>
-              {i < visual.traversalOrder.length - 1 && <span className="text-[var(--color-text-muted)]"> → </span>}
+      <AnimatePresence>
+        {visual.traversalOrder.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="px-3.5 py-2.5 rounded-xl bg-[var(--color-surface2)] border border-[var(--color-border)]"
+          >
+            <span className="text-[10px] font-bold text-[var(--color-text-muted)] uppercase tracking-widest">
+              Result
             </span>
-          ))}
-        </div>
-      )}
+            <div className="flex flex-wrap items-center gap-0.5 mt-1.5 font-mono text-sm">
+              {visual.traversalOrder.map((v, i) => (
+                <motion.span
+                  key={`${v}-${i}`}
+                  initial={{ scale: 0.5, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ delay: i * 0.03 }}
+                  className="flex items-center gap-0.5"
+                >
+                  <span className="px-2 py-0.5 rounded-md font-bold" style={{ color: "var(--color-primary)" }}>
+                    {v}
+                  </span>
+                  {i < visual.traversalOrder.length - 1 && (
+                    <span className="text-[var(--color-text-muted)]/40 text-xs">→</span>
+                  )}
+                </motion.span>
+              ))}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Canvas */}
-      <div className="relative rounded-2xl overflow-hidden border border-[var(--color-border)] bg-[var(--color-surface)] p-2">
+      <CanvasPanel accent="#f59e0b">
         <canvas ref={canvasRef} className="w-full" style={{ height: "clamp(280px, 45vh, 500px)" }} />
-      </div>
+      </CanvasPanel>
 
       {/* Legend */}
-      <div className="flex flex-wrap gap-4 text-[11px] text-[var(--color-text-muted)]">
-        <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-full" style={{ background: "var(--color-primary)" }} /> Visited</span>
-        <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-full bg-rose-500" /> Current</span>
-        <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-full" style={{ background: "var(--color-surface2)", border: "1px solid var(--color-border)" }} /> Unvisited</span>
-      </div>
+      <Legend items={[
+        { label: "Visited", color: "var(--color-primary)", rounded: true },
+        { label: "Current", color: "#f43f5e", rounded: true },
+        { label: "Unvisited", color: "transparent", rounded: true },
+      ]} />
     </div>
   );
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// MAIN PAGE
+// EXPORTS
 // ═══════════════════════════════════════════════════════════════════════════════
-const AlgoVisualizer = () => {
-  const [activeTab, setActiveTab] = useState("sorting");
-
-  return (
-    <section className="min-h-screen pt-28 pb-20 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto">
-      {/* Header */}
-      <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-        className="text-center mb-10"
-      >
-        <h1 className="text-3xl sm:text-4xl font-bold mb-3" style={{ color: "var(--color-text)" }}>
-          Algorithm <span style={{ color: "var(--color-primary)" }}>Visualizer</span>
-        </h1>
-        <p className="text-[var(--color-text-muted)] text-sm max-w-md mx-auto">
-          Interactive step-by-step visualizations. Use <kbd className="px-1.5 py-0.5 rounded bg-[var(--color-surface2)] border border-[var(--color-border)] text-[10px] font-mono">Space</kbd> to play/pause, <kbd className="px-1.5 py-0.5 rounded bg-[var(--color-surface2)] border border-[var(--color-border)] text-[10px] font-mono">←→</kbd> to step.
-        </p>
-      </motion.div>
-
-      {/* Tabs */}
-      <div className="flex justify-center mb-8">
-        <div className="flex items-center gap-1 p-1 rounded-2xl bg-[var(--color-surface2)] border border-[var(--color-border)]">
-          {TABS.map(tab => {
-            const Icon = tab.icon;
-            const isActive = activeTab === tab.id;
-            return (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className="relative flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-colors duration-200"
-                style={{
-                  color: isActive ? "#fff" : "var(--color-text-muted)",
-                  backgroundColor: isActive ? "var(--color-primary)" : "transparent",
-                }}
-              >
-                <Icon size={16} />
-                <span className="hidden sm:inline">{tab.label}</span>
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Content */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
-        className="glass-card rounded-2xl p-5 sm:p-6 border border-[var(--color-border)]"
-      >
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={activeTab}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.2 }}
-          >
-            {activeTab === "sorting" && <SortingVisualizer />}
-            {activeTab === "pathfinding" && <PathfindingVisualizer />}
-            {activeTab === "tree" && <TreeVisualizer />}
-          </motion.div>
-        </AnimatePresence>
-      </motion.div>
-    </section>
-  );
-};
-
-export default AlgoVisualizer;
+export default function AlgoVisualizer() {
+  return null; // Not used standalone anymore — Lab.jsx imports visualizers directly
+}
 export { SortingVisualizer, PathfindingVisualizer, TreeVisualizer };
