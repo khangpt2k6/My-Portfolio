@@ -5,6 +5,7 @@ import { motion, useScroll, useTransform, useSpring } from "framer-motion";
 import { Calendar, MapPin, Briefcase, ChevronRight } from "lucide-react";
 import experiences from "../data/experiences";
 import AnimatedHeading from "../components/ui/AnimatedHeading";
+import ConstellationNetwork from "../components/backgrounds/ConstellationNetwork";
 
 /* ── helpers ── */
 const isTouchDevice =
@@ -387,6 +388,16 @@ const Experience = () => {
       id="experience"
       className="relative min-h-screen bg-[var(--color-surface)] dark:bg-transparent pt-24 pb-16 md:pb-28 px-4 noise-overlay"
     >
+      {/* Constellation network */}
+      <ConstellationNetwork
+        particleCount={40}
+        connectionDistance={110}
+        mouseConnectionDistance={150}
+        mouseAttractionStrength={0.008}
+        particleSpeed={0.18}
+        opacity={0.3}
+      />
+
       {/* Decorative floating geometric shapes */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <motion.div

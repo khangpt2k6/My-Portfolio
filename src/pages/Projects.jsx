@@ -4,6 +4,7 @@ import { motion, AnimatePresence, useMotionValue, useTransform } from "framer-mo
 import { Github, ExternalLink, X, Code, Sparkles } from "lucide-react";
 import projects from "../data/projects";
 import AnimatedHeading from "../components/ui/AnimatedHeading";
+import ConstellationNetwork from "../components/backgrounds/ConstellationNetwork";
 
 /* ── SVG tracing border for project cards ── */
 const TracingBorder = ({ color, isHovered }) => {
@@ -445,6 +446,16 @@ const Projects = () => {
   return (
     <>
       <section id="projects" className="relative pt-24 pb-16 bg-[var(--color-bg)] dark:bg-transparent noise-overlay">
+        {/* Constellation network background */}
+        <ConstellationNetwork
+          particleCount={50}
+          connectionDistance={120}
+          mouseConnectionDistance={160}
+          mouseAttractionStrength={0.01}
+          particleSpeed={0.2}
+          opacity={0.4}
+        />
+
         {/* Decorative floating elements */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <motion.div

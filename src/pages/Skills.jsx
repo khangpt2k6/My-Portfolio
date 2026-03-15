@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import skillCategories from "../data/skills";
 import AnimatedHeading from "../components/ui/AnimatedHeading";
+import ConstellationNetwork from "../components/backgrounds/ConstellationNetwork";
 
 /* Alternating scroll direction & speed per row */
 const rowConfig = [
@@ -31,6 +32,16 @@ const Skills = () => {
 
   return (
     <section id="skills" className="relative min-h-screen pt-24 pb-28 bg-[var(--color-surface)] dark:bg-transparent noise-overlay">
+      {/* Constellation network */}
+      <ConstellationNetwork
+        particleCount={35}
+        connectionDistance={100}
+        mouseConnectionDistance={140}
+        mouseAttractionStrength={0.008}
+        particleSpeed={0.15}
+        opacity={0.3}
+      />
+
       {/* Section Header — constrained width */}
       <div className="max-w-6xl mx-auto px-4 md:px-6 text-center mb-8">
         <AnimatedHeading>Technical Skills</AnimatedHeading>
