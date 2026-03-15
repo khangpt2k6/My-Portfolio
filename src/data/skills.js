@@ -12,6 +12,7 @@ const skillCategories = [
     skills: [
       { name: "Python", icon: "python" },
       { name: "TypeScript", icon: "ts" },
+      { name: "Rust", icon: "rust" },
       { name: "Go", icon: "go" },
       { name: "JavaScript", icon: "js" },
       { name: "Java", icon: "java" },
@@ -27,6 +28,7 @@ const skillCategories = [
       { name: "Node.js", icon: "nodejs" },
       { name: "FastAPI", icon: "fastapi" },
       { name: "Django", icon: "django" },
+      { name: "GraphQL", icon: "graphql" },
       { name: "Tailwind CSS", icon: "tailwind" },
     ],
   },
@@ -37,9 +39,10 @@ const skillCategories = [
       { name: "AWS", icon: "aws" },
       { name: "Docker", icon: "docker" },
       { name: "Kubernetes", icon: "kubernetes" },
+      { name: "Terraform", icon: "terraform" },
       { name: "Git", icon: "git" },
       { name: "GitHub Actions", icon: "githubactions" },
-      { name: "Vercel", icon: "vercel" },
+      { name: "Kafka", icon: "kafka" },
     ],
   },
   {
@@ -52,6 +55,7 @@ const skillCategories = [
       { name: "PyTorch", icon: "pytorch" },
       { name: "TensorFlow", icon: "tensorflow" },
       { name: "LangChain", icon: "langchain" },
+      { name: "OpenCV", icon: "opencv" },
     ],
   },
 ];
