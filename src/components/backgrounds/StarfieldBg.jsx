@@ -22,7 +22,7 @@ const StarfieldBg = () => {
     if (!container || !isDark) return;
 
     const isMobile = window.innerWidth < 768;
-    const m = isMobile ? 0.4 : 1;
+    const m = isMobile ? 0.45 : 1;
 
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(
@@ -40,68 +40,111 @@ const StarfieldBg = () => {
 
     const disposables = { geometries: [], materials: [], textures: [] };
 
-    /* ── Round star texture ── */
+    /* ── Star dot texture ── */
     const starCanvas = document.createElement("canvas");
-    starCanvas.width = 32;
-    starCanvas.height = 32;
-    const ctx = starCanvas.getContext("2d");
-    const gradient = ctx.createRadialGradient(16, 16, 0, 16, 16, 16);
-    gradient.addColorStop(0, "rgba(255,255,255,1)");
-    gradient.addColorStop(0.3, "rgba(255,255,255,0.8)");
-    gradient.addColorStop(0.7, "rgba(255,255,255,0.15)");
-    gradient.addColorStop(1, "rgba(255,255,255,0)");
-    ctx.fillStyle = gradient;
-    ctx.fillRect(0, 0, 32, 32);
+    starCanvas.width = 64;
+    starCanvas.height = 64;
+    const sCtx = starCanvas.getContext("2d");
+    const sGrad = sCtx.createRadialGradient(32, 32, 0, 32, 32, 32);
+    sGrad.addColorStop(0, "rgba(255,255,255,1)");
+    sGrad.addColorStop(0.08, "rgba(255,255,255,0.85)");
+    sGrad.addColorStop(0.25, "rgba(255,255,255,0.25)");
+    sGrad.addColorStop(0.55, "rgba(255,255,255,0.04)");
+    sGrad.addColorStop(1, "rgba(255,255,255,0)");
+    sCtx.fillStyle = sGrad;
+    sCtx.fillRect(0, 0, 64, 64);
     const starTexture = new THREE.CanvasTexture(starCanvas);
     disposables.textures.push(starTexture);
 
-    /* ── Nebula cloud texture ── */
-    const createNebulaTexture = (baseR, baseG, baseB, size = 256) => {
+    /* ── Bloom texture for bright stars ── */
+    const createBloomTexture = (r, g, b, size = 128) => {
       const c = document.createElement("canvas");
       c.width = size;
       c.height = size;
       const cx = c.getContext("2d");
       const half = size / 2;
-
-      // Multi-layered radial gradients for volumetric cloud feel
-      for (let layer = 0; layer < 5; layer++) {
-        const offsetX = (Math.random() - 0.5) * size * 0.3;
-        const offsetY = (Math.random() - 0.5) * size * 0.3;
-        const radius = half * (0.5 + Math.random() * 0.5);
-        const g = cx.createRadialGradient(
-          half + offsetX, half + offsetY, 0,
-          half + offsetX, half + offsetY, radius
-        );
-        const alphaCore = 0.06 + Math.random() * 0.06;
-        g.addColorStop(0, `rgba(${baseR},${baseG},${baseB},${alphaCore})`);
-        g.addColorStop(0.3, `rgba(${baseR},${baseG},${baseB},${alphaCore * 0.6})`);
-        g.addColorStop(0.7, `rgba(${baseR},${baseG},${baseB},${alphaCore * 0.2})`);
-        g.addColorStop(1, `rgba(${baseR},${baseG},${baseB},0)`);
-        cx.fillStyle = g;
-        cx.fillRect(0, 0, size, size);
+      const g0 = cx.createRadialGradient(half, half, 0, half, half, half);
+      g0.addColorStop(0, `rgba(255,255,255,0.85)`);
+      g0.addColorStop(0.05, `rgba(${r},${g},${b},0.5)`);
+      g0.addColorStop(0.18, `rgba(${r},${g},${b},0.15)`);
+      g0.addColorStop(0.45, `rgba(${r},${g},${b},0.03)`);
+      g0.addColorStop(1, `rgba(${r},${g},${b},0)`);
+      cx.fillStyle = g0;
+      cx.fillRect(0, 0, size, size);
+      cx.globalCompositeOperation = "lighter";
+      for (let a = 0; a < 4; a++) {
+        cx.save();
+        cx.translate(half, half);
+        cx.rotate((a * Math.PI) / 4);
+        const spike = cx.createLinearGradient(0, -half, 0, half);
+        spike.addColorStop(0, `rgba(${r},${g},${b},0)`);
+        spike.addColorStop(0.43, `rgba(${r},${g},${b},0.04)`);
+        spike.addColorStop(0.5, `rgba(255,255,255,0.12)`);
+        spike.addColorStop(0.57, `rgba(${r},${g},${b},0.04)`);
+        spike.addColorStop(1, `rgba(${r},${g},${b},0)`);
+        cx.fillStyle = spike;
+        cx.fillRect(-1, -half, 2, size);
+        cx.restore();
       }
-
       const tex = new THREE.CanvasTexture(c);
       disposables.textures.push(tex);
       return tex;
     };
 
-    /* ── Create star layer with color tints ── */
-    const createStars = (count, minSize, maxSize, spread, colorVariation = false) => {
+    /* ── Nebula cloud texture ── */
+    const createNebulaTexture = (baseR, baseG, baseB, size = 512, intensity = 1) => {
+      const c = document.createElement("canvas");
+      c.width = size;
+      c.height = size;
+      const cx = c.getContext("2d");
+      const half = size / 2;
+      const layers = 8 + Math.floor(Math.random() * 4);
+      for (let layer = 0; layer < layers; layer++) {
+        const offsetX = (Math.random() - 0.5) * size * 0.6;
+        const offsetY = (Math.random() - 0.5) * size * 0.6;
+        const radius = half * (0.5 + Math.random() * 0.5);
+        const g = cx.createRadialGradient(
+          half + offsetX, half + offsetY, 0,
+          half + offsetX, half + offsetY, radius
+        );
+        const a = (0.008 + Math.random() * 0.012) * intensity;
+        const rV = Math.max(0, Math.min(255, baseR + (Math.random() - 0.5) * 20));
+        const gV = Math.max(0, Math.min(255, baseG + (Math.random() - 0.5) * 12));
+        const bV = Math.max(0, Math.min(255, baseB + (Math.random() - 0.5) * 18));
+        g.addColorStop(0, `rgba(${rV},${gV},${bV},${a})`);
+        g.addColorStop(0.3, `rgba(${rV},${gV},${bV},${a * 0.5})`);
+        g.addColorStop(0.6, `rgba(${rV},${gV},${bV},${a * 0.15})`);
+        g.addColorStop(1, `rgba(${rV},${gV},${bV},0)`);
+        cx.fillStyle = g;
+        cx.fillRect(0, 0, size, size);
+      }
+      const tex = new THREE.CanvasTexture(c);
+      disposables.textures.push(tex);
+      return tex;
+    };
+
+    /* ══════════════════════════════════════════════
+       Sparkling star particles with per-star twinkle
+       Different sizes, individual sparkle phases
+       ══════════════════════════════════════════════ */
+    const createSparkleStars = (count, minSize, maxSize, spread) => {
       const geo = new THREE.BufferGeometry();
       const positions = new Float32Array(count * 3);
       const colors = new Float32Array(count * 3);
+      const sizes = new Float32Array(count);
+      const twinklePhase = new Float32Array(count);
+      const twinkleSpeed = new Float32Array(count);
+      const baseBrightness = new Float32Array(count);
+      // Velocity for drifting
+      const velocities = new Float32Array(count * 3);
 
-      // Star color palette — realistic astronomical colors
-      const starColors = [
-        [1.0, 1.0, 1.0],       // White
-        [0.7, 0.8, 1.0],       // Blue-white (hot stars)
-        [0.6, 0.7, 1.0],       // Blue (O/B type)
-        [1.0, 0.95, 0.8],      // Yellow-white (F type)
-        [1.0, 0.85, 0.6],      // Yellow (G type, sun-like)
-        [1.0, 0.7, 0.5],       // Orange (K type)
-        [1.0, 0.5, 0.4],       // Red (M type)
-        [0.8, 0.85, 1.0],      // Pale blue
+      const palette = [
+        [1.0, 1.0, 1.0],
+        [0.92, 0.9, 1.0],
+        [0.85, 0.82, 1.0],
+        [1.0, 0.95, 0.98],
+        [0.95, 0.88, 1.0],
+        [0.9, 0.95, 1.0],
       ];
 
       for (let i = 0; i < count; i++) {
@@ -109,105 +152,161 @@ const StarfieldBg = () => {
         positions[i * 3 + 1] = (Math.random() - 0.5) * spread;
         positions[i * 3 + 2] = (Math.random() - 0.5) * spread;
 
-        if (colorVariation) {
-          const c = starColors[Math.floor(Math.random() * starColors.length)];
-          // Most stars white, some tinted
-          const tintStrength = Math.random() < 0.3 ? 1.0 : 0.15;
-          colors[i * 3] = THREE.MathUtils.lerp(1.0, c[0], tintStrength);
-          colors[i * 3 + 1] = THREE.MathUtils.lerp(1.0, c[1], tintStrength);
-          colors[i * 3 + 2] = THREE.MathUtils.lerp(1.0, c[2], tintStrength);
+        // Varied sizes — mostly tiny, some medium, rare big
+        const sizeRoll = Math.random();
+        if (sizeRoll < 0.65) {
+          sizes[i] = minSize + Math.random() * (maxSize - minSize) * 0.3;
+        } else if (sizeRoll < 0.9) {
+          sizes[i] = minSize + (maxSize - minSize) * (0.3 + Math.random() * 0.4);
         } else {
-          colors[i * 3] = 1.0;
-          colors[i * 3 + 1] = 1.0;
-          colors[i * 3 + 2] = 1.0;
+          sizes[i] = minSize + (maxSize - minSize) * (0.7 + Math.random() * 0.3);
         }
+
+        // Individual twinkle timing
+        twinklePhase[i] = Math.random() * Math.PI * 2;
+        twinkleSpeed[i] = 0.5 + Math.random() * 2.5; // each star sparkles at different speed
+        baseBrightness[i] = 0.3 + Math.random() * 0.7;
+
+        // Slow drift velocity
+        const driftSpeed = 0.02 + Math.random() * 0.08;
+        const angle1 = Math.random() * Math.PI * 2;
+        const angle2 = Math.random() * Math.PI * 2;
+        velocities[i * 3] = Math.cos(angle1) * Math.cos(angle2) * driftSpeed;
+        velocities[i * 3 + 1] = Math.sin(angle2) * driftSpeed;
+        velocities[i * 3 + 2] = Math.sin(angle1) * Math.cos(angle2) * driftSpeed * 0.3;
+
+        const c = palette[Math.floor(Math.random() * palette.length)];
+        const t = Math.random() < 0.2 ? 0.5 : 0.05;
+        colors[i * 3] = THREE.MathUtils.lerp(1.0, c[0], t);
+        colors[i * 3 + 1] = THREE.MathUtils.lerp(1.0, c[1], t);
+        colors[i * 3 + 2] = THREE.MathUtils.lerp(1.0, c[2], t);
       }
 
       geo.setAttribute("position", new THREE.BufferAttribute(positions, 3));
       geo.setAttribute("color", new THREE.BufferAttribute(colors, 3));
+      geo.setAttribute("size", new THREE.BufferAttribute(sizes, 1));
 
-      const mat = new THREE.PointsMaterial({
-        map: starTexture,
-        size: maxSize,
+      // Custom shader for per-particle size & twinkling
+      const mat = new THREE.ShaderMaterial({
+        uniforms: {
+          uTime: { value: 0 },
+          uTexture: { value: starTexture },
+          uPixelRatio: { value: Math.min(window.devicePixelRatio, 2) },
+        },
+        vertexShader: `
+          attribute float size;
+          attribute vec3 color;
+          varying vec3 vColor;
+          varying float vSize;
+          uniform float uTime;
+          uniform float uPixelRatio;
+
+          void main() {
+            vColor = color;
+            vSize = size;
+            vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+            gl_PointSize = size * uPixelRatio * (300.0 / -mvPosition.z);
+            gl_Position = projectionMatrix * mvPosition;
+          }
+        `,
+        fragmentShader: `
+          uniform sampler2D uTexture;
+          varying vec3 vColor;
+          varying float vSize;
+
+          void main() {
+            vec4 texColor = texture2D(uTexture, gl_PointCoord);
+            gl_FragColor = vec4(vColor, 1.0) * texColor;
+          }
+        `,
         transparent: true,
-        opacity: 1,
-        sizeAttenuation: true,
         depthWrite: false,
         blending: THREE.AdditiveBlending,
-        vertexColors: true,
       });
 
       disposables.geometries.push(geo);
       disposables.materials.push(mat);
-      return new THREE.Points(geo, mat);
+
+      const points = new THREE.Points(geo, mat);
+      return {
+        points,
+        positions,
+        sizes,
+        velocities,
+        twinklePhase,
+        twinkleSpeed,
+        baseBrightness,
+        baseSizes: new Float32Array(sizes),
+        count,
+        spread,
+      };
     };
 
-    /* ── Star layers with color variation ── */
-    const bgStars = createStars(Math.floor(6000 * m), 0.3, 1.0, 1800, true);
-    const midStars = createStars(Math.floor(2000 * m), 0.8, 1.8, 1200, true);
-    const fgStars = createStars(Math.floor(500 * m), 1.5, 2.5, 800, true);
-    scene.add(bgStars, midStars, fgStars);
+    // Multiple layers with different size ranges
+    const starLayer1 = createSparkleStars(Math.floor(6000 * m), 0.3, 1.2, 2200);  // Tiny distant
+    const starLayer2 = createSparkleStars(Math.floor(2500 * m), 0.8, 2.5, 1500);  // Medium
+    const starLayer3 = createSparkleStars(Math.floor(600 * m), 1.5, 4.0, 1000);   // Close, larger
+    const starLayer4 = createSparkleStars(Math.floor(150 * m), 2.5, 6.0, 800);    // Big bright ones
 
-    /* ── Galactic core glow — bright center of the galaxy ── */
-    const coreGlowCanvas = document.createElement("canvas");
-    coreGlowCanvas.width = 512;
-    coreGlowCanvas.height = 512;
-    const coreCtx = coreGlowCanvas.getContext("2d");
+    const allStarLayers = [starLayer1, starLayer2, starLayer3, starLayer4];
+    allStarLayers.forEach((l) => scene.add(l.points));
 
-    // Layered glow: warm center → cool edges
-    const coreG1 = coreCtx.createRadialGradient(256, 256, 0, 256, 256, 256);
-    coreG1.addColorStop(0, "rgba(255, 230, 180, 0.12)");
-    coreG1.addColorStop(0.15, "rgba(255, 200, 150, 0.08)");
-    coreG1.addColorStop(0.35, "rgba(180, 140, 255, 0.04)");
-    coreG1.addColorStop(0.6, "rgba(100, 80, 200, 0.02)");
-    coreG1.addColorStop(1, "rgba(0, 0, 0, 0)");
-    coreCtx.fillStyle = coreG1;
-    coreCtx.fillRect(0, 0, 512, 512);
+    /* ── Bloom stars ── */
+    const bloomMagenta = createBloomTexture(190, 60, 160);
+    const bloomViolet = createBloomTexture(140, 90, 210);
+    const bloomTeal = createBloomTexture(80, 160, 200);
+    const bloomWhite = createBloomTexture(190, 180, 230);
+    const bloomTextures = [bloomMagenta, bloomViolet, bloomTeal, bloomWhite];
+    const prominentStars = [];
+    const prominentCount = isMobile ? 4 : 10;
 
-    // Secondary warm bloom
-    const coreG2 = coreCtx.createRadialGradient(256, 256, 0, 256, 256, 180);
-    coreG2.addColorStop(0, "rgba(255, 240, 200, 0.1)");
-    coreG2.addColorStop(0.5, "rgba(255, 180, 120, 0.04)");
-    coreG2.addColorStop(1, "rgba(0, 0, 0, 0)");
-    coreCtx.fillStyle = coreG2;
-    coreCtx.fillRect(0, 0, 512, 512);
+    for (let i = 0; i < prominentCount; i++) {
+      const tex = bloomTextures[i % bloomTextures.length];
+      const mat = new THREE.SpriteMaterial({
+        map: tex,
+        transparent: true,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false,
+        opacity: 0.2 + Math.random() * 0.25,
+      });
+      const sprite = new THREE.Sprite(mat);
+      const scale = 12 + Math.random() * 30;
+      sprite.scale.set(scale, scale, 1);
+      sprite.position.set(
+        (Math.random() - 0.5) * 1600,
+        (Math.random() - 0.5) * 1000,
+        -100 - Math.random() * 500
+      );
+      disposables.materials.push(mat);
+      scene.add(sprite);
+      prominentStars.push({
+        sprite,
+        baseOpacity: mat.opacity,
+        pulseSpeed: 0.15 + Math.random() * 0.4,
+        pulsePhase: Math.random() * Math.PI * 2,
+      });
+    }
 
-    const coreTexture = new THREE.CanvasTexture(coreGlowCanvas);
-    disposables.textures.push(coreTexture);
-    const coreMat = new THREE.SpriteMaterial({
-      map: coreTexture,
-      transparent: true,
-      blending: THREE.AdditiveBlending,
-      depthWrite: false,
-      opacity: 1,
-    });
-    const coreSprite = new THREE.Sprite(coreMat);
-    coreSprite.scale.set(900, 500, 1);
-    coreSprite.position.set(-100, 30, -400);
-    disposables.materials.push(coreMat);
-    scene.add(coreSprite);
-
-    /* ── Nebula clouds — volumetric colored fog ── */
+    /* ── Nebula clouds ── */
     const nebulaConfigs = isMobile
       ? [
-          { r: 90, g: 60, b: 180, x: -300, y: 150, z: -500, sx: 700, sy: 450 },
-          { r: 40, g: 80, b: 180, x: 250, y: -100, z: -600, sx: 600, sy: 400 },
+          { r: 40, g: 15, b: 70, x: -150, y: 100, z: -850, sx: 1200, sy: 900, i: 0.8 },
+          { r: 12, g: 40, b: 55, x: 180, y: -80, z: -900, sx: 1000, sy: 800, i: 0.7 },
+          { r: 18, g: 20, b: 60, x: 0, y: 0, z: -880, sx: 1400, sy: 1000, i: 0.6 },
         ]
       : [
-          // Purple nebula — upper left
-          { r: 90, g: 60, b: 180, x: -300, y: 200, z: -500, sx: 800, sy: 500 },
-          // Deep blue nebula — right
-          { r: 40, g: 80, b: 180, x: 350, y: -50, z: -600, sx: 700, sy: 500 },
-          // Teal/cyan wisp — center bottom
-          { r: 30, g: 140, b: 180, x: 50, y: -200, z: -450, sx: 600, sy: 350 },
-          // Magenta/pink nebula — far left
-          { r: 150, g: 40, b: 120, x: -450, y: -100, z: -700, sx: 550, sy: 400 },
-          // Warm amber nebula — near core
-          { r: 180, g: 120, b: 60, x: -80, y: 60, z: -500, sx: 500, sy: 300 },
+          { r: 35, g: 12, b: 65, x: -450, y: 250, z: -900, sx: 1300, sy: 900, i: 0.8 },
+          { r: 40, g: 15, b: 70, x: 300, y: -200, z: -880, sx: 1200, sy: 850, i: 0.7 },
+          { r: 10, g: 35, b: 50, x: 450, y: 280, z: -920, sx: 1100, sy: 800, i: 0.7 },
+          { r: 8, g: 30, b: 45, x: -400, y: -250, z: -910, sx: 1000, sy: 700, i: 0.6 },
+          { r: 15, g: 18, b: 55, x: 0, y: 0, z: -850, sx: 1100, sy: 800, i: 0.8 },
+          { r: 12, g: 15, b: 50, x: -200, y: -100, z: -870, sx: 1000, sy: 700, i: 0.6 },
+          { r: 45, g: 10, b: 40, x: 200, y: 100, z: -840, sx: 800, sy: 550, i: 0.5 },
+          { r: 18, g: 10, b: 40, x: 0, y: 0, z: -980, sx: 2400, sy: 1600, i: 0.4 },
         ];
 
     const nebulae = nebulaConfigs.map((cfg) => {
-      const tex = createNebulaTexture(cfg.r, cfg.g, cfg.b);
+      const tex = createNebulaTexture(cfg.r, cfg.g, cfg.b, 512, cfg.i || 1);
       const mat = new THREE.SpriteMaterial({
         map: tex,
         transparent: true,
@@ -220,68 +319,11 @@ const StarfieldBg = () => {
       sprite.position.set(cfg.x, cfg.y, cfg.z);
       disposables.materials.push(mat);
       scene.add(sprite);
-      return { sprite, baseX: cfg.x, baseY: cfg.y, speed: 0.1 + Math.random() * 0.15 };
+      return { sprite, baseX: cfg.x, baseY: cfg.y, speed: 0.02 + Math.random() * 0.03 };
     });
 
-
-    /* ── Dense star cluster around galactic core ── */
-    const createCoreStars = (count, spread) => {
-      const geo = new THREE.BufferGeometry();
-      const positions = new Float32Array(count * 3);
-      const colors = new Float32Array(count * 3);
-
-      for (let i = 0; i < count; i++) {
-        // Gaussian distribution — dense near center
-        const r1 = Math.random() + Math.random() + Math.random();
-        const r2 = Math.random() + Math.random() + Math.random();
-        const gaussX = (r1 / 3 - 0.5) * spread;
-        const gaussY = (r2 / 3 - 0.5) * spread * 0.5;
-
-        positions[i * 3] = gaussX - 100;
-        positions[i * 3 + 1] = gaussY + 30;
-        positions[i * 3 + 2] = -400 + (Math.random() - 0.5) * 200;
-
-        // Warm tint near core
-        const warmth = Math.random();
-        if (warmth < 0.4) {
-          colors[i * 3] = 1.0;
-          colors[i * 3 + 1] = 0.9 + Math.random() * 0.1;
-          colors[i * 3 + 2] = 0.7 + Math.random() * 0.2;
-        } else if (warmth < 0.7) {
-          colors[i * 3] = 0.8 + Math.random() * 0.2;
-          colors[i * 3 + 1] = 0.85 + Math.random() * 0.15;
-          colors[i * 3 + 2] = 1.0;
-        } else {
-          colors[i * 3] = 1.0;
-          colors[i * 3 + 1] = 1.0;
-          colors[i * 3 + 2] = 1.0;
-        }
-      }
-
-      geo.setAttribute("position", new THREE.BufferAttribute(positions, 3));
-      geo.setAttribute("color", new THREE.BufferAttribute(colors, 3));
-
-      const mat = new THREE.PointsMaterial({
-        map: starTexture,
-        size: 1.2,
-        transparent: true,
-        opacity: 0.6,
-        sizeAttenuation: true,
-        depthWrite: false,
-        blending: THREE.AdditiveBlending,
-        vertexColors: true,
-      });
-
-      disposables.geometries.push(geo);
-      disposables.materials.push(mat);
-      return new THREE.Points(geo, mat);
-    };
-
-    const coreStars = createCoreStars(Math.floor(1500 * m), 600);
-    scene.add(coreStars);
-
     /* ── Shooting stars ── */
-    const shootingStarCount = isMobile ? 2 : 5;
+    const shootingStarCount = isMobile ? 2 : 4;
     const trailLength = 20;
     const shootingStars = [];
 
@@ -290,7 +332,7 @@ const StarfieldBg = () => {
       const positions = new Float32Array(trailLength * 3);
       geo.setAttribute("position", new THREE.BufferAttribute(positions, 3));
       const mat = new THREE.LineBasicMaterial({
-        color: 0xffffff,
+        color: 0xbbaadd,
         transparent: true,
         opacity: 0,
       });
@@ -299,13 +341,10 @@ const StarfieldBg = () => {
       disposables.geometries.push(geo);
       disposables.materials.push(mat);
       shootingStars.push({
-        line,
-        active: false,
-        progress: 0,
-        speed: 0,
+        line, active: false, progress: 0, speed: 0,
         startX: 0, startY: 0, startZ: 0,
         dirX: 0, dirY: 0, dirZ: 0,
-        nextTrigger: 2 + Math.random() * 4,
+        nextTrigger: 4 + Math.random() * 8,
         trailLength,
       });
     }
@@ -313,15 +352,15 @@ const StarfieldBg = () => {
     const triggerShootingStar = (star) => {
       star.active = true;
       star.progress = 0;
-      star.speed = 5 + Math.random() * 5;
-      star.startX = (Math.random() - 0.5) * 600;
-      star.startY = 200 + Math.random() * 200;
+      star.speed = 4 + Math.random() * 4;
+      star.startX = (Math.random() - 0.5) * 700;
+      star.startY = 250 + Math.random() * 200;
       star.startZ = (Math.random() - 0.5) * 300;
-      const angle = Math.PI * 0.6 + Math.random() * 0.5;
+      const angle = Math.PI * 0.55 + Math.random() * 0.5;
       star.dirX = Math.cos(angle) * 12;
       star.dirY = -Math.sin(angle) * 12;
       star.dirZ = (Math.random() - 0.5) * 2;
-      star.line.material.opacity = 0.8;
+      star.line.material.opacity = 0.5;
     };
 
     /* ── Mouse parallax ── */
@@ -356,31 +395,56 @@ const StarfieldBg = () => {
       const delta = clock.getDelta();
       elapsed += delta;
 
-      /* Slow drift rotation */
-      bgStars.rotation.y = elapsed * 0.008;
-      bgStars.rotation.x = elapsed * 0.003;
-      midStars.rotation.y = elapsed * 0.012;
-      midStars.rotation.x = -elapsed * 0.005;
-      fgStars.rotation.y = elapsed * 0.018;
-      fgStars.rotation.x = elapsed * 0.004;
-      coreStars.rotation.y = elapsed * 0.006;
+      /* ── Per-particle sparkle + drift ── */
+      allStarLayers.forEach((layer, layerIdx) => {
+        const posAttr = layer.points.geometry.attributes.position;
+        const sizeAttr = layer.points.geometry.attributes.size;
+        const halfSpread = layer.spread / 2;
 
-      /* Twinkling */
-      bgStars.material.opacity = 0.6 + Math.sin(elapsed * 0.3) * 0.1;
-      midStars.material.opacity = 0.7 + Math.sin(elapsed * 0.5 + 1) * 0.15;
-      fgStars.material.opacity = 0.8 + Math.sin(elapsed * 0.7 + 2) * 0.2;
-      coreStars.material.opacity = 0.5 + Math.sin(elapsed * 0.2) * 0.1;
+        for (let i = 0; i < layer.count; i++) {
+          // Drift movement
+          posAttr.array[i * 3] += layer.velocities[i * 3] * delta;
+          posAttr.array[i * 3 + 1] += layer.velocities[i * 3 + 1] * delta;
+          posAttr.array[i * 3 + 2] += layer.velocities[i * 3 + 2] * delta;
 
-      /* Nebula gentle drift */
-      nebulae.forEach((n, i) => {
-        n.sprite.position.x = n.baseX + Math.sin(elapsed * n.speed + i * 2) * 15;
-        n.sprite.position.y = n.baseY + Math.cos(elapsed * n.speed * 0.7 + i) * 10;
+          // Wrap around when leaving bounds
+          for (let axis = 0; axis < 3; axis++) {
+            if (posAttr.array[i * 3 + axis] > halfSpread) {
+              posAttr.array[i * 3 + axis] = -halfSpread;
+            } else if (posAttr.array[i * 3 + axis] < -halfSpread) {
+              posAttr.array[i * 3 + axis] = halfSpread;
+            }
+          }
+
+          // Per-star sparkle — size pulsation
+          const sparkle = Math.sin(elapsed * layer.twinkleSpeed[i] + layer.twinklePhase[i]);
+          const brightness = layer.baseBrightness[i] + sparkle * 0.3;
+          sizeAttr.array[i] = layer.baseSizes[i] * Math.max(0.15, brightness);
+        }
+
+        posAttr.needsUpdate = true;
+        sizeAttr.needsUpdate = true;
+
+        // Pass time to shader
+        layer.points.material.uniforms.uTime.value = elapsed;
+
+        // Slow overall rotation per layer
+        const rotSpeed = [0.003, 0.005, 0.008, 0.012][layerIdx] || 0.005;
+        layer.points.rotation.y = elapsed * rotSpeed;
+        layer.points.rotation.x = elapsed * rotSpeed * 0.4 * (layerIdx % 2 === 0 ? 1 : -1);
       });
 
-      /* Core glow pulse */
-      coreSprite.material.opacity = 0.85 + Math.sin(elapsed * 0.15) * 0.15;
-      coreSprite.scale.x = 900 + Math.sin(elapsed * 0.1) * 20;
-      coreSprite.scale.y = 500 + Math.cos(elapsed * 0.12) * 10;
+      /* Prominent star pulse */
+      prominentStars.forEach((ps) => {
+        ps.sprite.material.opacity =
+          ps.baseOpacity * (0.7 + 0.3 * Math.sin(elapsed * ps.pulseSpeed + ps.pulsePhase));
+      });
+
+      /* Nebula drift */
+      nebulae.forEach((n, i) => {
+        n.sprite.position.x = n.baseX + Math.sin(elapsed * n.speed + i * 1.3) * 5;
+        n.sprite.position.y = n.baseY + Math.cos(elapsed * n.speed * 0.6 + i) * 3;
+      });
 
       /* Shooting stars */
       shootingStars.forEach((star) => {
@@ -388,7 +452,7 @@ const StarfieldBg = () => {
           star.nextTrigger -= delta;
           if (star.nextTrigger <= 0) {
             triggerShootingStar(star);
-            star.nextTrigger = 3 + Math.random() * 5;
+            star.nextTrigger = 5 + Math.random() * 12;
           }
           return;
         }
@@ -411,8 +475,8 @@ const StarfieldBg = () => {
       });
 
       /* Mouse parallax */
-      camera.position.x += (mouseX * 30 - camera.position.x) * 0.02;
-      camera.position.y += (-mouseY * 30 - camera.position.y) * 0.02;
+      camera.position.x += (mouseX * 18 - camera.position.x) * 0.01;
+      camera.position.y += (-mouseY * 18 - camera.position.y) * 0.01;
 
       renderer.render(scene, camera);
     };
@@ -422,6 +486,9 @@ const StarfieldBg = () => {
       camera.aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();
       renderer.setSize(window.innerWidth, window.innerHeight);
+      allStarLayers.forEach((l) => {
+        l.points.material.uniforms.uPixelRatio.value = Math.min(window.devicePixelRatio, 2);
+      });
     };
     window.addEventListener("resize", onResize);
 
@@ -454,7 +521,7 @@ const StarfieldBg = () => {
       className={`fixed inset-0 -z-10 transition-opacity duration-700 ${
         isDark ? "opacity-100" : "opacity-0 pointer-events-none"
       }`}
-      style={{ pointerEvents: "none", backgroundColor: "#000" }}
+      style={{ pointerEvents: "none", backgroundColor: "#050208" }}
     />
   );
 };

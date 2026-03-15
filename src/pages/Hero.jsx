@@ -76,7 +76,7 @@ const FloatingParticles = () => (
 
 /* ── Subtle grid background ── */
 const GridBackground = () => (
-  <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-[0.03] dark:opacity-[0.04]">
+  <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-[0.03] dark:opacity-0">
     <div
       className="absolute inset-0"
       style={{
@@ -280,8 +280,8 @@ const Hero = () => {
           className="w-full max-w-3xl mt-10 mb-4 relative overflow-hidden"
         >
           {/* Fade edges */}
-          <div className="pointer-events-none absolute inset-y-0 left-0 w-24 z-10 bg-gradient-to-r from-[var(--color-bg)] dark:from-black to-transparent" />
-          <div className="pointer-events-none absolute inset-y-0 right-0 w-24 z-10 bg-gradient-to-l from-[var(--color-bg)] dark:from-black to-transparent" />
+          <div className="pointer-events-none absolute inset-y-0 left-0 w-24 z-10 bg-gradient-to-r from-[var(--color-bg)] dark:from-[#0a0515] to-transparent" />
+          <div className="pointer-events-none absolute inset-y-0 right-0 w-24 z-10 bg-gradient-to-l from-[var(--color-bg)] dark:from-[#0a0515] to-transparent" />
 
           <div className="flex gap-10 animate-marquee-hero">
             {[...Array(2)].map((_, copy) => (

@@ -346,7 +346,7 @@ html {
 }
 
 .dark .noise-overlay::before {
-  opacity: 0.04;
+  display: none;
 }
 
 /* ── Dot grid pattern ── */
@@ -365,6 +365,10 @@ html {
     radial-gradient(at 20% 80%, rgba(var(--color-primary-rgb), 0.06) 0%, transparent 50%),
     radial-gradient(at 80% 20%, rgba(var(--color-secondary-rgb), 0.04) 0%, transparent 50%),
     radial-gradient(at 50% 50%, rgba(var(--color-primary-rgb), 0.02) 0%, transparent 70%);
+}
+
+.dark .gradient-mesh {
+  background: none;
 }
 
 /* ── Glowing line (horizontal decorative divider) ── */
