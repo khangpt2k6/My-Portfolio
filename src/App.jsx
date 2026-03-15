@@ -10,7 +10,6 @@ import Navbar from "./components/layout/Navbar"
 import Footer from "./components/layout/Footer"
 import ScrollProgress from "./components/ui/ScrollProgress"
 import CustomCursor from "./components/ui/CustomCursor"
-import MiniPlayer from "./components/ui/MiniPlayer"
 import ContactChat from "./components/ui/ContactChat"
 
 // ── Lazy-loaded page components (code-splitting) ────────────────────────────
@@ -138,7 +137,6 @@ function App() {
         <Navbar />
         <AnimatedRoutes />
         <Footer />
-        <MiniPlayer />
         <ContactChat />
       </div>
     </Router>

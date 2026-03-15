@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, Palette, Check, MousePointer } from "lucide-react";
 import { CURSOR_STYLES } from "../ui/CustomCursor";
 import ThemeToggle from "../ui/ThemeToggle";
+import MiniPlayer from "../ui/MiniPlayer";
 
 // ── Navigation links ────────────────────────────────────────────────────────
 const navLinks = [
@@ -363,6 +364,9 @@ const Navbar = () => {
                 )}
               </AnimatePresence>
             </div>
+
+            {/* Music player dropdown */}
+            <MiniPlayer />
 
             {/* Theme toggle — animated sun/moon */}
             <div className="flex items-center rounded-full bg-[var(--color-surface2)] border border-[var(--color-border)] backdrop-blur-xl p-[3px]">
