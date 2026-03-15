@@ -174,7 +174,7 @@ const ProjectRow = ({ project, index, onOpen }) => {
           >
             <div
               onClick={() => onOpen(project)}
-              className="relative h-64 sm:h-72 lg:h-[360px] cursor-pointer overflow-hidden"
+              className="relative h-64 sm:h-72 lg:h-full cursor-pointer overflow-hidden"
             >
               <ProjectImage
                 image={project.image}
@@ -444,7 +444,7 @@ const Projects = () => {
 
   return (
     <>
-      <section id="projects" className="relative min-h-screen pt-24 pb-28 bg-[var(--color-bg)] dark:bg-transparent noise-overlay">
+      <section id="projects" className="relative pt-24 pb-16 bg-[var(--color-bg)] dark:bg-transparent noise-overlay">
         {/* Decorative floating elements */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <motion.div

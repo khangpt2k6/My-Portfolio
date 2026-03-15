@@ -6,6 +6,8 @@ const SPEED_PRESETS = [
   { label: "1x", value: 1 },
   { label: "2x", value: 2 },
   { label: "4x", value: 4 },
+  { label: "6x", value: 6 },
+  { label: "8x", value: 8 },
 ];
 
 const BASE_INTERVAL = 400; // ms per step at 1x speed
