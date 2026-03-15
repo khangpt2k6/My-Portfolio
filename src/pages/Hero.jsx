@@ -5,8 +5,12 @@ import {
   useScroll,
 } from "framer-motion";
 import { TypeAnimation } from "react-type-animation";
-import { Terminal } from "lucide-react";
 import hero from "../data/hero";
+import {
+  SiReact, SiTypescript, SiPython, SiNextdotjs, SiNodedotjs,
+  SiAmazonwebservices, SiDocker, SiKubernetes, SiGraphql,
+  SiRust, SiTensorflow, SiGo,
+} from "react-icons/si";
 
 const buildSequence = (titles) => titles.flatMap((t) => [t, 2200]);
 
@@ -283,36 +287,49 @@ const Hero = () => {
           </span>
         </motion.div>
 
-        {/* ── Tagline badge ── */}
+
+
+        {/* ── Tech marquee (Stripe-style) ── */}
         <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 1.4 }}
-          className="mb-5"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.8, delay: 1.8 }}
+          className="w-full max-w-3xl mt-10 mb-4 relative overflow-hidden"
         >
-          <span
-            className="group/tag relative inline-flex items-center gap-3 px-5 py-2.5 rounded-2xl text-sm font-bold
-                       bg-[var(--color-surface)]/80 backdrop-blur-xl text-[var(--color-text)]
-                       border border-[var(--color-border)] shadow-lg
-                       hover:border-[var(--color-primary)]/40 hover:shadow-[0_0_24px_rgba(99,102,241,0.15)]
-                       transition-all duration-500 cursor-default overflow-hidden"
-          >
-            {/* Animated gradient bg on hover */}
-            <span className="absolute inset-0 bg-gradient-to-r from-[var(--color-primary)]/5 via-transparent to-[var(--color-primary)]/5 opacity-0 group-hover/tag:opacity-100 transition-opacity duration-500" />
+          {/* Fade edges */}
+          <div className="pointer-events-none absolute inset-y-0 left-0 w-24 z-10 bg-gradient-to-r from-[var(--color-bg)] dark:from-black to-transparent" />
+          <div className="pointer-events-none absolute inset-y-0 right-0 w-24 z-10 bg-gradient-to-l from-[var(--color-bg)] dark:from-black to-transparent" />
 
-            {/* Terminal icon */}
-            <Terminal className="relative w-4 h-4 text-[var(--color-primary)]" />
-
-            {/* Text */}
-            <span className="relative tracking-wide" style={{ fontFamily: "var(--font-display)" }}>
-              {hero.tagline}
-            </span>
-
-            {/* Blinking cursor */}
-            <span className="relative w-[2px] h-4 bg-[var(--color-primary)] rounded-full animate-pulse" />
-          </span>
+          <div className="flex gap-10 animate-marquee-hero">
+            {[...Array(2)].map((_, copy) => (
+              <div key={copy} className="flex shrink-0 gap-10 items-center">
+                {[
+                  { name: "React", icon: SiReact },
+                  { name: "TypeScript", icon: SiTypescript },
+                  { name: "Python", icon: SiPython },
+                  { name: "Next.js", icon: SiNextdotjs },
+                  { name: "Node.js", icon: SiNodedotjs },
+                  { name: "AWS", icon: SiAmazonwebservices },
+                  { name: "Docker", icon: SiDocker },
+                  { name: "Kubernetes", icon: SiKubernetes },
+                  { name: "GraphQL", icon: SiGraphql },
+                  { name: "Rust", icon: SiRust },
+                  { name: "TensorFlow", icon: SiTensorflow },
+                  { name: "Go", icon: SiGo },
+                ].map(({ name, icon: Icon }) => (
+                  <span
+                    key={`${copy}-${name}`}
+                    className="flex items-center gap-2 text-sm font-medium text-[var(--color-text-muted)]/50 whitespace-nowrap tracking-wide hover:text-[var(--color-primary)] transition-colors duration-300 cursor-default select-none group"
+                    style={{ fontFamily: "var(--font-display)" }}
+                  >
+                    <Icon className="w-4 h-4 opacity-60 group-hover:opacity-100 transition-opacity duration-300" />
+                    {name}
+                  </span>
+                ))}
+              </div>
+            ))}
+          </div>
         </motion.div>
-
 
         {/* ── Scroll indicator — line traces mouse, morphs to arrow ── */}
         <motion.div
@@ -385,10 +402,10 @@ const Hero = () => {
                     "M15 1 C22 1 28 7 28 14 C28 21 28 28 28 30 C28 37 22 43 15 43 C8 43 2 37 2 30 C2 28 2 21 2 14 C2 7 8 1 15 1 Z",
                     // Hold mouse
                     "M15 1 C22 1 28 7 28 14 C28 21 28 28 28 30 C28 37 22 43 15 43 C8 43 2 37 2 30 C2 28 2 21 2 14 C2 7 8 1 15 1 Z",
-                    // Morph to down arrow (flat top, sharp point at bottom)
-                    "M15 5 C21 5 27 5 28 5 C28 6 24 16 21 22 C18 28 16 36 15 41 C14 36 12 28 9 22 C6 16 2 6 2 5 C3 5 9 5 15 5 Z",
+                    // Morph to down arrow (thin shaft + chevron arrowhead)
+                    "M15 1 C17 1 18 1 18 2 C18 8 18 16 18 22 C22 22 29 22 15 43 C1 22 8 22 12 22 C12 16 12 8 12 2 C12 1 13 1 15 1 Z",
                     // Hold arrow
-                    "M15 5 C21 5 27 5 28 5 C28 6 24 16 21 22 C18 28 16 36 15 41 C14 36 12 28 9 22 C6 16 2 6 2 5 C3 5 9 5 15 5 Z",
+                    "M15 1 C17 1 18 1 18 2 C18 8 18 16 18 22 C22 22 29 22 15 43 C1 22 8 22 12 22 C12 16 12 8 12 2 C12 1 13 1 15 1 Z",
                     // Morph back to mouse
                     "M15 1 C22 1 28 7 28 14 C28 21 28 28 28 30 C28 37 22 43 15 43 C8 43 2 37 2 30 C2 28 2 21 2 14 C2 7 8 1 15 1 Z",
                   ],

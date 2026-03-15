@@ -112,6 +112,16 @@ html {
   animation-play-state: paused;
 }
 
+.animate-marquee-hero {
+  display: flex;
+  width: max-content;
+  animation: marquee-left 25s linear infinite;
+}
+
+.animate-marquee-hero:hover {
+  animation-play-state: paused;
+}
+
 /* ── Glassmorphism Utility ── */
 .glass {
   background: var(--glass-bg);
