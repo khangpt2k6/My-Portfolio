@@ -58,10 +58,10 @@ const Footer = () => {
 
   return (
     <footer className="bg-[var(--color-surface2)] dark:bg-transparent">
-      <div className="max-w-6xl mx-auto px-6 py-16">
+      <div className="max-w-6xl mx-auto px-6 py-8">
         {/* Three-column grid */}
         <FadeInView direction="up">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {/* Left column — Branding & Socials */}
             <div className="space-y-5">
               <h2 className="text-xl font-bold text-[var(--color-text)]">
@@ -174,7 +174,7 @@ const Footer = () => {
         </FadeInView>
 
         {/* Bottom bar */}
-        <div className="mt-12 pt-6">
+        <div className="mt-6 pt-4">
           <div className="flex justify-center items-center">
             <span className="text-sm text-[var(--color-text-muted)]">
               &copy; {currentYear} {footerData.copyright}. All rights reserved.

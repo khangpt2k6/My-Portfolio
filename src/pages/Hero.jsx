@@ -381,12 +381,12 @@ const Hero = () => {
         </motion.div>
 
 
-        {/* ── Scroll indicator (click to scroll down) ── */}
+        {/* ── Scroll indicator — line traces mouse, morphs to arrow ── */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 2.2, duration: 1 }}
-          className="mt-14"
+          className="mt-14 flex flex-col items-center"
         >
           <motion.button
             type="button"
@@ -394,25 +394,100 @@ const Hero = () => {
               document.getElementById("about")?.scrollIntoView({ behavior: "smooth" })
             }
             aria-label="Scroll to content"
-            animate={{ y: [0, 8, 0] }}
+            className="cursor-pointer"
+            animate={{ y: [0, 6, 0] }}
             transition={{
-              duration: 2,
+              duration: 4,
               repeat: Infinity,
               ease: "easeInOut",
+              times: [0, 0.65, 1],
             }}
-            className="w-6 h-10 rounded-full border-2 border-[var(--color-text-muted)]/30
-                       flex items-start justify-center p-1.5 cursor-pointer
-                       hover:border-[var(--color-primary)]/50 hover:scale-105 transition-all duration-200"
           >
-            <motion.div
-              className="w-1.5 h-1.5 rounded-full bg-[var(--color-primary)]"
-              animate={{ opacity: [1, 0.3, 1], y: [0, 12, 0] }}
-              transition={{
-                duration: 2,
-                repeat: Infinity,
-                ease: "easeInOut",
-              }}
-            />
+            <svg
+              width="30"
+              height="46"
+              viewBox="0 0 30 46"
+              fill="none"
+              className="overflow-visible"
+            >
+              <defs>
+                <filter id="scrollGlow">
+                  <feGaussianBlur stdDeviation="2" result="blur" />
+                  <feMerge>
+                    <feMergeNode in="blur" />
+                    <feMergeNode in="SourceGraphic" />
+                  </feMerge>
+                </filter>
+              </defs>
+
+              {/* Faint static mouse outline (always visible) */}
+              <motion.path
+                d="M15 1 C22 1 28 7 28 14 C28 21 28 28 28 30 C28 37 22 43 15 43 C8 43 2 37 2 30 C2 28 2 21 2 14 C2 7 8 1 15 1 Z"
+                stroke="var(--color-text-muted)"
+                strokeWidth="1.5"
+                strokeOpacity="0.15"
+                fill="none"
+                animate={{
+                  opacity: [0.6, 0.6, 0, 0, 0.6],
+                }}
+                transition={{
+                  duration: 4,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                  times: [0, 0.3, 0.45, 0.85, 1],
+                }}
+              />
+
+              {/* Animated path: traces mouse → morphs to arrow → morphs back */}
+              <motion.path
+                stroke="var(--color-primary)"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                fill="none"
+                filter="url(#scrollGlow)"
+                animate={{
+                  d: [
+                    // Mouse shape (trace in)
+                    "M15 1 C22 1 28 7 28 14 C28 21 28 28 28 30 C28 37 22 43 15 43 C8 43 2 37 2 30 C2 28 2 21 2 14 C2 7 8 1 15 1 Z",
+                    // Hold mouse
+                    "M15 1 C22 1 28 7 28 14 C28 21 28 28 28 30 C28 37 22 43 15 43 C8 43 2 37 2 30 C2 28 2 21 2 14 C2 7 8 1 15 1 Z",
+                    // Morph to down arrow (flat top, sharp point at bottom)
+                    "M15 5 C21 5 27 5 28 5 C28 6 24 16 21 22 C18 28 16 36 15 41 C14 36 12 28 9 22 C6 16 2 6 2 5 C3 5 9 5 15 5 Z",
+                    // Hold arrow
+                    "M15 5 C21 5 27 5 28 5 C28 6 24 16 21 22 C18 28 16 36 15 41 C14 36 12 28 9 22 C6 16 2 6 2 5 C3 5 9 5 15 5 Z",
+                    // Morph back to mouse
+                    "M15 1 C22 1 28 7 28 14 C28 21 28 28 28 30 C28 37 22 43 15 43 C8 43 2 37 2 30 C2 28 2 21 2 14 C2 7 8 1 15 1 Z",
+                  ],
+                  pathLength: [0, 1, 1, 1, 0],
+                  opacity: [0.5, 1, 1, 1, 0.5],
+                }}
+                transition={{
+                  duration: 4,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                  times: [0, 0.25, 0.45, 0.65, 1],
+                }}
+              />
+
+              {/* Scroll wheel — visible during mouse phase, fades during arrow */}
+              <motion.circle
+                cx="15"
+                r="1.5"
+                fill="var(--color-primary)"
+                filter="url(#scrollGlow)"
+                animate={{
+                  cy: [11, 17, 11, 11, 11],
+                  opacity: [1, 1, 0, 0, 1],
+                }}
+                transition={{
+                  duration: 4,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                  times: [0, 0.25, 0.4, 0.85, 1],
+                }}
+              />
+            </svg>
           </motion.button>
         </motion.div>
       </motion.div>

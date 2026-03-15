@@ -133,7 +133,7 @@ function AnimatedRoutes() {
 function App() {
   return (
     <Router>
-      <div className="bg-white dark:bg-black text-[var(--color-text)] min-h-screen transition-colors duration-300">
+      <div className="bg-white dark:bg-transparent text-[var(--color-text)] min-h-screen transition-colors duration-300">
         <StarfieldBg />
         <AuroraBg />
         <ScrollProgress />
