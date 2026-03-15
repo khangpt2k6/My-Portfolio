@@ -100,14 +100,14 @@ const ProfileImage = () => {
           {/* Front — real photo */}
           <img
             src={about.image}
-            alt="Kevin Phan"
+            alt="Khang Phan"
             className="absolute inset-0 z-[1] w-full h-full object-cover object-top rounded-2xl"
             style={{ backfaceVisibility: "hidden" }}
           />
           {/* Back — notion avatar */}
           <img
             src="/notion_avatar.png"
-            alt="Kevin Phan — Notion Avatar"
+            alt="Khang Phan — Notion Avatar"
             className="absolute inset-0 z-[1] w-full h-full object-cover object-center rounded-2xl
                        bg-[var(--color-surface)]"
             style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}
@@ -259,7 +259,7 @@ const About = () => {
                 </div>
                 <div className="flex-1 flex justify-center">
                   <span className="text-xs font-medium text-[var(--color-text-muted)]/60 tracking-wide">
-                    about-kevin
+                    about-khang
                   </span>
                 </div>
                 <div className="w-[52px]" />

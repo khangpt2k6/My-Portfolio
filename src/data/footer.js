@@ -5,8 +5,8 @@
  */
 
 const footer = {
-  name: "Kevin Phan",
-  copyright: "Tuan Kevin Phan",
+  name: "Khang Phan",
+  copyright: "Tuan Khang Phan",
   tagline: "Built with passion & dedication",
 
   socialLinks: [

@@ -98,8 +98,10 @@ const GridBackground = () => (
   </div>
 );
 
-/* ── Gradient Name Line — per-character stagger reveal ── */
-const GradientName = ({ text, delay = 0, reverse = false }) => (
+/* ── Name line — per-char sequential reveal ── */
+const STAGGER = 0.12;
+
+const NameLine = ({ text, baseDelay = 0 }) => (
   <h1
     className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-extrabold uppercase leading-[1.1] tracking-[0.04em] flex justify-center overflow-hidden"
     style={{ fontFamily: "var(--font-display)" }}
@@ -107,16 +109,16 @@ const GradientName = ({ text, delay = 0, reverse = false }) => (
     {text.split("").map((char, i) => (
       <motion.span
         key={i}
-        initial={{ y: "120%", opacity: 0, rotateX: 90 }}
-        animate={{ y: "0%", opacity: 1, rotateX: 0 }}
+        className="inline-block"
+        initial={{ y: "110%", opacity: 0 }}
+        animate={{ y: "0%", opacity: 1 }}
         transition={{
-          duration: 0.7,
-          delay: delay + (reverse ? (text.length - 1 - i) : i) * 0.06,
+          duration: 0.5,
+          delay: baseDelay + i * STAGGER,
           ease: [0.22, 1, 0.36, 1],
         }}
-        className="inline-block"
         style={{
-          background: "linear-gradient(135deg, #6366F1, #06B6D4, #6366F1)",
+          background: "linear-gradient(135deg, var(--color-primary), var(--color-secondary), var(--color-primary))",
           backgroundSize: "200% 200%",
           WebkitBackgroundClip: "text",
           WebkitTextFillColor: "transparent",
@@ -208,29 +210,10 @@ const Hero = () => {
           <div className="h-px w-8 bg-[var(--color-primary)]/50" />
         </motion.div>
 
-        {/* ── Name ── */}
-        <div className="relative mb-6">
-          {/* Light streak across name */}
-          <motion.div
-            className="absolute inset-0 pointer-events-none overflow-hidden z-10"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 1.5 }}
-          >
-            <motion.div
-              className="absolute inset-y-0 w-32"
-              style={{
-                background:
-                  "linear-gradient(90deg, transparent, rgba(255,255,255,0.18), transparent)",
-              }}
-              initial={{ x: "-100%" }}
-              animate={{ x: "600%" }}
-              transition={{ delay: 1.8, duration: 1.0, ease: "easeOut" }}
-            />
-          </motion.div>
-
-          <GradientName text={hero.firstName} delay={0.3} />
-          <GradientName text={hero.lastName} delay={0.7} reverse />
+        {/* ── Name — both lines reveal simultaneously, letter by letter ── */}
+        <div className="mb-6">
+          <NameLine text={hero.firstName} baseDelay={0.3} />
+          <NameLine text={hero.lastName} baseDelay={0.3} />
         </div>
 
         {/* ── Animated underline glow ── */}

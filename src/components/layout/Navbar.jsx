@@ -83,8 +83,7 @@ const Navbar = () => {
   // ── Theme: init ───────────────────────────────────────────────────────────
   useEffect(() => {
     const stored = localStorage.getItem("theme");
-    const prefersDark = window.matchMedia?.("(prefers-color-scheme: dark)").matches;
-    const initial = stored || (prefersDark ? "dark" : "light");
+    const initial = stored || "dark";
     setTheme(initial);
     document.documentElement.classList.toggle("dark", initial === "dark");
   }, []);
@@ -157,21 +156,25 @@ const Navbar = () => {
     return () => window.removeEventListener("resize", onResize);
   }, []);
 
+  const scrollToSection = useCallback((hash) => {
+    const el = document.querySelector(hash);
+    if (!el) return;
+    const navHeight = 80;
+    const y = el.getBoundingClientRect().top + window.scrollY - navHeight;
+    window.scrollTo({ top: y, behavior: "smooth" });
+  }, []);
+
   const handleNavClick = useCallback((link, e) => {
     if (link.hash) {
       e.preventDefault();
       if (location.pathname !== "/") {
         navigate("/");
-        setTimeout(() => {
-          const el = document.querySelector(link.hash);
-          el?.scrollIntoView({ behavior: "smooth" });
-        }, 100);
+        setTimeout(() => scrollToSection(link.hash), 150);
       } else {
-        const el = document.querySelector(link.hash);
-        el?.scrollIntoView({ behavior: "smooth" });
+        scrollToSection(link.hash);
       }
     }
-  }, [location.pathname, navigate]);
+  }, [location.pathname, navigate, scrollToSection]);
 
   const getIsActive = (link) => {
     if (link.hash) {
@@ -199,7 +202,7 @@ const Navbar = () => {
           <NavLink to="/" className="cursor-pointer flex-shrink-0">
             <motion.img
               src="/official_logo.jpg"
-              alt="Kevin Phan"
+              alt="Khang Phan"
               className="h-9 w-9 rounded-full object-cover ring-2 ring-[var(--color-border)] hover:ring-[var(--color-primary)] transition-all"
               whileHover={{ scale: 1.08 }}
               transition={{ type: "spring", stiffness: 400, damping: 15 }}
@@ -207,7 +210,7 @@ const Navbar = () => {
           </NavLink>
 
           {/* Desktop links */}
-          <div className="hidden md:flex items-center gap-1">
+          <div className="hidden md:flex items-center gap-0.5 relative">
             {navLinks.map((link) => {
               const isActive = getIsActive(link);
               return (
@@ -215,19 +218,44 @@ const Navbar = () => {
                   key={link.name}
                   to={link.hash ? "/" : link.to}
                   onClick={(e) => handleNavClick(link, e)}
-                  className="relative px-4 py-2 text-sm font-medium cursor-pointer select-none rounded-full transition-colors duration-200"
+                  className="relative px-4 py-2 text-sm font-medium cursor-pointer select-none rounded-full transition-all duration-300 group"
                   style={{ color: isActive ? "var(--color-primary)" : "var(--color-text-muted)" }}
                   onMouseEnter={(e) => { if (!isActive) e.currentTarget.style.color = "var(--color-text)"; }}
                   onMouseLeave={(e) => { if (!isActive) e.currentTarget.style.color = "var(--color-text-muted)"; }}
                 >
+                  {/* Background pill — slides between items */}
                   {isActive && (
                     <motion.div
                       layoutId="nav-pill"
                       className="absolute inset-0 rounded-full"
-                      style={{ backgroundColor: "var(--color-primary)", opacity: 0.15 }}
-                      transition={{ type: "spring", stiffness: 350, damping: 30 }}
+                      style={{
+                        backgroundColor: "var(--color-primary)",
+                        opacity: 0.12,
+                        boxShadow: "0 0 20px rgba(var(--color-primary-rgb), 0.15)",
+                      }}
+                      transition={{ type: "spring", stiffness: 400, damping: 28, mass: 0.8 }}
                     />
                   )}
+
+                  {/* Glowing underline dot */}
+                  {isActive && (
+                    <motion.div
+                      layoutId="nav-dot"
+                      className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full"
+                      style={{
+                        backgroundColor: "var(--color-primary)",
+                        boxShadow: "0 0 8px 2px rgba(var(--color-primary-rgb), 0.5)",
+                      }}
+                      transition={{ type: "spring", stiffness: 400, damping: 28, mass: 0.8 }}
+                    />
+                  )}
+
+                  {/* Hover underline (non-active) */}
+                  <span
+                    className="absolute bottom-0.5 left-1/2 -translate-x-1/2 h-[1.5px] bg-[var(--color-text-muted)]/30 rounded-full transition-all duration-300 w-0 group-hover:w-3/5"
+                    style={{ display: isActive ? "none" : "block" }}
+                  />
+
                   <span className="relative z-10">{link.name}</span>
                 </NavLink>
               );

@@ -7,7 +7,7 @@
 const about = {
   image: "/profile.jpg",
 
-  greeting: "Hi, I'm Kevin.",
+  greeting: "Hi, I'm Khang.",
   bio: "I'm a CS student at USF who loves building apps and exploring AI/ML. I enjoy turning ideas into real projects, whether it's a web app or a small side project. When I'm not coding, you'll probably find me on a boba run or playing video games.",
 
   details: [
