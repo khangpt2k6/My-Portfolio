@@ -369,9 +369,7 @@ const Navbar = () => {
             <MiniPlayer />
 
             {/* Theme toggle — animated sun/moon */}
-            <div className="flex items-center rounded-full bg-[var(--color-surface2)] border border-[var(--color-border)] backdrop-blur-xl p-[3px]">
-              <ThemeToggle isDark={isDark} onToggle={toggleTheme} />
-            </div>
+            <ThemeToggle isDark={isDark} onToggle={toggleTheme} />
 
             {/* Mobile hamburger */}
             <motion.button

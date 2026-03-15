@@ -10,7 +10,7 @@ import Navbar from "./components/layout/Navbar"
 import Footer from "./components/layout/Footer"
 import ScrollProgress from "./components/ui/ScrollProgress"
 import CustomCursor from "./components/ui/CustomCursor"
-import ContactChat from "./components/ui/ContactChat"
+const Contact = lazy(() => import("./pages/Contact"))
 
 // ── Lazy-loaded page components (code-splitting) ────────────────────────────
 const Hero = lazy(() => import("./pages/Hero"))
@@ -114,6 +114,7 @@ function AnimatedRoutes() {
               <Experience />
               <Projects />
               <Skills />
+              <Contact />
             </PageWrapper>
           } />
           <Route path="/lab" element={
@@ -137,7 +138,6 @@ function App() {
         <Navbar />
         <AnimatedRoutes />
         <Footer />
-        <ContactChat />
       </div>
     </Router>
   )
