@@ -295,19 +295,22 @@ function SortingVisualizer() {
         </div>
       </div>
 
-      {/* Playback + Info */}
       <PlaybackBar player={player} />
-      <InfoBar algo={algo} stepData={player.currentStepData} stats={stats} />
 
-      {/* Canvas — fills remaining space */}
-      <div className="flex-1 min-h-0 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-1.5 overflow-hidden">
-        <canvas ref={canvasRef} className="w-full h-full" />
+      {/* Canvas + right info column */}
+      <div className="flex gap-3 flex-1 min-h-0">
+        <div className="flex-1 min-h-0 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-1.5 overflow-hidden">
+          <canvas ref={canvasRef} className="w-full h-full" />
+        </div>
+
+        <div className="flex flex-col gap-3 w-36 shrink-0 justify-between">
+          <InfoBar algo={algo} stepData={player.currentStepData} stats={stats} />
+          <Legend items={[
+            { label: "Unsorted", color: "rgb(130,142,241)" }, { label: "Comparing", color: "#f43f5e" },
+            { label: "Pivot", color: "#f59e0b" }, { label: "Sorted", color: "#34d399" },
+          ]} />
+        </div>
       </div>
-
-      <Legend items={[
-        { label: "Unsorted", color: "rgb(130,142,241)" }, { label: "Comparing", color: "#f43f5e" },
-        { label: "Pivot", color: "#f59e0b" }, { label: "Sorted", color: "#34d399" },
-      ]} />
     </div>
   );
 }
@@ -407,45 +410,52 @@ function PathfindingVisualizer() {
       </div>
 
       <PlaybackBar player={player} />
-      <InfoBar algo={algo} stepData={player.currentStepData} stats={currentStats} />
 
-      {/* Grid */}
-      <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-2 overflow-hidden"
-        onMouseLeave={() => { setMouseDown(false); setDragging(null); }}
-        onMouseUp={() => { setMouseDown(false); setDragging(null); }}>
-        <div className="grid" style={{
-          gridTemplateColumns: `repeat(${COLS}, minmax(12px, 1fr))`,
-          gridTemplateRows: `repeat(${ROWS}, minmax(12px, 1fr))`,
-          gap: "1px",
-          aspectRatio: `${COLS} / ${ROWS}`,
-        }}>
-          {displayGrid.map((row, r) => row.map((cell, c) => {
-            const isStart = r === startPos[0] && c === startPos[1];
-            const isEnd = r === endPos[0] && c === endPos[1];
-            return (
-              <div key={`${r}-${c}`}
-                onMouseDown={() => handleCellEvent(r, c, true)}
-                onMouseEnter={() => handleCellEvent(r, c)}
-                className="transition-colors duration-75"
-                style={{
-                  backgroundColor: cellColor(cell, r, c),
-                  cursor: (player.isPlaying || steps.length > 0) ? "default" : "pointer",
-                  borderRadius: isStart || isEnd ? "50%" : "2px",
-                  boxShadow: isStart ? "0 0 8px var(--color-primary)" : isEnd ? "0 0 8px #f43f5e" : "none",
-                }}
-              />
-            );
-          }))}
+      {/* Grid + right info column */}
+      <div className="flex gap-3 flex-1 min-h-0">
+        {/* Grid */}
+        <div className="flex-1 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-2 overflow-hidden"
+          onMouseLeave={() => { setMouseDown(false); setDragging(null); }}
+          onMouseUp={() => { setMouseDown(false); setDragging(null); }}>
+          <div className="grid" style={{
+            gridTemplateColumns: `repeat(${COLS}, minmax(0, 1fr))`,
+            gridTemplateRows: `repeat(${ROWS}, minmax(0, 1fr))`,
+            gap: "1px",
+            width: "100%",
+            height: "100%",
+          }}>
+            {displayGrid.map((row, r) => row.map((cell, c) => {
+              const isStart = r === startPos[0] && c === startPos[1];
+              const isEnd = r === endPos[0] && c === endPos[1];
+              return (
+                <div key={`${r}-${c}`}
+                  onMouseDown={() => handleCellEvent(r, c, true)}
+                  onMouseEnter={() => handleCellEvent(r, c)}
+                  className="transition-colors duration-75"
+                  style={{
+                    backgroundColor: cellColor(cell, r, c),
+                    cursor: (player.isPlaying || steps.length > 0) ? "default" : "pointer",
+                    borderRadius: isStart || isEnd ? "50%" : "2px",
+                    boxShadow: isStart ? "0 0 8px var(--color-primary)" : isEnd ? "0 0 8px #f43f5e" : "none",
+                  }}
+                />
+              );
+            }))}
+          </div>
+        </div>
+
+        {/* Right column: info + legend */}
+        <div className="flex flex-col gap-3 w-36 shrink-0 justify-between">
+          <InfoBar algo={algo} stepData={player.currentStepData} stats={currentStats} />
+          <Legend items={[
+            { label: "Start", color: "var(--color-primary)", rounded: true },
+            { label: "End", color: "#f43f5e", rounded: true },
+            { label: "Wall", color: "var(--color-text)" },
+            { label: "Visited", color: "rgba(var(--color-primary-rgb), 0.35)" },
+            { label: "Path", color: "#facc15" },
+          ]} />
         </div>
       </div>
-
-      <Legend items={[
-        { label: "Start", color: "var(--color-primary)", rounded: true },
-        { label: "End", color: "#f43f5e", rounded: true },
-        { label: "Wall", color: "var(--color-text)" },
-        { label: "Visited", color: "rgba(var(--color-primary-rgb), 0.35)" },
-        { label: "Path", color: "#facc15" },
-      ]} />
     </div>
   );
 }
@@ -588,133 +598,141 @@ function TreeVisualizer() {
       </div>
 
       <PlaybackBar player={player} />
-      <InfoBar algo={traversal} stepData={player.currentStepData} />
 
-      {/* Traversal result + data structure */}
-      {(visual.traversalOrder.length > 0 || (visual.dataStructure?.items.length > 0)) && (
-        <div className="flex flex-wrap items-center gap-2 text-[10px]">
-          {visual.dataStructure?.items.length > 0 && (
-            <div className="flex items-center gap-1 px-2 py-1 rounded-lg bg-[var(--color-surface2)] border border-[var(--color-border)]">
-              <span className="font-bold text-[var(--color-text-muted)] uppercase text-[8px] tracking-wider">{visual.dataStructure.label}:</span>
-              {visual.dataStructure.items.map((item, i) => (
-                <span key={i} className="font-mono font-bold text-[var(--color-primary)]">{item}</span>
-              ))}
+      {/* SVG Tree + right info column */}
+      <div className="flex gap-3 flex-1 min-h-0">
+        {/* SVG Tree */}
+        <div ref={containerRef}
+          className="flex-1 min-h-0 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] overflow-hidden relative touch-none"
+          onPointerMove={onPointerMove} onPointerUp={onPointerUp} onPointerLeave={onPointerUp}>
+          {!root ? (
+            <div className="absolute inset-0 flex items-center justify-center text-[var(--color-text-muted)] text-sm">
+              Insert values to build a tree
             </div>
-          )}
-          {visual.traversalOrder.length > 0 && (
-            <div className="flex items-center gap-0.5 px-2 py-1 rounded-lg bg-[var(--color-surface2)] border border-[var(--color-border)]">
-              <span className="font-bold text-[var(--color-text-muted)] uppercase text-[8px] tracking-wider mr-1">Result:</span>
-              {visual.traversalOrder.map((v, i) => (
-                <span key={i} className="font-mono font-bold text-[var(--color-primary)]">
-                  {v}{i < visual.traversalOrder.length - 1 && <span className="text-[var(--color-text-muted)]/30 mx-0.5">→</span>}
-                </span>
-              ))}
-            </div>
+          ) : (
+            <svg width={size.w} height={size.h} className="w-full h-full">
+              <style>{`
+                .tree-node { cursor: grab; }
+                .tree-node:active { cursor: grabbing; }
+                .tree-node .node-ring { opacity: 0; transition: opacity 0.2s ease; }
+                .tree-node:hover .node-ring { opacity: 0.35; }
+                .tree-node .node-body { transition: filter 0.2s ease, fill 0.15s ease, stroke 0.15s ease; }
+                .tree-node:hover .node-body { filter: brightness(1.15); }
+                .tree-edge { transition: d 0.2s ease; }
+                @keyframes treePulse {
+                  0%, 100% { opacity: 0.6; }
+                  50% { opacity: 1; }
+                }
+              `}</style>
+              <defs>
+                <filter id="treeGlow" x="-80%" y="-80%" width="260%" height="260%">
+                  <feGaussianBlur stdDeviation="8" result="blur" />
+                  <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
+                </filter>
+                <filter id="treeShadow" x="-40%" y="-40%" width="180%" height="180%">
+                  <feDropShadow dx="0" dy="3" stdDeviation="5" floodColor="rgba(0,0,0,0.3)" floodOpacity="0.3" />
+                </filter>
+                <radialGradient id="nodeSheen" cx="40%" cy="30%" r="60%">
+                  <stop offset="0%" stopColor="white" stopOpacity="0.15" />
+                  <stop offset="100%" stopColor="white" stopOpacity="0" />
+                </radialGradient>
+              </defs>
+
+              {/* Edges — curved bezier */}
+              {layout.edges.map((e, i) => {
+                const midY = (e.from.cy + e.to.cy) / 2;
+                const isFromH = visual.highlighted.has(e.from.val) || visual.current === e.from.val;
+                const isToH = visual.highlighted.has(e.to.val) || visual.current === e.to.val;
+                const edgeActive = isFromH && isToH;
+                return (
+                  <path key={i} className="tree-edge"
+                    d={`M ${e.from.cx},${e.from.cy + e.from.r} C ${e.from.cx},${midY} ${e.to.cx},${midY} ${e.to.cx},${e.to.cy - e.to.r}`}
+                    fill="none"
+                    stroke={edgeActive ? "var(--color-primary)" : "var(--color-border)"}
+                    strokeWidth={edgeActive ? 3 : 2}
+                    strokeLinecap="round"
+                    opacity={edgeActive ? 0.9 : 0.5}
+                  />
+                );
+              })}
+
+              {/* Nodes */}
+              {layout.nodes.map(n => {
+                const isH = visual.highlighted.has(n.val);
+                const isC = visual.current === n.val;
+                const fill = isC ? "#f43f5e" : isH ? "var(--color-primary)" : "var(--color-surface2)";
+                const stroke = isC ? "#f43f5e" : isH ? "var(--color-primary)" : "var(--color-border)";
+                const textFill = (isC || isH) ? "#fff" : "var(--color-text)";
+                return (
+                  <g key={n.val} className="tree-node"
+                    onPointerDown={e => onPointerDown(e, n)}
+                    onDoubleClick={() => removeNode(n.val)}>
+                    {/* Hover glow ring */}
+                    <circle className="node-ring" cx={n.cx} cy={n.cy} r={n.r + 8}
+                      fill="none" stroke="var(--color-primary)" strokeWidth="2" />
+                    {/* Pulse ring for current node */}
+                    {isC && (
+                      <circle cx={n.cx} cy={n.cy} r={n.r + 5}
+                        fill="none" stroke="#f43f5e" strokeWidth="2"
+                        style={{ animation: "treePulse 1.2s ease-in-out infinite" }} />
+                    )}
+                    {/* Main node circle */}
+                    <circle className="node-body" cx={n.cx} cy={n.cy} r={n.r}
+                      fill={fill} stroke={stroke}
+                      strokeWidth={isC || isH ? 3 : 2}
+                      filter={(isC || isH) ? "url(#treeGlow)" : "url(#treeShadow)"} />
+                    {/* Glass sheen */}
+                    <circle cx={n.cx} cy={n.cy} r={n.r}
+                      fill="url(#nodeSheen)" style={{ pointerEvents: "none" }} />
+                    {/* Value text */}
+                    <text x={n.cx} y={n.cy} textAnchor="middle" dominantBaseline="central"
+                      fill={textFill} fontSize={Math.min(14, n.r * 0.85)} fontWeight="700" fontFamily="system-ui"
+                      style={{ pointerEvents: "none", userSelect: "none" }}>
+                      {n.val}
+                    </text>
+                  </g>
+                );
+              })}
+            </svg>
           )}
         </div>
-      )}
 
-      {/* SVG Tree */}
-      <div ref={containerRef}
-        className="flex-1 min-h-0 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] overflow-hidden relative touch-none"
-        onPointerMove={onPointerMove} onPointerUp={onPointerUp} onPointerLeave={onPointerUp}>
-        {!root ? (
-          <div className="absolute inset-0 flex items-center justify-center text-[var(--color-text-muted)] text-sm">
-            Insert values to build a tree
+        {/* Right column: info + traversal result + legend */}
+        <div className="flex flex-col gap-3 w-36 shrink-0 justify-between overflow-hidden">
+          <div className="flex flex-col gap-2">
+            <InfoBar algo={traversal} stepData={player.currentStepData} />
+            {(visual.traversalOrder.length > 0 || visual.dataStructure?.items.length > 0) && (
+              <div className="flex flex-col gap-1.5 text-[10px]">
+                {visual.dataStructure?.items.length > 0 && (
+                  <div className="px-2 py-1 rounded-lg bg-[var(--color-surface2)] border border-[var(--color-border)]">
+                    <span className="font-bold text-[var(--color-text-muted)] uppercase text-[8px] tracking-wider block mb-0.5">{visual.dataStructure.label}:</span>
+                    <div className="flex flex-wrap gap-0.5">
+                      {visual.dataStructure.items.map((item, i) => (
+                        <span key={i} className="font-mono font-bold text-[var(--color-primary)]">{item}</span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {visual.traversalOrder.length > 0 && (
+                  <div className="px-2 py-1 rounded-lg bg-[var(--color-surface2)] border border-[var(--color-border)]">
+                    <span className="font-bold text-[var(--color-text-muted)] uppercase text-[8px] tracking-wider block mb-0.5">Result:</span>
+                    <div className="flex flex-wrap gap-0.5">
+                      {visual.traversalOrder.map((v, i) => (
+                        <span key={i} className="font-mono font-bold text-[var(--color-primary)]">{v}</span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
-        ) : (
-          <svg width={size.w} height={size.h} className="w-full h-full">
-            <style>{`
-              .tree-node { cursor: grab; }
-              .tree-node:active { cursor: grabbing; }
-              .tree-node .node-ring { opacity: 0; transition: opacity 0.2s ease; }
-              .tree-node:hover .node-ring { opacity: 0.35; }
-              .tree-node .node-body { transition: filter 0.2s ease, fill 0.15s ease, stroke 0.15s ease; }
-              .tree-node:hover .node-body { filter: brightness(1.15); }
-              .tree-edge { transition: d 0.2s ease; }
-              @keyframes treePulse {
-                0%, 100% { opacity: 0.6; }
-                50% { opacity: 1; }
-              }
-            `}</style>
-            <defs>
-              <filter id="treeGlow" x="-80%" y="-80%" width="260%" height="260%">
-                <feGaussianBlur stdDeviation="8" result="blur" />
-                <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
-              </filter>
-              <filter id="treeShadow" x="-40%" y="-40%" width="180%" height="180%">
-                <feDropShadow dx="0" dy="3" stdDeviation="5" floodColor="rgba(0,0,0,0.3)" floodOpacity="0.3" />
-              </filter>
-              <radialGradient id="nodeSheen" cx="40%" cy="30%" r="60%">
-                <stop offset="0%" stopColor="white" stopOpacity="0.15" />
-                <stop offset="100%" stopColor="white" stopOpacity="0" />
-              </radialGradient>
-            </defs>
-
-            {/* Edges — curved bezier */}
-            {layout.edges.map((e, i) => {
-              const midY = (e.from.cy + e.to.cy) / 2;
-              const isFromH = visual.highlighted.has(e.from.val) || visual.current === e.from.val;
-              const isToH = visual.highlighted.has(e.to.val) || visual.current === e.to.val;
-              const edgeActive = isFromH && isToH;
-              return (
-                <path key={i} className="tree-edge"
-                  d={`M ${e.from.cx},${e.from.cy + e.from.r} C ${e.from.cx},${midY} ${e.to.cx},${midY} ${e.to.cx},${e.to.cy - e.to.r}`}
-                  fill="none"
-                  stroke={edgeActive ? "var(--color-primary)" : "var(--color-border)"}
-                  strokeWidth={edgeActive ? 3 : 2}
-                  strokeLinecap="round"
-                  opacity={edgeActive ? 0.9 : 0.5}
-                />
-              );
-            })}
-
-            {/* Nodes */}
-            {layout.nodes.map(n => {
-              const isH = visual.highlighted.has(n.val);
-              const isC = visual.current === n.val;
-              const fill = isC ? "#f43f5e" : isH ? "var(--color-primary)" : "var(--color-surface2)";
-              const stroke = isC ? "#f43f5e" : isH ? "var(--color-primary)" : "var(--color-border)";
-              const textFill = (isC || isH) ? "#fff" : "var(--color-text)";
-              return (
-                <g key={n.val} className="tree-node"
-                  onPointerDown={e => onPointerDown(e, n)}
-                  onDoubleClick={() => removeNode(n.val)}>
-                  {/* Hover glow ring */}
-                  <circle className="node-ring" cx={n.cx} cy={n.cy} r={n.r + 8}
-                    fill="none" stroke="var(--color-primary)" strokeWidth="2" />
-                  {/* Pulse ring for current node */}
-                  {isC && (
-                    <circle cx={n.cx} cy={n.cy} r={n.r + 5}
-                      fill="none" stroke="#f43f5e" strokeWidth="2"
-                      style={{ animation: "treePulse 1.2s ease-in-out infinite" }} />
-                  )}
-                  {/* Main node circle */}
-                  <circle className="node-body" cx={n.cx} cy={n.cy} r={n.r}
-                    fill={fill} stroke={stroke}
-                    strokeWidth={isC || isH ? 3 : 2}
-                    filter={(isC || isH) ? "url(#treeGlow)" : "url(#treeShadow)"} />
-                  {/* Glass sheen */}
-                  <circle cx={n.cx} cy={n.cy} r={n.r}
-                    fill="url(#nodeSheen)" style={{ pointerEvents: "none" }} />
-                  {/* Value text */}
-                  <text x={n.cx} y={n.cy} textAnchor="middle" dominantBaseline="central"
-                    fill={textFill} fontSize={Math.min(14, n.r * 0.85)} fontWeight="700" fontFamily="system-ui"
-                    style={{ pointerEvents: "none", userSelect: "none" }}>
-                    {n.val}
-                  </text>
-                </g>
-              );
-            })}
-          </svg>
-        )}
+          <Legend items={[
+            { label: "Visited", color: "var(--color-primary)", rounded: true },
+            { label: "Current", color: "#f43f5e", rounded: true },
+            { label: "Drag · Dbl-click delete", color: "transparent", rounded: true },
+          ]} />
+        </div>
       </div>
-
-      <Legend items={[
-        { label: "Visited", color: "var(--color-primary)", rounded: true },
-        { label: "Current", color: "#f43f5e", rounded: true },
-        { label: "Drag to move · Double-click to delete", color: "transparent", rounded: true },
-      ]} />
     </div>
   );
 }
