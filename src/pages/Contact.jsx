@@ -20,7 +20,7 @@ import {
 import AnimatedHeading from "../components/ui/AnimatedHeading";
 
 
-const WEB3FORMS_KEY = "YOUR_ACCESS_KEY_HERE";
+const WEB3FORMS_KEY = import.meta.env.VITE_WEB3FORMS_KEY;
 
 /* ── My location: Tampa, FL ── */
 const MY_LOCATION = { lat: 27.9506, lng: -82.4572, city: "Tampa, Florida" };

@@ -2,8 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { MessageCircle, X, Send, CheckCircle, AlertCircle, Loader2 } from "lucide-react";
 
-// Web3Forms access key — get yours free at https://web3forms.com
-const WEB3FORMS_KEY = "YOUR_ACCESS_KEY_HERE";
+const WEB3FORMS_KEY = import.meta.env.VITE_WEB3FORMS_KEY;
 
 const ContactChat = () => {
   const [isOpen, setIsOpen] = useState(false);
