@@ -7,7 +7,7 @@ import Tilt from "react-parallax-tilt";
 import about from "../data/about";
 import AnimatedHeading from "../components/ui/AnimatedHeading";
 
-/* ── Social icon config ─
+/* ── Social icon config ── */
 const socialConfig = {
   Github: { Icon: FaGithub, color: "#6e5494", label: "GitHub" },
   Linkedin: { Icon: FaLinkedin, color: "#0A66C2", label: "LinkedIn" },
