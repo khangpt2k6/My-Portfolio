@@ -216,7 +216,7 @@ const About = () => {
   return (
     <section
       id="about"
-      className="relative bg-[var(--color-surface)] dark:bg-transparent pb-16 md:pb-28 px-4 overflow-hidden noise-overlay gradient-mesh"
+      className="relative bg-transparent pb-16 md:pb-28 px-4 overflow-hidden"
     >
 
       {/* Decorative floating dots */}
