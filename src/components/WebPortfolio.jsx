@@ -6,7 +6,7 @@ import Navbar from "./layout/Navbar";
 import Footer from "./layout/Footer";
 import Hero from "../pages/Hero";
 import About from "../pages/About";
-import Education from "./Education";
+
 import Experience from "../pages/Experience";
 import Projects from "../pages/Projects";
 import Skills from "../pages/Skills";
@@ -24,7 +24,6 @@ export default function WebPortfolio() {
           <main>
             <Hero />
             <About />
-            <Education />
             <Experience />
             <Projects />
             <Skills />
