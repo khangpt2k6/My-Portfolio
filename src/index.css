@@ -66,6 +66,35 @@ html {
   scroll-behavior: smooth;
 }
 
+/* ── Window content scaling ──
+   Pages were designed for full-viewport. Inside macOS windows,
+   scale them down so they fit without horizontal overflow. */
+.window-content {
+  font-size: 0.85em;
+}
+.window-content section {
+  padding-left: 1rem !important;
+  padding-right: 1rem !important;
+  max-width: 100% !important;
+}
+.window-content .max-w-5xl,
+.window-content .max-w-6xl,
+.window-content .max-w-7xl {
+  max-width: 100% !important;
+}
+.window-content .text-4xl { font-size: 1.5rem !important; }
+.window-content .text-5xl { font-size: 1.75rem !important; }
+.window-content .text-6xl { font-size: 2rem !important; }
+.window-content .md\:text-5xl { font-size: 1.75rem !important; }
+.window-content .lg\:text-6xl { font-size: 2rem !important; }
+.window-content .min-h-screen { min-height: auto !important; }
+.window-content .pb-16 { padding-bottom: 1rem !important; }
+.window-content .pb-28 { padding-bottom: 1.5rem !important; }
+.window-content .pt-20 { padding-top: 1rem !important; }
+.window-content .pt-24 { padding-top: 1rem !important; }
+.window-content .mb-14 { margin-bottom: 0.75rem !important; }
+.window-content .mb-16 { margin-bottom: 1rem !important; }
+
 /* ── Hero Gradient Animation ── */
 @keyframes gradient-shift {
   0%   { background-position: 0% 50%; }

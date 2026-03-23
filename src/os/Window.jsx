@@ -103,7 +103,7 @@ export default function Window({ id, title, children }) {
   const isMax = win?.isMaximized;
 
   const style = isMax
-    ? { top: 28, left: 0, width: "100%", height: "calc(100% - 28px - 68px)", zIndex: win?.zIndex || 0 }
+    ? { top: 26, left: 0, width: "100%", height: "calc(100% - 26px - 56px)", zIndex: win?.zIndex || 0 }
     : {
         top: win?.position?.y || 100,
         left: win?.position?.x || 100,
@@ -195,7 +195,7 @@ export default function Window({ id, title, children }) {
             </div>
 
             {/* ── Content ── */}
-            <div className="flex-1 overflow-auto" style={{ background: "var(--color-surface)" }}>
+            <div className="flex-1 overflow-auto window-content" style={{ background: "var(--color-surface)" }}>
               {children}
             </div>
           </div>
