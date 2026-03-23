@@ -4,10 +4,22 @@ import apps from "../data/apps";
 const WindowContext = createContext(null);
 
 /* ── helpers ── */
-const centerWindow = (w, h) => ({
-  x: Math.max(40, (window.innerWidth - w) / 2 + (Math.random() - 0.5) * 60),
-  y: Math.max(40, (window.innerHeight - h) / 2 + (Math.random() - 0.5) * 40),
-});
+const getScreenSize = () => {
+  const el = document.getElementById("macbook-screen");
+  if (el) return { w: el.offsetWidth, h: el.offsetHeight };
+  return { w: Math.min(window.innerWidth * 0.88, 1280), h: Math.min(window.innerWidth * 0.56, 800) };
+};
+
+const centerWindow = (w, h) => {
+  const screen = getScreenSize();
+  // Scale window to fit inside the MacBook screen
+  const sw = Math.min(w, screen.w - 40);
+  const sh = Math.min(h, screen.h - 80);
+  return {
+    x: Math.max(20, (screen.w - sw) / 2 + (Math.random() - 0.5) * 40),
+    y: Math.max(36, (screen.h - sh) / 2 + (Math.random() - 0.5) * 30),
+  };
+};
 
 const buildInitial = () => {
   const windows = {};

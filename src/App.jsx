@@ -59,7 +59,7 @@ function useIsMobile(breakpoint = 768) {
 // ── Desktop OS (rendered inside MacBook screen) ──
 function DesktopScreen() {
   return (
-    <div className="relative w-full h-full overflow-hidden bg-white dark:bg-transparent">
+    <div id="macbook-screen" className="relative w-full h-full overflow-hidden bg-white dark:bg-transparent">
       {/* Wallpaper backgrounds — inside the MacBook screen */}
       <StarfieldBg />
       <AuroraBg />
