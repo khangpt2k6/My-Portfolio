@@ -408,7 +408,9 @@ const Navbar = () => {
             <MiniPlayer />
 
             {/* Theme toggle — animated sun/moon */}
-            <ThemeToggle isDark={isDark} onToggle={toggleTheme} />
+            <div style={{ transform: "scale(1.5)", transformOrigin: "center" }}>
+              <ThemeToggle isDark={isDark} onToggle={toggleTheme} />
+            </div>
 
             {/* Mobile hamburger */}
             <motion.button

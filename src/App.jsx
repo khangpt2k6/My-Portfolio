@@ -1,145 +1,201 @@
 "use client"
 
-import { useEffect, useState, Suspense, lazy } from "react"
-
-import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom"
-import { motion, AnimatePresence } from "framer-motion"
+import { useState, useEffect, lazy, Suspense } from "react"
+import { AnimatePresence } from "framer-motion"
 import StarfieldBg from "./components/backgrounds/StarfieldBg"
 import AuroraBg from "./components/backgrounds/AuroraBg"
-import Navbar from "./components/layout/Navbar"
-import Footer from "./components/layout/Footer"
-import ScrollProgress from "./components/ui/ScrollProgress"
 import CustomCursor from "./components/ui/CustomCursor"
-const Contact = lazy(() => import("./pages/Contact"))
+import { WindowProvider } from "./os/WindowContext"
+import Window from "./os/Window"
+import Desktop from "./os/Desktop"
+import Dock from "./os/Dock"
+import MenuBar from "./os/MenuBar"
+import BootScreen from "./os/BootScreen"
+import MacBookFrame from "./os/MacBookFrame"
+import MobileOS from "./os/MobileOS"
+import ModePicker from "./components/ModePicker"
+import ModeSwitchButton from "./components/ModeSwitchButton"
+import apps from "./data/apps"
 
-// ── Lazy-loaded page components (code-splitting) ────────────────────────────
-const Hero = lazy(() => import("./pages/Hero"))
-const About = lazy(() => import("./pages/About"))
-const Experience = lazy(() => import("./pages/Experience"))
-const Projects = lazy(() => import("./pages/Projects"))
-const Skills = lazy(() => import("./pages/Skills"))
-const Lab = lazy(() => import("./pages/Lab"))
+// ── App components ──
+import AboutApp from "./apps/AboutApp"
+import ProjectsApp from "./apps/ProjectsApp"
+import ExperienceApp from "./apps/ExperienceApp"
+import SkillsApp from "./apps/SkillsApp"
+import ContactApp from "./apps/ContactApp"
 
-// ── Page loading fallback ───────────────────────────────────────────────────
-const PageLoader = () => (
-  <div className="min-h-screen flex items-center justify-center">
-    <motion.div
-      className="w-10 h-10 rounded-full border-2 border-[var(--color-primary)] border-t-transparent"
-      animate={{ rotate: 360 }}
-      transition={{ duration: 0.8, repeat: Infinity, ease: "linear" }}
-    />
-  </div>
-)
+import TerminalApp from "./apps/TerminalApp"
+import LabApp from "./apps/LabApp"
+import MusicApp from "./apps/MusicApp"
+import SettingsApp from "./apps/SettingsApp"
+import ResumeApp from "./apps/ResumeApp"
 
-// ── Transition presets ──────────────────────────────────────────────────────
-const transitionPresets = {
-  Fade: {
-    initial: { opacity: 0, filter: "blur(8px)" },
-    animate: { opacity: 1, filter: "blur(0px)", transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] } },
-    exit: { opacity: 0, filter: "blur(4px)", transition: { duration: 0.3, ease: "easeIn" } },
-  },
-  Slide: {
-    initial: { opacity: 0, x: 80, filter: "blur(4px)" },
-    animate: { opacity: 1, x: 0, filter: "blur(0px)", transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] } },
-    exit: { opacity: 0, x: -60, filter: "blur(4px)", transition: { duration: 0.3, ease: "easeIn" } },
-  },
-  Zoom: {
-    initial: { opacity: 0, scale: 0.92, filter: "blur(8px)" },
-    animate: { opacity: 1, scale: 1, filter: "blur(0px)", transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] } },
-    exit: { opacity: 0, scale: 1.05, filter: "blur(6px)", transition: { duration: 0.3, ease: "easeIn" } },
-  },
+const WebPortfolio = lazy(() => import("./components/WebPortfolio"))
+
+const appComponents = {
+  about: AboutApp,
+  projects: ProjectsApp,
+  experience: ExperienceApp,
+  skills: SkillsApp,
+  contact: ContactApp,
+  terminal: TerminalApp,
+  lab: LabApp,
+  music: MusicApp,
+  settings: SettingsApp,
+  resume: ResumeApp,
 }
 
-// ── Page transition wrapper ──────────────────────────────────────────────────
-function PageWrapper({ children, transitionStyle }) {
-  const variants = transitionPresets[transitionStyle] || transitionPresets.Fade
+// ── Responsive hook ──
+function useIsMobile(breakpoint = 768) {
+  const [mobile, setMobile] = useState(
+    typeof window !== "undefined" ? window.innerWidth < breakpoint : false
+  )
+  useEffect(() => {
+    const mq = window.matchMedia(`(max-width: ${breakpoint - 1}px)`)
+    const handler = (e) => setMobile(e.matches)
+    mq.addEventListener("change", handler)
+    setMobile(mq.matches)
+    return () => mq.removeEventListener("change", handler)
+  }, [breakpoint])
+  return mobile
+}
+
+// ── Wallpaper hook ──
+function useWallpaper() {
+  const [wp, setWp] = useState(() => localStorage.getItem("wallpaper") || "dynamic")
+  useEffect(() => {
+    const handler = () => setWp(localStorage.getItem("wallpaper") || "dynamic")
+    window.addEventListener("wallpaper-change", handler)
+    return () => window.removeEventListener("wallpaper-change", handler)
+  }, [])
+  return wp
+}
+
+// ── Desktop OS (rendered inside MacBook screen) ──
+function DesktopScreen() {
+  const wallpaperId = useWallpaper()
+  const wallpaperSrc = wallpaperId !== "dynamic"
+    ? (() => {
+        const map = {
+          bV6xf3: "/desktop_background/bV6xf3.webp",
+          sea: "/desktop_background/colourful-textured-background-desktop-sea-600nw-2432936989.webp",
+          icH5Aj: "/desktop_background/icH5Aj.webp",
+          lake: "/desktop_background/lake-side-trees-live-desktop-jwhxpov3u0jdebb0.jpg",
+          nature: "/desktop_background/nature-background-high-resolution-wallpaper-for-a-serene-and-stunning-view-free-photo.jpg",
+          landscape: "/desktop_background/stunning-high-resolution-nature-and-landscape-backgrounds-breathtaking-scenery-in-hd-free-photo.jpg",
+        }
+        return map[wallpaperId] || null
+      })()
+    : null
+
   return (
-    <motion.div
-      variants={variants}
-      initial="initial"
-      animate="animate"
-      exit="exit"
-    >
-      {children}
-    </motion.div>
+    <div id="macbook-screen" className="relative w-full h-full overflow-hidden bg-white dark:bg-transparent">
+      {/* Wallpaper — static image or animated backgrounds */}
+      {wallpaperSrc ? (
+        <img
+          src={wallpaperSrc}
+          alt=""
+          className="absolute inset-0 w-full h-full object-cover"
+          draggable={false}
+        />
+      ) : (
+        <>
+          <StarfieldBg />
+          <AuroraBg />
+        </>
+      )}
+
+      <MenuBar />
+      <Desktop />
+      {/* Render all windows */}
+      {apps.map((app) => {
+        const Component = appComponents[app.id]
+        if (!Component) return null
+        return (
+          <Window key={app.id} id={app.id} title={app.title}>
+            <Component />
+          </Window>
+        )
+      })}
+      <Dock />
+    </div>
   )
 }
 
-// ── Animated routes ──────────────────────────────────────────────────────────
-function AnimatedRoutes() {
-  const location = useLocation()
-  const [transitionStyle, setTransitionStyle] = useState("Fade")
-
-  // Read transition preference from localStorage
-  useEffect(() => {
-    const saved = localStorage.getItem("page-transition")
-    if (saved && transitionPresets[saved]) {
-      setTransitionStyle(saved)
-    }
-
-    const handleStorage = () => {
-      const val = localStorage.getItem("page-transition")
-      if (val && transitionPresets[val]) setTransitionStyle(val)
-    }
-    window.addEventListener("storage", handleStorage)
-
-    const interval = setInterval(() => {
-      const val = localStorage.getItem("page-transition")
-      if (val && val !== transitionStyle && transitionPresets[val]) {
-        setTransitionStyle(val)
-      }
-    }, 500)
-
-    return () => {
-      window.removeEventListener("storage", handleStorage)
-      clearInterval(interval)
-    }
-  }, [transitionStyle])
-
-  // Scroll to top on route change (only for Lab)
-  useEffect(() => {
-    if (location.pathname !== "/") {
-      window.scrollTo(0, 0)
-    }
-  }, [location.pathname])
+// ── Desktop OS mode (with boot + frame) ──
+function DesktopMode() {
+  const [booted, setBooted] = useState(false)
+  const isMobile = useIsMobile()
 
   return (
-    <Suspense fallback={<PageLoader />}>
-      <AnimatePresence mode="wait">
-        <Routes location={location} key={location.pathname}>
-          <Route path="/" element={
-            <PageWrapper transitionStyle={transitionStyle}>
-              <Hero />
-              <About />
-              <Experience />
-              <Projects />
-              <Skills />
-              <Contact />
-            </PageWrapper>
-          } />
-          <Route path="/lab" element={
-            <PageWrapper transitionStyle={transitionStyle}><Lab /></PageWrapper>
-          } />
-        </Routes>
-      </AnimatePresence>
-    </Suspense>
-  )
-}
+    <WindowProvider>
+      <div className="text-[var(--color-text)] min-h-screen overflow-hidden"
+        style={{ background: "#0a0a14" }}>
 
-// ── App ──────────────────────────────────────────────────────────────────────
-function App() {
-  return (
-    <Router>
-      <div className="bg-white dark:bg-transparent text-[var(--color-text)] min-h-screen transition-colors duration-300">
-        <StarfieldBg />
-        <AuroraBg />
-        <ScrollProgress />
-        <CustomCursor />
-        <Navbar />
-        <AnimatedRoutes />
-        <Footer />
+        {/* Custom cursor (desktop only) */}
+        {!isMobile && <CustomCursor />}
+
+        {/* Boot sequence */}
+        {!booted && <BootScreen onComplete={() => setBooted(true)} />}
+
+        {/* OS interface */}
+        {booted && (
+          isMobile ? (
+            <div className="relative w-full h-screen bg-white dark:bg-transparent">
+              <StarfieldBg />
+              <AuroraBg />
+              <MobileOS />
+            </div>
+          ) : (
+            <MacBookFrame>
+              <DesktopScreen />
+            </MacBookFrame>
+          )
+        )}
       </div>
-    </Router>
+    </WindowProvider>
+  )
+}
+
+// ── Main App ──
+function App() {
+  const [mode, setMode] = useState(() => {
+    return localStorage.getItem("portfolio-mode") || null
+  })
+
+  const handleSelectMode = (selected) => {
+    localStorage.setItem("portfolio-mode", selected)
+    setMode(selected)
+  }
+
+  const handleSwitch = () => {
+    const next = mode === "desktop" ? "web" : "desktop"
+    localStorage.setItem("portfolio-mode", next)
+    // Clear boot session so desktop re-boots on switch back
+    if (next === "web") sessionStorage.removeItem("os-booted")
+    setMode(next)
+  }
+
+  return (
+    <>
+      <AnimatePresence mode="wait">
+        {!mode && <ModePicker key="picker" onSelect={handleSelectMode} />}
+      </AnimatePresence>
+
+      {mode === "desktop" && <DesktopMode />}
+
+      {mode === "web" && (
+        <Suspense fallback={
+          <div className="fixed inset-0 flex items-center justify-center" style={{ background: "#0a0a14" }}>
+            <div className="w-8 h-8 border-2 border-[var(--color-primary)] border-t-transparent rounded-full animate-spin" />
+          </div>
+        }>
+          <WebPortfolio />
+        </Suspense>
+      )}
+
+      {mode && <ModeSwitchButton currentMode={mode} onSwitch={handleSwitch} />}
+    </>
   )
 }
 

@@ -33,6 +33,9 @@
   --shadow-card:       0 1px 3px rgba(0,0,0,0.04), 0 4px 16px rgba(0,0,0,0.06);
   --shadow-card-hover: 0 8px 30px rgba(var(--color-primary-rgb),0.12), 0 16px 40px rgba(0,0,0,0.08);
   --shadow-elevated:   0 12px 40px rgba(var(--color-primary-rgb),0.15), 0 24px 56px rgba(0,0,0,0.10);
+
+  /* OS window background — solid, no transparency */
+  --window-bg: #F0F0F0;
 }
 
 /* ══════════════════════════════════════════════════════════
@@ -60,11 +63,21 @@
   --shadow-card:       0 1px 3px rgba(0,0,0,0.4), 0 4px 16px rgba(var(--color-primary-rgb),0.06);
   --shadow-card-hover: 0 8px 30px rgba(var(--color-primary-rgb),0.2), 0 16px 40px rgba(0,0,0,0.4);
   --shadow-elevated:   0 12px 40px rgba(var(--color-primary-rgb),0.25), 0 24px 56px rgba(0,0,0,0.5);
+
+  --window-bg: #1C1C1E;
 }
 
 html {
   scroll-behavior: smooth;
 }
+
+/* ── Window content scaling ──
+   Pages were designed for full-viewport. Inside macOS windows,
+   use CSS zoom to proportionally shrink everything to fit. */
+.window-content {
+  zoom: 0.75;
+}
+.window-content .min-h-screen { min-height: auto !important; }
 
 /* ── Hero Gradient Animation ── */
 @keyframes gradient-shift {
