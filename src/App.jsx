@@ -88,9 +88,11 @@ function DesktopScreen() {
     <div id="macbook-screen" className="relative w-full h-full overflow-hidden bg-white dark:bg-transparent">
       {/* Wallpaper — static image or animated backgrounds */}
       {wallpaperSrc ? (
-        <div
-          className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: `url(${wallpaperSrc})` }}
+        <img
+          src={wallpaperSrc}
+          alt=""
+          className="absolute inset-0 w-full h-full object-cover"
+          draggable={false}
         />
       ) : (
         <>

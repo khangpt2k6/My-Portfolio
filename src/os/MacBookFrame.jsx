@@ -62,10 +62,8 @@ export default function MacBookFrame({ children }) {
           <div
             className="relative overflow-hidden rounded-[6px]"
             style={{
-              width: "min(88vw, 1280px)",
-              height: "min(56vw, 800px)",
-              minWidth: 900,
-              minHeight: 560,
+              width: "clamp(600px, 88vw, 1280px)",
+              height: "clamp(375px, min(56vw, 82vh), 800px)",
             }}
           >
             {children}
@@ -75,7 +73,7 @@ export default function MacBookFrame({ children }) {
         {/* ── Hinge ── */}
         <div
           style={{
-            width: "min(90vw, 1310px)",
+            width: "clamp(620px, 90vw, 1310px)",
             height: 8,
             background: "linear-gradient(180deg, #3a3a3e 0%, #2a2a2e 50%, #222226 100%)",
             borderRadius: "0 0 2px 2px",
@@ -87,7 +85,7 @@ export default function MacBookFrame({ children }) {
         <div
           className="relative"
           style={{
-            width: "min(96vw, 1400px)",
+            width: "clamp(660px, 96vw, 1400px)",
             height: 12,
             background: "linear-gradient(180deg, #6e6e72 0%, #5a5a5e 40%, #4a4a4e 100%)",
             borderRadius: "0 0 10px 10px",
