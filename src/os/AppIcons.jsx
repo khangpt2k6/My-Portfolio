@@ -19,7 +19,7 @@ function ImgIcon({ src, alt, size = 52 }) {
 /* ── Image-based icons ── */
 
 export function AboutIcon({ size = 52 }) {
-  return <ImgIcon src="/about_me.jpg" alt="About Me" size={size} />;
+  return <ImgIcon src="/finder.webp" alt="About Me" size={size} />;
 }
 
 export function ProjectsIcon({ size = 52 }) {
@@ -47,7 +47,7 @@ export function TerminalIcon({ size = 52 }) {
 }
 
 export function LabIcon({ size = 52 }) {
-  return <ImgIcon src="/rare-lab.jpg" alt="Lab" size={size} />;
+  return <ImgIcon src="/lab.webp" alt="Lab" size={size} />;
 }
 
 export function MusicIcon({ size = 52 }) {
