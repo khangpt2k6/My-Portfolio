@@ -164,7 +164,7 @@ export default function MenuBar() {
 
       {/* Right */}
       <div className="flex items-center gap-3">
-        <div style={{ transform: "scale(1.4)", transformOrigin: "center" }}>
+        <div style={{ transform: "scale(0.9)", transformOrigin: "center" }}>
           <ThemeToggle isDark={isDark} onToggle={toggleTheme} />
         </div>
         <Wifi className="w-[15px] h-[15px] opacity-60" />
