@@ -26,8 +26,7 @@ export default function SettingsApp() {
   const [accent, setAccent] = useState(() => localStorage.getItem("accent-color") || "Indigo");
   const [cursor, setCursor] = useState(() => localStorage.getItem("cursor-style") || "ring");
   const [wallpaper, setWallpaper] = useState(() => localStorage.getItem("wallpaper") || "dynamic");
-
-  const isDark = document.documentElement.classList.contains("dark");
+  const [isDark, setIsDark] = useState(() => document.documentElement.classList.contains("dark"));
 
   const applyAccent = (name) => {
     setAccent(name);
@@ -55,6 +54,7 @@ export default function SettingsApp() {
 
   const toggleTheme = () => {
     document.documentElement.classList.toggle("dark");
+    setIsDark((prev) => !prev);
   };
 
   return (

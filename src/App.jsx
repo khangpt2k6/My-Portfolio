@@ -1,10 +1,11 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, lazy, Suspense } from "react"
+import { AnimatePresence } from "framer-motion"
 import StarfieldBg from "./components/backgrounds/StarfieldBg"
 import AuroraBg from "./components/backgrounds/AuroraBg"
 import CustomCursor from "./components/ui/CustomCursor"
-import { WindowProvider, useWindows } from "./os/WindowContext"
+import { WindowProvider } from "./os/WindowContext"
 import Window from "./os/Window"
 import Desktop from "./os/Desktop"
 import Dock from "./os/Dock"
@@ -12,6 +13,8 @@ import MenuBar from "./os/MenuBar"
 import BootScreen from "./os/BootScreen"
 import MacBookFrame from "./os/MacBookFrame"
 import MobileOS from "./os/MobileOS"
+import ModePicker from "./components/ModePicker"
+import ModeSwitchButton from "./components/ModeSwitchButton"
 import apps from "./data/apps"
 
 // ── App components ──
@@ -26,6 +29,8 @@ import LabApp from "./apps/LabApp"
 import MusicApp from "./apps/MusicApp"
 import SettingsApp from "./apps/SettingsApp"
 import ResumeApp from "./apps/ResumeApp"
+
+const WebPortfolio = lazy(() => import("./components/WebPortfolio"))
 
 const appComponents = {
   about: AboutApp,
@@ -118,8 +123,8 @@ function DesktopScreen() {
   )
 }
 
-// ── Main App ──
-function App() {
+// ── Desktop OS mode (with boot + frame) ──
+function DesktopMode() {
   const [booted, setBooted] = useState(false)
   const isMobile = useIsMobile()
 
@@ -150,6 +155,48 @@ function App() {
         )}
       </div>
     </WindowProvider>
+  )
+}
+
+// ── Main App ──
+function App() {
+  const [mode, setMode] = useState(() => {
+    return localStorage.getItem("portfolio-mode") || null
+  })
+
+  const handleSelectMode = (selected) => {
+    localStorage.setItem("portfolio-mode", selected)
+    setMode(selected)
+  }
+
+  const handleSwitch = () => {
+    const next = mode === "desktop" ? "web" : "desktop"
+    localStorage.setItem("portfolio-mode", next)
+    // Clear boot session so desktop re-boots on switch back
+    if (next === "web") sessionStorage.removeItem("os-booted")
+    setMode(next)
+  }
+
+  return (
+    <>
+      <AnimatePresence mode="wait">
+        {!mode && <ModePicker key="picker" onSelect={handleSelectMode} />}
+      </AnimatePresence>
+
+      {mode === "desktop" && <DesktopMode />}
+
+      {mode === "web" && (
+        <Suspense fallback={
+          <div className="fixed inset-0 flex items-center justify-center" style={{ background: "#0a0a14" }}>
+            <div className="w-8 h-8 border-2 border-[var(--color-primary)] border-t-transparent rounded-full animate-spin" />
+          </div>
+        }>
+          <WebPortfolio />
+        </Suspense>
+      )}
+
+      {mode && <ModeSwitchButton currentMode={mode} onSwitch={handleSwitch} />}
+    </>
   )
 }
 
