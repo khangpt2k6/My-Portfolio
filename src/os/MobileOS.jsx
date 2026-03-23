@@ -114,15 +114,15 @@ export default function MobileOS() {
         {activeApp && AppComponent && (
           <motion.div
             className="fixed inset-0 z-50 flex flex-col"
-            style={{ background: "var(--color-surface)" }}
+            style={{ background: "var(--window-bg)" }}
             initial={{ scale: 0.9, opacity: 0, borderRadius: "20px" }}
             animate={{ scale: 1, opacity: 1, borderRadius: "0px" }}
             exit={{ scale: 0.9, opacity: 0, borderRadius: "20px" }}
             transition={{ type: "spring", stiffness: 350, damping: 30 }}
           >
             {/* App header */}
-            <div className="flex items-center gap-3 px-4 py-3 border-b border-[var(--glass-border)]"
-              style={{ background: "var(--glass-bg)", backdropFilter: "blur(20px)" }}>
+            <div className="flex items-center gap-3 px-4 py-3 border-b border-[var(--color-border)]"
+              style={{ background: "var(--window-bg)" }}>
               <button onClick={closeApp} className="flex items-center gap-1 text-[var(--color-primary)]">
                 <ChevronLeft className="w-5 h-5" />
                 <span className="text-sm font-medium">Back</span>

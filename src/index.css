@@ -33,6 +33,9 @@
   --shadow-card:       0 1px 3px rgba(0,0,0,0.04), 0 4px 16px rgba(0,0,0,0.06);
   --shadow-card-hover: 0 8px 30px rgba(var(--color-primary-rgb),0.12), 0 16px 40px rgba(0,0,0,0.08);
   --shadow-elevated:   0 12px 40px rgba(var(--color-primary-rgb),0.15), 0 24px 56px rgba(0,0,0,0.10);
+
+  /* OS window background — solid, no transparency */
+  --window-bg: #F0F0F0;
 }
 
 /* ══════════════════════════════════════════════════════════
@@ -60,6 +63,8 @@
   --shadow-card:       0 1px 3px rgba(0,0,0,0.4), 0 4px 16px rgba(var(--color-primary-rgb),0.06);
   --shadow-card-hover: 0 8px 30px rgba(var(--color-primary-rgb),0.2), 0 16px 40px rgba(0,0,0,0.4);
   --shadow-elevated:   0 12px 40px rgba(var(--color-primary-rgb),0.25), 0 24px 56px rgba(0,0,0,0.5);
+
+  --window-bg: #1C1C1E;
 }
 
 html {
@@ -68,32 +73,11 @@ html {
 
 /* ── Window content scaling ──
    Pages were designed for full-viewport. Inside macOS windows,
-   scale them down so they fit without horizontal overflow. */
+   use CSS zoom to proportionally shrink everything to fit. */
 .window-content {
-  font-size: 0.85em;
+  zoom: 0.75;
 }
-.window-content section {
-  padding-left: 1rem !important;
-  padding-right: 1rem !important;
-  max-width: 100% !important;
-}
-.window-content .max-w-5xl,
-.window-content .max-w-6xl,
-.window-content .max-w-7xl {
-  max-width: 100% !important;
-}
-.window-content .text-4xl { font-size: 1.5rem !important; }
-.window-content .text-5xl { font-size: 1.75rem !important; }
-.window-content .text-6xl { font-size: 2rem !important; }
-.window-content .md\:text-5xl { font-size: 1.75rem !important; }
-.window-content .lg\:text-6xl { font-size: 2rem !important; }
 .window-content .min-h-screen { min-height: auto !important; }
-.window-content .pb-16 { padding-bottom: 1rem !important; }
-.window-content .pb-28 { padding-bottom: 1.5rem !important; }
-.window-content .pt-20 { padding-top: 1rem !important; }
-.window-content .pt-24 { padding-top: 1rem !important; }
-.window-content .mb-14 { margin-bottom: 0.75rem !important; }
-.window-content .mb-16 { margin-bottom: 1rem !important; }
 
 /* ── Hero Gradient Animation ── */
 @keyframes gradient-shift {

@@ -132,14 +132,14 @@ export default function Window({ id, title, children }) {
                 ? "shadow-[0_12px_60px_rgba(0,0,0,0.25)]"
                 : "shadow-[0_4px_24px_rgba(0,0,0,0.12)]"
               }`}
-            style={{ background: "var(--glass-bg)", backdropFilter: "blur(40px)" }}
+            style={{ background: "var(--window-bg)" }}
           >
             {/* ── Title bar ── */}
             <div
               className="flex items-center h-9 px-3 shrink-0 cursor-grab active:cursor-grabbing"
               style={{
-                background: "linear-gradient(180deg, rgba(var(--color-primary-rgb),0.06), rgba(var(--color-primary-rgb),0.02))",
-                borderBottom: "1px solid var(--glass-border)",
+                background: "var(--window-bg)",
+                borderBottom: "1px solid var(--color-border)",
               }}
               onMouseDown={onDragStart}
               onDoubleClick={() => maximizeApp(id)}
@@ -195,7 +195,7 @@ export default function Window({ id, title, children }) {
             </div>
 
             {/* ── Content ── */}
-            <div className="flex-1 overflow-auto window-content" style={{ background: "var(--color-surface)" }}>
+            <div className="flex-1 overflow-auto window-content" style={{ background: "var(--window-bg)" }}>
               {children}
             </div>
           </div>
