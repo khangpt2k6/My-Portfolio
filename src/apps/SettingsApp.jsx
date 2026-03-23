@@ -1,7 +1,17 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Palette, MousePointer, Monitor, Check } from "lucide-react";
+import { Palette, MousePointer, Monitor, Image, Check } from "lucide-react";
 import { CURSOR_STYLES } from "../components/ui/CustomCursor";
+
+const WALLPAPERS = [
+  { id: "dynamic", name: "Dynamic", src: null },
+  { id: "bV6xf3", name: "Mountain", src: "/desktop_background/bV6xf3.webp" },
+  { id: "sea", name: "Sea", src: "/desktop_background/colourful-textured-background-desktop-sea-600nw-2432936989.webp" },
+  { id: "icH5Aj", name: "Aurora", src: "/desktop_background/icH5Aj.webp" },
+  { id: "lake", name: "Lakeside", src: "/desktop_background/lake-side-trees-live-desktop-jwhxpov3u0jdebb0.jpg" },
+  { id: "nature", name: "Nature", src: "/desktop_background/nature-background-high-resolution-wallpaper-for-a-serene-and-stunning-view-free-photo.jpg" },
+  { id: "landscape", name: "Landscape", src: "/desktop_background/stunning-high-resolution-nature-and-landscape-backgrounds-breathtaking-scenery-in-hd-free-photo.jpg" },
+];
 
 const ACCENT_COLORS = [
   { name: "Indigo", light: "#6366F1", dark: "#818CF8", rgbLight: "99, 102, 241", rgbDark: "129, 140, 248" },
@@ -15,6 +25,7 @@ const ACCENT_COLORS = [
 export default function SettingsApp() {
   const [accent, setAccent] = useState(() => localStorage.getItem("accent-color") || "Indigo");
   const [cursor, setCursor] = useState(() => localStorage.getItem("cursor-style") || "ring");
+  const [wallpaper, setWallpaper] = useState(() => localStorage.getItem("wallpaper") || "dynamic");
 
   const isDark = document.documentElement.classList.contains("dark");
 
@@ -34,6 +45,12 @@ export default function SettingsApp() {
     setCursor(style);
     localStorage.setItem("cursor-style", style);
     window.dispatchEvent(new Event("storage"));
+  };
+
+  const applyWallpaper = (id) => {
+    setWallpaper(id);
+    localStorage.setItem("wallpaper", id);
+    window.dispatchEvent(new Event("wallpaper-change"));
   };
 
   const toggleTheme = () => {
@@ -65,6 +82,57 @@ export default function SettingsApp() {
             <div className="w-16 h-10 rounded-lg bg-gray-900 border border-gray-700" />
             <span className="text-xs font-medium text-[var(--color-text)]">Dark</span>
           </button>
+        </div>
+      </section>
+
+      {/* Wallpaper */}
+      <section>
+        <div className="flex items-center gap-2 mb-4">
+          <Image className="w-5 h-5 text-[var(--color-primary)]" />
+          <h3 className="text-lg font-bold text-[var(--color-text)]">Wallpaper</h3>
+        </div>
+        <div className="grid grid-cols-3 gap-3">
+          {WALLPAPERS.map((wp) => (
+            <button
+              key={wp.id}
+              onClick={() => applyWallpaper(wp.id)}
+              className={`relative rounded-xl overflow-hidden border-2 transition-all hover:scale-[1.03]
+                ${wallpaper === wp.id
+                  ? "border-[var(--color-primary)] shadow-[0_0_12px_rgba(var(--color-primary-rgb),0.4)]"
+                  : "border-transparent"
+                }`}
+            >
+              <div className="aspect-[16/10] w-full">
+                {wp.src ? (
+                  <img
+                    src={wp.src}
+                    alt={wp.name}
+                    className="w-full h-full object-cover"
+                    loading="lazy"
+                  />
+                ) : (
+                  <div
+                    className="w-full h-full"
+                    style={{
+                      background: "linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%)",
+                    }}
+                  >
+                    <div className="w-full h-full flex items-center justify-center">
+                      <span className="text-[10px] text-white/50 font-medium">Dynamic</span>
+                    </div>
+                  </div>
+                )}
+              </div>
+              {wallpaper === wp.id && (
+                <div className="absolute top-1 right-1 w-5 h-5 rounded-full bg-[var(--color-primary)] flex items-center justify-center">
+                  <Check className="w-3 h-3 text-white" />
+                </div>
+              )}
+              <div className="absolute bottom-0 inset-x-0 py-1 text-center text-[10px] font-medium text-white bg-black/40 backdrop-blur-sm">
+                {wp.name}
+              </div>
+            </button>
+          ))}
         </div>
       </section>
 

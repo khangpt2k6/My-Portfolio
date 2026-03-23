@@ -56,13 +56,48 @@ function useIsMobile(breakpoint = 768) {
   return mobile
 }
 
+// ── Wallpaper hook ──
+function useWallpaper() {
+  const [wp, setWp] = useState(() => localStorage.getItem("wallpaper") || "dynamic")
+  useEffect(() => {
+    const handler = () => setWp(localStorage.getItem("wallpaper") || "dynamic")
+    window.addEventListener("wallpaper-change", handler)
+    return () => window.removeEventListener("wallpaper-change", handler)
+  }, [])
+  return wp
+}
+
 // ── Desktop OS (rendered inside MacBook screen) ──
 function DesktopScreen() {
+  const wallpaperId = useWallpaper()
+  const wallpaperSrc = wallpaperId !== "dynamic"
+    ? (() => {
+        const map = {
+          bV6xf3: "/desktop_background/bV6xf3.webp",
+          sea: "/desktop_background/colourful-textured-background-desktop-sea-600nw-2432936989.webp",
+          icH5Aj: "/desktop_background/icH5Aj.webp",
+          lake: "/desktop_background/lake-side-trees-live-desktop-jwhxpov3u0jdebb0.jpg",
+          nature: "/desktop_background/nature-background-high-resolution-wallpaper-for-a-serene-and-stunning-view-free-photo.jpg",
+          landscape: "/desktop_background/stunning-high-resolution-nature-and-landscape-backgrounds-breathtaking-scenery-in-hd-free-photo.jpg",
+        }
+        return map[wallpaperId] || null
+      })()
+    : null
+
   return (
     <div id="macbook-screen" className="relative w-full h-full overflow-hidden bg-white dark:bg-transparent">
-      {/* Wallpaper backgrounds — inside the MacBook screen */}
-      <StarfieldBg />
-      <AuroraBg />
+      {/* Wallpaper — static image or animated backgrounds */}
+      {wallpaperSrc ? (
+        <div
+          className="absolute inset-0 bg-cover bg-center"
+          style={{ backgroundImage: `url(${wallpaperSrc})` }}
+        />
+      ) : (
+        <>
+          <StarfieldBg />
+          <AuroraBg />
+        </>
+      )}
 
       <MenuBar />
       <Desktop />
