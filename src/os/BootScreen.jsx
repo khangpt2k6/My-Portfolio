@@ -343,68 +343,73 @@ export default function BootScreen({ onComplete }) {
           </div>
         </motion.div>
 
-        {/* ── Hinge ── */}
-        <div
-          style={{
-            width: 540,
-            height: 8,
-            background: "linear-gradient(180deg, #3a3a3e 0%, #2a2a2e 50%, #222226 100%)",
-            borderRadius: "0 0 2px 2px",
-            boxShadow: "0 2px 6px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05)",
-          }}
-        />
+        {/* ── Hinge + Base assembly ── */}
+        <div className="relative flex flex-col items-center">
+          {/* Hinge */}
+          <div
+            style={{
+              width: 540,
+              height: 8,
+              background: "linear-gradient(180deg, #3a3a3e 0%, #2a2a2e 50%, #222226 100%)",
+              borderRadius: "0 0 2px 2px",
+              boxShadow: "0 2px 6px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05)",
+            }}
+          />
 
-        {/* ── Keyboard Surface (perspective deck) ── */}
-        <div
-          style={{
-            width: 520,
-            height: 340,
-            background: "linear-gradient(180deg, #2a2a2e 0%, #1a1a1e 100%)",
-            borderRadius: "0 0 4px 4px",
-            transformOrigin: "top center",
-            transform: "rotateX(-85deg)",
-            boxShadow: "inset 0 0 40px rgba(0,0,0,0.5)",
-          }}
-        >
-          {/* Keyboard grid suggestion */}
-          <div className="absolute inset-4 grid grid-cols-14 grid-rows-5 gap-[3px] opacity-20">
-            {Array.from({ length: 60 }).map((_, i) => (
-              <div key={i} className="rounded-sm bg-white/10" />
-            ))}
+          {/* Keyboard Surface — absolutely positioned so it doesn't affect centering */}
+          <div
+            className="absolute left-1/2 -translate-x-1/2"
+            style={{
+              top: 0,
+              width: 520,
+              height: 340,
+              background: "linear-gradient(180deg, #2a2a2e 0%, #1a1a1e 100%)",
+              borderRadius: "0 0 4px 4px",
+              transformOrigin: "top center",
+              transform: "rotateX(-85deg)",
+              boxShadow: "inset 0 0 40px rgba(0,0,0,0.5)",
+            }}
+          >
+            {/* Keyboard grid suggestion */}
+            <div className="absolute inset-4 grid grid-cols-14 grid-rows-5 gap-[3px] opacity-20">
+              {Array.from({ length: 60 }).map((_, i) => (
+                <div key={i} className="rounded-sm bg-white/10" />
+              ))}
+            </div>
+            {/* Trackpad */}
+            <div
+              className="absolute bottom-4 left-1/2 -translate-x-1/2 rounded-lg"
+              style={{
+                width: 160,
+                height: 100,
+                background: "rgba(255,255,255,0.04)",
+                border: "1px solid rgba(255,255,255,0.06)",
+              }}
+            />
           </div>
-          {/* Trackpad */}
-          <div
-            className="absolute bottom-4 left-1/2 -translate-x-1/2 rounded-lg"
-            style={{
-              width: 160,
-              height: 100,
-              background: "rgba(255,255,255,0.04)",
-              border: "1px solid rgba(255,255,255,0.06)",
-            }}
-          />
-        </div>
 
-        {/* ── Base (front edge) ── */}
-        <div
-          style={{
-            width: 560,
-            height: 14,
-            background: "linear-gradient(180deg, #8a8a8e 0%, #6e6e72 40%, #4a4a4e 100%)",
-            borderRadius: "0 0 12px 12px",
-            boxShadow: "0 6px 40px rgba(0,0,0,0.5), 0 1px 0 rgba(255,255,255,0.05) inset",
-            marginTop: -1,
-          }}
-        >
-          {/* Front lip notch */}
+          {/* Base (front edge) */}
           <div
-            className="absolute left-1/2 -translate-x-1/2 top-0"
+            className="relative"
             style={{
-              width: 60,
-              height: 4,
-              borderRadius: "0 0 6px 6px",
-              background: "rgba(255,255,255,0.06)",
+              width: 560,
+              height: 14,
+              background: "linear-gradient(180deg, #8a8a8e 0%, #6e6e72 40%, #4a4a4e 100%)",
+              borderRadius: "0 0 12px 12px",
+              boxShadow: "0 6px 40px rgba(0,0,0,0.5), 0 1px 0 rgba(255,255,255,0.05) inset",
             }}
-          />
+          >
+            {/* Front lip notch */}
+            <div
+              className="absolute left-1/2 -translate-x-1/2 top-0"
+              style={{
+                width: 60,
+                height: 4,
+                borderRadius: "0 0 6px 6px",
+                background: "rgba(255,255,255,0.06)",
+              }}
+            />
+          </div>
         </div>
       </motion.div>
 
