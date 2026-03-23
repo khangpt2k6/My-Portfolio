@@ -310,7 +310,7 @@ const Navbar = () => {
                 ref={paletteBtnRef}
                 onClick={() => setPaletteOpen((p) => !p)}
                 whileTap={{ scale: 0.9 }}
-                className="relative flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[var(--color-surface2)] border border-[var(--color-border)] backdrop-blur-xl transition-colors duration-200"
+                className="relative flex items-center gap-1.5 px-3 py-1.5 rounded-full hover:bg-[var(--color-text)]/8 transition-colors duration-200 cursor-pointer"
                 style={{ color: paletteOpen ? "var(--color-primary)" : "var(--color-text)" }}
                 aria-label="Customize colors"
               >
