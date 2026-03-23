@@ -3,9 +3,9 @@ import { motion, AnimatePresence, useMotionValue, useTransform, useSpring } from
 import apps from "../data/apps";
 import { useWindows } from "./WindowContext";
 
-const BASE_SIZE = 52;
-const MAX_ADDITION = 28; // extra px at peak magnification
-const DISTANCE = 180; // px range of magnification effect
+const BASE_SIZE = 40;
+const MAX_ADDITION = 20; // extra px at peak magnification
+const DISTANCE = 140; // px range of magnification effect
 
 function DockIcon({ app, mouseX, dockLeft, index }) {
   const { windows, openApp, focusApp, minimizeApp } = useWindows();

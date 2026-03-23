@@ -16,6 +16,14 @@ export default function Window({ id, title, children }) {
   const winRef = useRef(null);
   const [hoverBtn, setHoverBtn] = useState(false);
 
+  /* ── Get screen container offset ── */
+  const getScreenOffset = () => {
+    const el = document.getElementById("macbook-screen");
+    if (!el) return { x: 0, y: 0 };
+    const rect = el.getBoundingClientRect();
+    return { x: rect.left, y: rect.top };
+  };
+
   /* ── Drag logic ── */
   const onDragStart = useCallback(
     (e) => {
@@ -23,13 +31,15 @@ export default function Window({ id, title, children }) {
       e.preventDefault();
       focusApp(id);
 
-      const startX = e.clientX - win.position.x;
-      const startY = e.clientY - win.position.y;
+      const offset = getScreenOffset();
+      const startX = e.clientX - offset.x - win.position.x;
+      const startY = e.clientY - offset.y - win.position.y;
 
       const onMove = (ev) => {
+        const off = getScreenOffset();
         moveApp(id, {
-          x: Math.max(0, ev.clientX - startX),
-          y: Math.max(28, ev.clientY - startY),
+          x: Math.max(0, ev.clientX - off.x - startX),
+          y: Math.max(28, ev.clientY - off.y - startY),
         });
       };
       const onUp = () => {
@@ -60,6 +70,9 @@ export default function Window({ id, title, children }) {
       const onMove = (ev) => {
         const dx = ev.clientX - startX;
         const dy = ev.clientY - startY;
+        const screen = document.getElementById("macbook-screen");
+        const maxW = screen ? screen.offsetWidth - 20 : 1200;
+        const maxH = screen ? screen.offsetHeight - 40 : 700;
         let newW = startW, newH = startH, newX = startPosX, newY = startPosY;
 
         if (direction.includes("e")) newW = Math.max(MIN_W, startW + dx);
