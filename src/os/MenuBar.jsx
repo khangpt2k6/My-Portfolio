@@ -1,9 +1,56 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Wifi, Battery, Search } from "lucide-react";
+import { Wifi, Search } from "lucide-react";
 import { useWindows } from "./WindowContext";
 import apps from "../data/apps";
 import ThemeToggle from "../components/ui/ThemeToggle";
+
+function useBattery() {
+  const [battery, setBattery] = useState({ level: 1, charging: false, supported: false });
+  useEffect(() => {
+    let batt = null;
+    const update = () => {
+      if (batt) setBattery({ level: batt.level, charging: batt.charging, supported: true });
+    };
+    if (navigator.getBattery) {
+      navigator.getBattery().then((b) => {
+        batt = b;
+        update();
+        b.addEventListener("levelchange", update);
+        b.addEventListener("chargingchange", update);
+      });
+    }
+    return () => {
+      if (batt) {
+        batt.removeEventListener("levelchange", update);
+        batt.removeEventListener("chargingchange", update);
+      }
+    };
+  }, []);
+  return battery;
+}
+
+function BatteryIcon({ level, charging }) {
+  const pct = Math.round(level * 100);
+  const fill = pct <= 20 ? "#EF4444" : pct <= 50 ? "#FBBF24" : "#34D399";
+  return (
+    <div className="flex items-center gap-1 opacity-70">
+      <svg width="20" height="11" viewBox="0 0 20 11" fill="none">
+        {/* Battery body */}
+        <rect x="0.5" y="0.5" width="16" height="10" rx="2" stroke="currentColor" strokeWidth="1" fill="none" />
+        {/* Battery tip */}
+        <rect x="17" y="3" width="2.5" height="5" rx="1" fill="currentColor" opacity="0.4" />
+        {/* Fill level */}
+        <rect x="2" y="2" width={Math.max(0, 13 * level)} height="7" rx="1" fill={fill} />
+        {/* Charging bolt */}
+        {charging && (
+          <path d="M9 1.5L6.5 5.5H9L8 9.5L11.5 5H9L9 1.5Z" fill="currentColor" />
+        )}
+      </svg>
+      <span className="text-[10px] font-medium">{pct}%</span>
+    </div>
+  );
+}
 
 function Clock() {
   const [time, setTime] = useState(new Date());
@@ -42,6 +89,7 @@ export default function MenuBar() {
     setIsDark((d) => !d);
   };
 
+  const battery = useBattery();
   const activeApp = apps.find((a) => a.id === focusedWindow);
 
   return (
@@ -118,7 +166,7 @@ export default function MenuBar() {
       <div className="flex items-center gap-3">
         <ThemeToggle isDark={isDark} onToggle={toggleTheme} />
         <Wifi className="w-[15px] h-[15px] opacity-60" />
-        <Battery className="w-[17px] h-[17px] opacity-60" />
+        <BatteryIcon level={battery.level} charging={battery.charging} />
         <Clock />
       </div>
     </motion.div>

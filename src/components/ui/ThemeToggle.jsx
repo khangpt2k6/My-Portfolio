@@ -10,7 +10,7 @@ const ThemeToggle = ({ isDark, onToggle }) => {
       onClick={onToggle}
       aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
       className="relative flex items-center justify-center rounded-full bg-[var(--color-surface2)] border border-[var(--color-border)] backdrop-blur-xl cursor-pointer overflow-hidden"
-      style={{ width: 44, height: 30, padding: 3 }}
+      style={{ width: 32, height: 18, padding: 2 }}
       whileTap={{ scale: 0.9 }}
     >
       {/* Background scene — sky/night gradient */}
@@ -34,24 +34,24 @@ const ThemeToggle = ({ isDark, onToggle }) => {
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0 }}
               transition={{ delay: 0.15, duration: 0.3 }}
-              className="absolute w-[3px] h-[3px] rounded-full bg-white/80"
-              style={{ top: 6, left: 7 }}
+              className="absolute w-[2px] h-[2px] rounded-full bg-white/80"
+              style={{ top: 3, left: 5 }}
             />
             <motion.div
               initial={{ opacity: 0, scale: 0 }}
               animate={{ opacity: 0.6, scale: 1 }}
               exit={{ opacity: 0, scale: 0 }}
               transition={{ delay: 0.25, duration: 0.3 }}
-              className="absolute w-[2px] h-[2px] rounded-full bg-white/60"
-              style={{ top: 19, left: 12 }}
+              className="absolute w-[1.5px] h-[1.5px] rounded-full bg-white/60"
+              style={{ top: 12, left: 8 }}
             />
             <motion.div
               initial={{ opacity: 0, scale: 0 }}
               animate={{ opacity: 0.4, scale: 1 }}
               exit={{ opacity: 0, scale: 0 }}
               transition={{ delay: 0.3, duration: 0.3 }}
-              className="absolute w-[2px] h-[2px] rounded-full bg-white/50"
-              style={{ top: 8, left: 18 }}
+              className="absolute w-[1.5px] h-[1.5px] rounded-full bg-white/50"
+              style={{ top: 5, left: 12 }}
             />
           </>
         )}
@@ -61,7 +61,7 @@ const ThemeToggle = ({ isDark, onToggle }) => {
       <motion.div
         className="absolute flex items-center justify-center"
         animate={{
-          left: isDark ? 21 : 3,
+          left: isDark ? 16 : 2,
         }}
         transition={{
           type: "spring",
@@ -70,9 +70,9 @@ const ThemeToggle = ({ isDark, onToggle }) => {
           mass: 0.7,
         }}
         style={{
-          width: 22,
-          height: 22,
-          top: 3,
+          width: 14,
+          height: 14,
+          top: 2,
           borderRadius: "50%",
         }}
       >
