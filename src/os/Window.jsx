@@ -136,7 +136,7 @@ export default function Window({ id, title, children }) {
           >
             {/* ── Title bar ── */}
             <div
-              className="flex items-center h-12 px-4 shrink-0 cursor-grab active:cursor-grabbing"
+              className="flex items-center h-9 px-3 shrink-0 cursor-grab active:cursor-grabbing"
               style={{
                 background: "linear-gradient(180deg, rgba(var(--color-primary-rgb),0.06), rgba(var(--color-primary-rgb),0.02))",
                 borderBottom: "1px solid var(--glass-border)",
@@ -152,7 +152,7 @@ export default function Window({ id, title, children }) {
               >
                 <button
                   className="w-3 h-3 rounded-full flex items-center justify-center transition-colors"
-                  style={{ background: isFocused ? "#FF5F57" : "#6b6b6b" }}
+                  style={{ background: "#FF5F57" }}
                   onClick={(e) => { e.stopPropagation(); closeApp(id); }}
                   onMouseDown={(e) => e.stopPropagation()}
                 >
@@ -164,7 +164,7 @@ export default function Window({ id, title, children }) {
                 </button>
                 <button
                   className="w-3 h-3 rounded-full flex items-center justify-center transition-colors"
-                  style={{ background: isFocused ? "#FEBC2E" : "#6b6b6b" }}
+                  style={{ background: "#FEBC2E" }}
                   onClick={(e) => { e.stopPropagation(); minimizeApp(id); }}
                   onMouseDown={(e) => e.stopPropagation()}
                 >
@@ -176,7 +176,7 @@ export default function Window({ id, title, children }) {
                 </button>
                 <button
                   className="w-3 h-3 rounded-full flex items-center justify-center transition-colors"
-                  style={{ background: isFocused ? "#28C840" : "#6b6b6b" }}
+                  style={{ background: "#28C840" }}
                   onClick={(e) => { e.stopPropagation(); maximizeApp(id); }}
                   onMouseDown={(e) => e.stopPropagation()}
                 >
