@@ -79,17 +79,34 @@ export default function MusicApp() {
 
       {/* Album art area */}
       <div
-        className="flex-1 flex items-center justify-center p-8"
+        className="flex-1 flex items-center justify-center p-6 relative overflow-hidden"
         style={{ background: track.gradient }}
       >
+        {/* Blurred background image */}
+        {track.image && (
+          <img
+            src={track.image}
+            alt=""
+            className="absolute inset-0 w-full h-full object-cover blur-2xl scale-110 opacity-60"
+          />
+        )}
         <motion.div
-          className="w-48 h-48 rounded-full border-4 border-white/20 shadow-2xl
-                     flex items-center justify-center bg-black/20 backdrop-blur-sm"
-          animate={{ rotate: playing ? 360 : 0 }}
-          transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
-          key={playing ? "spin" : "stop"}
+          className="relative w-44 h-44 rounded-2xl shadow-2xl overflow-hidden
+                     border-2 border-white/15"
+          animate={{ scale: playing ? [1, 1.02, 1] : 1 }}
+          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
         >
-          <Volume2 className="w-12 h-12 text-white/60" />
+          {track.image ? (
+            <img
+              src={track.image}
+              alt={track.title}
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center bg-black/20 backdrop-blur-sm">
+              <Volume2 className="w-12 h-12 text-white/60" />
+            </div>
+          )}
         </motion.div>
       </div>
 
@@ -144,7 +161,13 @@ export default function MusicApp() {
               ${i === current ? "text-[var(--color-primary)]" : "text-[var(--color-text)]"}`}
             onClick={() => { setCurrent(i); setPlaying(true); }}
           >
-            <span className="text-xs w-5 text-center">{i + 1}</span>
+            <div className="w-8 h-8 rounded shrink-0 overflow-hidden">
+              {t.image ? (
+                <img src={t.image} alt={t.title} className="w-full h-full object-cover" />
+              ) : (
+                <div className="w-full h-full rounded" style={{ background: t.gradient }} />
+              )}
+            </div>
             <div className="flex-1 min-w-0">
               <div className="text-sm font-medium truncate">{t.title}</div>
               <div className="text-xs text-[var(--color-text-muted)] truncate">{t.artist}</div>
