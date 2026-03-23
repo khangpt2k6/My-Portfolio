@@ -1,18 +1,17 @@
 /**
  * App Registry — single source of truth for all desktop apps
- * Window sizes scaled to fit inside MacBook screen (~1280x800)
+ * Uses custom macOS-style SVG icons from AppIcons.jsx
  */
 import {
-  User, FolderOpen, Briefcase, Zap, Mail,
-  Terminal, FlaskConical, Settings, Music, FileText, GraduationCap,
-} from "lucide-react";
+  AboutIcon, ProjectsIcon, ExperienceIcon, SkillsIcon, MailIcon,
+  TerminalIcon, LabIcon, SettingsIcon, MusicIcon, ResumeIcon, EducationIcon,
+} from "../os/AppIcons";
 
 const apps = [
   {
     id: "about",
     title: "About Me",
-    icon: User,
-    color: "#6366F1",
+    IconComponent: AboutIcon,
     defaultSize: { w: 580, h: 400 },
     dockOrder: 1,
     desktopRow: 0,
@@ -21,8 +20,7 @@ const apps = [
   {
     id: "projects",
     title: "Projects",
-    icon: FolderOpen,
-    color: "#06B6D4",
+    IconComponent: ProjectsIcon,
     defaultSize: { w: 700, h: 480 },
     dockOrder: 2,
     desktopRow: 1,
@@ -31,8 +29,7 @@ const apps = [
   {
     id: "experience",
     title: "Experience",
-    icon: Briefcase,
-    color: "#F59E0B",
+    IconComponent: ExperienceIcon,
     defaultSize: { w: 640, h: 440 },
     dockOrder: 3,
     desktopRow: 2,
@@ -41,8 +38,7 @@ const apps = [
   {
     id: "skills",
     title: "Skills",
-    icon: Zap,
-    color: "#10B981",
+    IconComponent: SkillsIcon,
     defaultSize: { w: 660, h: 400 },
     dockOrder: 4,
     desktopRow: 3,
@@ -51,8 +47,7 @@ const apps = [
   {
     id: "contact",
     title: "Mail",
-    icon: Mail,
-    color: "#3B82F6",
+    IconComponent: MailIcon,
     defaultSize: { w: 500, h: 400 },
     dockOrder: 5,
     desktopRow: 4,
@@ -61,8 +56,7 @@ const apps = [
   {
     id: "education",
     title: "Education",
-    icon: GraduationCap,
-    color: "#8B5CF6",
+    IconComponent: EducationIcon,
     defaultSize: { w: 560, h: 400 },
     dockOrder: 6,
     desktopRow: 0,
@@ -71,8 +65,7 @@ const apps = [
   {
     id: "terminal",
     title: "Terminal",
-    icon: Terminal,
-    color: "#1E1E1E",
+    IconComponent: TerminalIcon,
     defaultSize: { w: 540, h: 360 },
     dockOrder: 7,
     desktopRow: 1,
@@ -81,8 +74,7 @@ const apps = [
   {
     id: "lab",
     title: "Lab",
-    icon: FlaskConical,
-    color: "#EC4899",
+    IconComponent: LabIcon,
     defaultSize: { w: 720, h: 500 },
     dockOrder: 8,
     desktopRow: 2,
@@ -91,8 +83,7 @@ const apps = [
   {
     id: "music",
     title: "Music",
-    icon: Music,
-    color: "#EF4444",
+    IconComponent: MusicIcon,
     defaultSize: { w: 340, h: 440 },
     dockOrder: 9,
     desktopRow: 3,
@@ -101,8 +92,7 @@ const apps = [
   {
     id: "settings",
     title: "Settings",
-    icon: Settings,
-    color: "#6B7280",
+    IconComponent: SettingsIcon,
     defaultSize: { w: 460, h: 380 },
     dockOrder: 10,
     desktopRow: 4,
@@ -111,8 +101,7 @@ const apps = [
   {
     id: "resume",
     title: "Resume",
-    icon: FileText,
-    color: "#F97316",
+    IconComponent: ResumeIcon,
     defaultSize: { w: 480, h: 520 },
     dockOrder: 11,
     desktopRow: 5,

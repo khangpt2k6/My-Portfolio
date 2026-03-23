@@ -10,7 +10,7 @@ const DISTANCE = 140; // px range of magnification effect
 function DockIcon({ app, mouseX, dockLeft, index }) {
   const { windows, openApp, focusApp, minimizeApp } = useWindows();
   const ref = useRef(null);
-  const Icon = app.icon;
+  const IconComponent = app.IconComponent;
   const win = windows[app.id];
   const isOpen = win?.isOpen;
   const [tooltip, setTooltip] = useState(false);
@@ -33,6 +33,12 @@ function DockIcon({ app, mouseX, dockLeft, index }) {
   }, [mouseX, size]);
 
   const springSize = useSpring(size, { stiffness: 300, damping: 22 });
+  const [currentSize, setCurrentSize] = useState(BASE_SIZE);
+
+  useEffect(() => {
+    const unsubSize = springSize.on("change", (v) => setCurrentSize(Math.round(v)));
+    return unsubSize;
+  }, [springSize]);
 
   const handleClick = () => {
     if (win?.isOpen && !win.isMinimized) {
@@ -74,24 +80,11 @@ function DockIcon({ app, mouseX, dockLeft, index }) {
       </AnimatePresence>
 
       <motion.button
-        className="w-full h-full rounded-[22%] flex items-center justify-center
-                   shadow-lg hover:shadow-xl transition-shadow relative overflow-hidden"
-        style={{
-          background: `linear-gradient(145deg, ${app.color}ee, ${app.color}bb)`,
-          boxShadow: `0 2px 8px ${app.color}40, 0 8px 24px rgba(0,0,0,0.3)`,
-        }}
+        className="w-full h-full flex items-center justify-center drop-shadow-lg hover:drop-shadow-xl transition-all"
         onClick={handleClick}
         whileTap={{ scale: 0.85 }}
       >
-        {/* Glossy reflection */}
-        <div
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            background: "linear-gradient(180deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0) 50%)",
-            borderRadius: "inherit",
-          }}
-        />
-        <Icon className="w-[50%] h-[50%] text-white relative z-10 drop-shadow-sm" strokeWidth={1.6} />
+        <IconComponent size={currentSize} />
       </motion.button>
 
       {/* Open indicator dot */}

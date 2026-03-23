@@ -66,7 +66,7 @@ export default function MobileOS() {
       <div className="flex-1 px-6 pt-4 pb-4 overflow-auto">
         <div className="grid grid-cols-4 gap-y-6 gap-x-4 justify-items-center">
           {apps.map((app, i) => {
-            const Icon = app.icon;
+            const IconComp = app.IconComponent;
             return (
               <motion.button
                 key={app.id}
@@ -77,11 +77,8 @@ export default function MobileOS() {
                 onClick={() => openApp(app.id)}
                 whileTap={{ scale: 0.9 }}
               >
-                <div
-                  className="w-14 h-14 rounded-[14px] flex items-center justify-center shadow-lg"
-                  style={{ background: app.color }}
-                >
-                  <Icon className="w-7 h-7 text-white" strokeWidth={1.8} />
+                <div className="w-14 h-14 drop-shadow-lg">
+                  <IconComp size={56} />
                 </div>
                 <span className="text-[10px] font-medium text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.6)]
                                line-clamp-1 max-w-[60px] text-center">
@@ -100,12 +97,11 @@ export default function MobileOS() {
           {DOCK_APPS.map((id) => {
             const app = apps.find((a) => a.id === id);
             if (!app) return null;
-            const Icon = app.icon;
+            const IconComp = app.IconComponent;
             return (
               <button key={id} onClick={() => openApp(id)} className="p-2">
-                <div className="w-12 h-12 rounded-[12px] flex items-center justify-center"
-                  style={{ background: app.color }}>
-                  <Icon className="w-6 h-6 text-white" strokeWidth={1.8} />
+                <div className="w-12 h-12 drop-shadow-lg">
+                  <IconComp size={48} />
                 </div>
               </button>
             );
