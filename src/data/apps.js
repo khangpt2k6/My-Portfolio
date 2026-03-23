@@ -4,7 +4,7 @@
  */
 import {
   AboutIcon, ProjectsIcon, ExperienceIcon, SkillsIcon, MailIcon,
-  TerminalIcon, LabIcon, SettingsIcon, MusicIcon, ResumeIcon, EducationIcon,
+  TerminalIcon, LabIcon, SettingsIcon, MusicIcon, ResumeIcon,
 } from "../os/AppIcons";
 
 const apps = [
@@ -54,21 +54,12 @@ const apps = [
     desktopCol: 0,
   },
   {
-    id: "education",
-    title: "Education",
-    IconComponent: EducationIcon,
-    defaultSize: { w: 500, h: 360 },
-    dockOrder: 6,
-    desktopRow: 0,
-    desktopCol: 1,
-  },
-  {
     id: "terminal",
     title: "Terminal",
     IconComponent: TerminalIcon,
     defaultSize: { w: 480, h: 320 },
-    dockOrder: 7,
-    desktopRow: 1,
+    dockOrder: 6,
+    desktopRow: 0,
     desktopCol: 1,
   },
   {
@@ -76,8 +67,8 @@ const apps = [
     title: "Lab",
     IconComponent: LabIcon,
     defaultSize: { w: 640, h: 440 },
-    dockOrder: 8,
-    desktopRow: 2,
+    dockOrder: 7,
+    desktopRow: 1,
     desktopCol: 1,
   },
   {
@@ -85,8 +76,8 @@ const apps = [
     title: "Music",
     IconComponent: MusicIcon,
     defaultSize: { w: 300, h: 400 },
-    dockOrder: 9,
-    desktopRow: 3,
+    dockOrder: 8,
+    desktopRow: 2,
     desktopCol: 1,
   },
   {
@@ -94,8 +85,8 @@ const apps = [
     title: "Settings",
     IconComponent: SettingsIcon,
     defaultSize: { w: 400, h: 340 },
-    dockOrder: 10,
-    desktopRow: 4,
+    dockOrder: 9,
+    desktopRow: 3,
     desktopCol: 1,
   },
   {
@@ -103,9 +94,9 @@ const apps = [
     title: "Resume",
     IconComponent: ResumeIcon,
     defaultSize: { w: 420, h: 440 },
-    dockOrder: 11,
-    desktopRow: 5,
-    desktopCol: 0,
+    dockOrder: 10,
+    desktopRow: 4,
+    desktopCol: 1,
   },
 ];
 

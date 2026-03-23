@@ -4,7 +4,7 @@ import { motion, useAnimation } from "framer-motion";
 /*
   3D MacBook Boot Sequence
   ────────────────────────
-  1. Dark scene → MacBook appears from slight angle
+  1. Dark scene → MacBook appears with dramatic 3D tilt
   2. Lid opens with satisfying animation
   3. Screen glows, shows KP logo + progress
   4. Login screen on MacBook display
@@ -73,12 +73,9 @@ export default function BootScreen({ onComplete }) {
     phase === "zoomIn" ? 0 : -8;
 
   /* Scene scale — zooms in during zoomIn phase */
-  const sceneScale =
-    phase === "zoomIn" ? 4.5 : 1;
+  const sceneScale = phase === "zoomIn" ? 4.5 : 1;
 
-  const sceneY =
-    phase === "zoomIn" ? "-38%" :
-    phase === "intro" ? "8%" : "0%";
+  const sceneY = phase === "zoomIn" ? "-38%" : "0%";
 
   /* Screen brightness */
   const screenOn = phase !== "intro";
@@ -86,23 +83,50 @@ export default function BootScreen({ onComplete }) {
   return (
     <motion.div
       className="fixed inset-0 z-[9990] flex items-center justify-center overflow-hidden select-none"
-      style={{ background: "#000", perspective: "1800px" }}
+      style={{
+        background: "radial-gradient(ellipse at 50% 60%, #111827 0%, #030712 60%, #000 100%)",
+        perspective: "1800px",
+      }}
       onClick={handleSkip}
       initial={{ opacity: 1 }}
       animate={{ opacity: phase === "zoomIn" ? 0 : 1 }}
       transition={{ duration: 1, delay: phase === "zoomIn" ? 0.8 : 0 }}
     >
+      {/* Star-like ambient particles */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {Array.from({ length: 40 }).map((_, i) => (
+          <motion.div
+            key={i}
+            className="absolute rounded-full bg-white"
+            style={{
+              width: Math.random() * 2 + 1,
+              height: Math.random() * 2 + 1,
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+              opacity: Math.random() * 0.3 + 0.05,
+            }}
+            animate={{ opacity: [0.05, 0.3, 0.05] }}
+            transition={{
+              duration: Math.random() * 3 + 2,
+              repeat: Infinity,
+              delay: Math.random() * 2,
+            }}
+          />
+        ))}
+      </div>
+
       {/* Ambient light glow behind MacBook */}
       <motion.div
         className="absolute rounded-full pointer-events-none"
         style={{
-          width: 600,
-          height: 300,
-          background: "radial-gradient(ellipse, rgba(var(--color-primary-rgb),0.15) 0%, transparent 70%)",
+          width: 800,
+          height: 400,
+          background: "radial-gradient(ellipse, rgba(var(--color-primary-rgb),0.12) 0%, rgba(var(--color-primary-rgb),0.04) 40%, transparent 70%)",
           filter: "blur(80px)",
         }}
         animate={{
-          opacity: screenOn ? [0.3, 0.6, 0.3] : 0,
+          opacity: screenOn ? [0.4, 0.8, 0.4] : 0,
+          scale: screenOn ? [1, 1.05, 1] : 0.9,
         }}
         transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
       />
@@ -110,10 +134,10 @@ export default function BootScreen({ onComplete }) {
       {/* ── 3D MacBook Scene ── */}
       <motion.div
         ref={sceneRef}
-        className="relative"
+        className="relative flex flex-col items-center"
         style={{
           transformStyle: "preserve-3d",
-          transform: "rotateX(12deg)",
+          transform: "rotateX(14deg)",
         }}
         animate={{
           scale: sceneScale,
@@ -124,77 +148,10 @@ export default function BootScreen({ onComplete }) {
           ease: [0.16, 1, 0.3, 1],
         }}
       >
-        {/* ── MacBook Base (bottom) ── */}
-        <div
-          className="relative mx-auto"
-          style={{
-            width: 540,
-            height: 18,
-            background: "linear-gradient(180deg, #8a8a8e 0%, #6e6e72 40%, #4a4a4e 100%)",
-            borderRadius: "0 0 12px 12px",
-            boxShadow: "0 4px 30px rgba(0,0,0,0.6), 0 1px 0 rgba(255,255,255,0.05) inset",
-          }}
-        >
-          {/* Trackpad indent */}
-          <div
-            className="absolute left-1/2 -translate-x-1/2 top-0"
-            style={{
-              width: 80,
-              height: 4,
-              borderRadius: "0 0 6px 6px",
-              background: "rgba(255,255,255,0.06)",
-            }}
-          />
-          {/* Front lip notch */}
-          <div
-            className="absolute left-1/2 -translate-x-1/2 -top-1"
-            style={{
-              width: 40,
-              height: 4,
-              borderRadius: "0 0 4px 4px",
-              background: "#5a5a5e",
-            }}
-          />
-        </div>
-
-        {/* ── Keyboard Surface ── */}
-        <div
-          className="absolute left-1/2 -translate-x-1/2"
-          style={{
-            width: 520,
-            height: 340,
-            bottom: 18,
-            background: "linear-gradient(180deg, #2a2a2e 0%, #1a1a1e 100%)",
-            borderRadius: "4px 4px 0 0",
-            transformOrigin: "bottom center",
-            transform: "rotateX(85deg)",
-            boxShadow: "inset 0 0 40px rgba(0,0,0,0.5)",
-          }}
-        >
-          {/* Keyboard grid suggestion */}
-          <div className="absolute inset-4 grid grid-cols-14 grid-rows-5 gap-[3px] opacity-20">
-            {Array.from({ length: 60 }).map((_, i) => (
-              <div key={i} className="rounded-sm bg-white/10" />
-            ))}
-          </div>
-          {/* Trackpad */}
-          <div
-            className="absolute bottom-4 left-1/2 -translate-x-1/2 rounded-lg"
-            style={{
-              width: 160,
-              height: 100,
-              background: "rgba(255,255,255,0.04)",
-              border: "1px solid rgba(255,255,255,0.06)",
-            }}
-          />
-        </div>
-
-        {/* ── Lid (hinged from bottom) ── */}
+        {/* ── Lid (hinged from bottom of screen) ── */}
         <motion.div
-          className="absolute left-1/2 -translate-x-1/2"
           style={{
             width: 540,
-            bottom: 18,
             transformOrigin: "bottom center",
             transformStyle: "preserve-3d",
           }}
@@ -209,26 +166,32 @@ export default function BootScreen({ onComplete }) {
             style={{
               width: 540,
               height: 360,
-              background: "linear-gradient(180deg, #6e6e72 0%, #4a4a4e 50%, #3a3a3e 100%)",
+              background: "linear-gradient(180deg, #7a7a7e 0%, #5a5a5e 30%, #3a3a3e 100%)",
               borderRadius: "12px 12px 0 0",
               position: "absolute",
               backfaceVisibility: "hidden",
               transform: "rotateY(180deg)",
-              boxShadow: "0 -2px 20px rgba(0,0,0,0.3)",
+              boxShadow: "0 -2px 20px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.1)",
             }}
           >
             {/* Apple-like logo on back */}
             <div className="absolute inset-0 flex items-center justify-center">
-              <div
+              <motion.div
                 className="text-3xl font-black tracking-tight"
                 style={{
                   fontFamily: "Syne, sans-serif",
-                  color: "rgba(255,255,255,0.08)",
+                  color: "rgba(255,255,255,0.06)",
                   transform: "rotateY(180deg)",
                 }}
+                animate={{
+                  color: screenOn
+                    ? ["rgba(255,255,255,0.06)", "rgba(255,255,255,0.12)", "rgba(255,255,255,0.06)"]
+                    : "rgba(255,255,255,0.06)",
+                }}
+                transition={{ duration: 3, repeat: Infinity }}
               >
                 KP
-              </div>
+              </motion.div>
             </div>
           </div>
 
@@ -256,9 +219,14 @@ export default function BootScreen({ onComplete }) {
                 marginTop: -1,
               }}
             >
-              <div
+              <motion.div
                 className="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full"
-                style={{ background: "#2a2a2e", boxShadow: screenOn ? "0 0 4px rgba(0,200,0,0.3)" : "none" }}
+                style={{ background: "#2a2a2e" }}
+                animate={{
+                  boxShadow: screenOn
+                    ? "0 0 6px rgba(0,200,0,0.5)"
+                    : "none",
+                }}
               />
             </div>
 
@@ -278,7 +246,7 @@ export default function BootScreen({ onComplete }) {
                 <motion.div
                   className="absolute inset-0 pointer-events-none"
                   style={{
-                    background: "radial-gradient(ellipse at 50% 30%, rgba(var(--color-primary-rgb),0.06), transparent 60%)",
+                    background: "radial-gradient(ellipse at 50% 30%, rgba(var(--color-primary-rgb),0.08), transparent 60%)",
                   }}
                   animate={{ opacity: [0.5, 1, 0.5] }}
                   transition={{ duration: 3, repeat: Infinity }}
@@ -293,17 +261,28 @@ export default function BootScreen({ onComplete }) {
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.5 }}
                 >
-                  <div
+                  <motion.div
                     className="text-3xl font-black text-white/80 tracking-tight"
                     style={{ fontFamily: "Syne, sans-serif" }}
+                    animate={{
+                      textShadow: [
+                        "0 0 20px rgba(var(--color-primary-rgb),0)",
+                        "0 0 20px rgba(var(--color-primary-rgb),0.4)",
+                        "0 0 20px rgba(var(--color-primary-rgb),0)",
+                      ],
+                    }}
+                    transition={{ duration: 2, repeat: Infinity }}
                   >
                     KP
-                  </div>
+                  </motion.div>
                   {phase === "booting" && (
                     <div className="w-32 h-0.5 rounded-full bg-white/10 overflow-hidden">
                       <motion.div
-                        className="h-full rounded-full bg-white/60"
-                        style={{ width: `${progress}%` }}
+                        className="h-full rounded-full"
+                        style={{
+                          width: `${progress}%`,
+                          background: "linear-gradient(90deg, rgba(var(--color-primary-rgb),0.8), white)",
+                        }}
                       />
                     </div>
                   )}
@@ -318,21 +297,42 @@ export default function BootScreen({ onComplete }) {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.4 }}
                 >
-                  <div className="w-16 h-16 rounded-full overflow-hidden border border-white/10 shadow-lg">
+                  <motion.div
+                    className="w-16 h-16 rounded-full overflow-hidden shadow-lg"
+                    style={{
+                      border: "2px solid rgba(var(--color-primary-rgb),0.3)",
+                      boxShadow: "0 0 20px rgba(var(--color-primary-rgb),0.15)",
+                    }}
+                    animate={{
+                      boxShadow: [
+                        "0 0 20px rgba(var(--color-primary-rgb),0.15)",
+                        "0 0 30px rgba(var(--color-primary-rgb),0.25)",
+                        "0 0 20px rgba(var(--color-primary-rgb),0.15)",
+                      ],
+                    }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                  >
                     <img
                       src="/profile.jpg"
                       alt="Khang Phan"
                       className="w-full h-full object-cover object-top"
                     />
-                  </div>
+                  </motion.div>
                   <h2 className="text-sm font-semibold text-white/90">Khang Phan</h2>
                   <p className="text-[10px] text-white/40">Computer Science @ USF</p>
                   <motion.button
                     onClick={(e) => { e.stopPropagation(); handleEnter(); }}
                     className="mt-1 px-5 py-1.5 rounded-full text-[11px] font-medium
-                               bg-white/10 border border-white/15 text-white/80
-                               hover:bg-white/20 transition-all backdrop-blur-sm"
-                    whileHover={{ scale: 1.05 }}
+                               text-white/80 transition-all backdrop-blur-sm cursor-pointer"
+                    style={{
+                      background: "linear-gradient(135deg, rgba(var(--color-primary-rgb),0.3), rgba(var(--color-primary-rgb),0.1))",
+                      border: "1px solid rgba(var(--color-primary-rgb),0.3)",
+                      boxShadow: "0 0 20px rgba(var(--color-primary-rgb),0.1)",
+                    }}
+                    whileHover={{
+                      scale: 1.05,
+                      boxShadow: "0 0 30px rgba(var(--color-primary-rgb),0.25)",
+                    }}
                     whileTap={{ scale: 0.95 }}
                   >
                     Click to Enter
@@ -342,7 +342,89 @@ export default function BootScreen({ onComplete }) {
             </motion.div>
           </div>
         </motion.div>
+
+        {/* ── Hinge ── */}
+        <div
+          style={{
+            width: 540,
+            height: 8,
+            background: "linear-gradient(180deg, #3a3a3e 0%, #2a2a2e 50%, #222226 100%)",
+            borderRadius: "0 0 2px 2px",
+            boxShadow: "0 2px 6px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05)",
+          }}
+        />
+
+        {/* ── Keyboard Surface (perspective deck) ── */}
+        <div
+          style={{
+            width: 520,
+            height: 340,
+            background: "linear-gradient(180deg, #2a2a2e 0%, #1a1a1e 100%)",
+            borderRadius: "0 0 4px 4px",
+            transformOrigin: "top center",
+            transform: "rotateX(-85deg)",
+            boxShadow: "inset 0 0 40px rgba(0,0,0,0.5)",
+          }}
+        >
+          {/* Keyboard grid suggestion */}
+          <div className="absolute inset-4 grid grid-cols-14 grid-rows-5 gap-[3px] opacity-20">
+            {Array.from({ length: 60 }).map((_, i) => (
+              <div key={i} className="rounded-sm bg-white/10" />
+            ))}
+          </div>
+          {/* Trackpad */}
+          <div
+            className="absolute bottom-4 left-1/2 -translate-x-1/2 rounded-lg"
+            style={{
+              width: 160,
+              height: 100,
+              background: "rgba(255,255,255,0.04)",
+              border: "1px solid rgba(255,255,255,0.06)",
+            }}
+          />
+        </div>
+
+        {/* ── Base (front edge) ── */}
+        <div
+          style={{
+            width: 560,
+            height: 14,
+            background: "linear-gradient(180deg, #8a8a8e 0%, #6e6e72 40%, #4a4a4e 100%)",
+            borderRadius: "0 0 12px 12px",
+            boxShadow: "0 6px 40px rgba(0,0,0,0.5), 0 1px 0 rgba(255,255,255,0.05) inset",
+            marginTop: -1,
+          }}
+        >
+          {/* Front lip notch */}
+          <div
+            className="absolute left-1/2 -translate-x-1/2 top-0"
+            style={{
+              width: 60,
+              height: 4,
+              borderRadius: "0 0 6px 6px",
+              background: "rgba(255,255,255,0.06)",
+            }}
+          />
+        </div>
       </motion.div>
+
+      {/* Surface reflection below MacBook */}
+      <motion.div
+        className="absolute pointer-events-none"
+        style={{
+          bottom: "8%",
+          left: "50%",
+          transform: "translateX(-50%)",
+          width: "50vw",
+          height: "18vh",
+          background: "radial-gradient(ellipse at top, rgba(var(--color-primary-rgb),0.04), transparent 70%)",
+          filter: "blur(30px)",
+        }}
+        animate={{
+          opacity: screenOn ? [0.3, 0.6, 0.3] : 0,
+        }}
+        transition={{ duration: 3, repeat: Infinity }}
+      />
 
       {/* Skip hint */}
       {phase !== "zoomIn" && (

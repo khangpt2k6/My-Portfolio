@@ -23,7 +23,7 @@ import ProjectsApp from "./apps/ProjectsApp"
 import ExperienceApp from "./apps/ExperienceApp"
 import SkillsApp from "./apps/SkillsApp"
 import ContactApp from "./apps/ContactApp"
-import EducationApp from "./apps/EducationApp"
+
 import TerminalApp from "./apps/TerminalApp"
 import LabApp from "./apps/LabApp"
 import MusicApp from "./apps/MusicApp"
@@ -38,7 +38,6 @@ const appComponents = {
   experience: ExperienceApp,
   skills: SkillsApp,
   contact: ContactApp,
-  education: EducationApp,
   terminal: TerminalApp,
   lab: LabApp,
   music: MusicApp,

@@ -20,16 +20,18 @@ export default function WebPortfolio() {
         <AuroraBg />
         <CustomCursor />
         <Navbar />
-        <main>
-          <Hero />
-          <About />
-          <Education />
-          <Experience />
-          <Projects />
-          <Skills />
-          <Contact />
-        </main>
-        <Footer />
+        <div className="relative z-10">
+          <main>
+            <Hero />
+            <About />
+            <Education />
+            <Experience />
+            <Projects />
+            <Skills />
+            <Contact />
+          </main>
+          <Footer />
+        </div>
       </div>
     </BrowserRouter>
   );
