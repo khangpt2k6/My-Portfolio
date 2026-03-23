@@ -139,7 +139,7 @@ const MiniPlayer = () => {
           ref={btnRef}
           onClick={() => setIsOpen((p) => !p)}
           whileTap={{ scale: 0.9 }}
-          className="relative flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[var(--color-surface2)] border border-[var(--color-border)] backdrop-blur-xl transition-all duration-300"
+          className="relative flex items-center gap-1.5 px-3 py-1.5 rounded-full hover:bg-[var(--color-text)]/8 transition-all duration-300 cursor-pointer"
           style={{ color: isOpen || isPlaying ? "var(--color-primary)" : "var(--color-text)" }}
           aria-label="Music player"
         >

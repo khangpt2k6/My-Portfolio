@@ -43,7 +43,7 @@ const tracks = [
     title: "A Thousand Years",
     artist: "Christina Perri",
     src: "/music/Christina Perri - A Thousand Years.mp3",
-    image: null,
+    image: "/thousand years.jpg",
     gradient: "linear-gradient(135deg, #fbc2eb 0%, #a18cd1 100%)",
   },
   {
@@ -51,7 +51,7 @@ const tracks = [
     title: "Blank Space",
     artist: "Taylor Swift",
     src: "/music/Taylor Swift - Blank Space.mp3",
-    image: null,
+    image: "/blank_spaces.jpg",
     gradient: "linear-gradient(135deg, #ff0844 0%, #ffb199 100%)",
   },
   {
@@ -59,7 +59,7 @@ const tracks = [
     title: "Love Me Like You Do",
     artist: "Ellie Goulding",
     src: "/music/Ellie Goulding - Love Me Like You Do (Lyrics).mp3",
-    image: null,
+    image: "/love me like you do.jpg",
     gradient: "linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)",
   },
   {
@@ -67,7 +67,7 @@ const tracks = [
     title: "Night Changes",
     artist: "One Direction",
     src: "/music/One Direction - Night Changes (Lyrics).mp3",
-    image: null,
+    image: "/night_changes.jpg",
     gradient: "linear-gradient(135deg, #0c0c3a 0%, #1a1a5e 40%, #6366f1 100%)",
   },
   {
@@ -75,7 +75,7 @@ const tracks = [
     title: "Way Back Home",
     artist: "Conor Maynard (Shaun)",
     src: "/music/[Lyrics] Way Back Home - Conor Maynard (Shuan)   Music Full English version.mp3",
-    image: null,
+    image: "/way back home.jpg",
     gradient: "linear-gradient(135deg, #a18cd1 0%, #fbc2eb 50%, #667eea 100%)",
   },
   {
@@ -83,7 +83,7 @@ const tracks = [
     title: "Theme Music",
     artist: "Portfolio",
     src: "/music/Theme Music.mp3",
-    image: null,
+    image: "/theme_music.png",
     gradient: "linear-gradient(135deg, #667eea 0%, #43e97b 100%)",
   },
 ];
