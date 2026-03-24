@@ -4,8 +4,11 @@ import { ChevronLeft, ChevronRight, MapPin, Calendar } from "lucide-react";
 import experiences from "../data/experiences";
 
 const MS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+const MONTHS = ["JANUARY","FEBRUARY","MARCH","APRIL","MAY","JUNE","JULY","AUGUST","SEPTEMBER","OCTOBER","NOVEMBER","DECEMBER"];
 const DS = ["S","M","T","W","T","F","S"];
-const pages = experiences.professional;
+
+const ACCENTS = ["#FF2D55","#007AFF","#34C759","#AF52DE"];
+const pages = experiences.professional.map((exp, i) => ({ ...exp, color: ACCENTS[i % ACCENTS.length] }));
 
 function parsePeriod(period) {
   const str = period.split(/\s*[–-]\s*/)[0].trim();
@@ -14,8 +17,8 @@ function parsePeriod(period) {
   return { month: mi >= 0 ? mi : 0, year: parseInt(y) || 2025 };
 }
 
-/* ── Tiny decorative calendar ── */
-function MiniCal({ month, year }) {
+/* ── Mini calendar grid ── */
+function MiniCal({ month, year, color }) {
   const { cells, todayD } = useMemo(() => {
     const first = new Date(year, month, 1).getDay();
     const dim = new Date(year, month + 1, 0).getDate();
@@ -28,25 +31,23 @@ function MiniCal({ month, year }) {
   }, [month, year]);
 
   return (
-    <div className="w-[72px]">
-      <div className="grid grid-cols-7 mb-px">
+    <div>
+      <div className="grid grid-cols-7 mb-0.5">
         {DS.map((d, i) => (
-          <div key={i} className="text-center text-[5px] font-bold"
-            style={{ color: "var(--color-text-muted)", opacity: 0.25 }}>{d}</div>
+          <div key={i} className="text-center text-[7px] font-bold text-white/40">{d}</div>
         ))}
       </div>
       <div className="grid grid-cols-7">
         {cells.map((d, i) => (
-          <div key={i} className="flex items-center justify-center" style={{ height: 10 }}>
+          <div key={i} className="flex items-center justify-center" style={{ height: 13 }}>
             {d != null && (
-              <span className="flex items-center justify-center text-[5px] leading-none rounded-full"
+              <span className="flex items-center justify-center text-[7px] leading-none rounded-full"
                 style={{
-                  color: d === todayD ? "#fff" : "var(--color-text-muted)",
-                  opacity: d === todayD ? 1 : 0.2,
-                  background: d === todayD ? "var(--color-primary)" : "transparent",
-                  width: d === todayD ? 10 : "auto",
-                  height: d === todayD ? 10 : "auto",
-                  fontWeight: d === todayD ? 700 : 400,
+                  color: d === todayD ? color : "rgba(255,255,255,0.5)",
+                  background: d === todayD ? "#fff" : "transparent",
+                  width: d === todayD ? 13 : "auto",
+                  height: d === todayD ? 13 : "auto",
+                  fontWeight: d === todayD ? 800 : 500,
                 }}>
                 {d}
               </span>
@@ -58,81 +59,9 @@ function MiniCal({ month, year }) {
   );
 }
 
-/* ── Wave SVG shape for cards ── */
-function WaveCard({ children, index, total }) {
-  // Each card gets a slightly different wave pattern
-  const waveY = 6 + (index % 3) * 2;
-  const curveDir = index % 2 === 0;
-  const progress = ((index + 1) / total) * 100;
+/* ── Calendar page peel animation ── */
+/* Peels from bottom-right corner upward, like flipping a wall calendar */
 
-  return (
-    <div className="relative rounded-2xl overflow-hidden" style={{
-      background: "var(--color-surface2)",
-      border: "0.5px solid var(--color-border)",
-    }}>
-      {/* Top wave accent */}
-      <svg className="absolute top-0 left-0 w-full" height="28" preserveAspectRatio="none" viewBox="0 0 400 28">
-        <defs>
-          <linearGradient id={`wg${index}`} x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor="var(--color-primary)" stopOpacity="0.12" />
-            <stop offset={`${progress}%`} stopColor="var(--color-primary)" stopOpacity="0.06" />
-            <stop offset="100%" stopColor="var(--color-primary)" stopOpacity="0" />
-          </linearGradient>
-        </defs>
-        <path
-          d={curveDir
-            ? `M0,0 L400,0 L400,${waveY} Q300,${waveY + 12} 200,${waveY} Q100,${waveY - 8} 0,${waveY + 4} Z`
-            : `M0,0 L400,0 L400,${waveY + 4} Q300,${waveY - 6} 200,${waveY + 6} Q100,${waveY + 14} 0,${waveY} Z`
-          }
-          fill={`url(#wg${index})`}
-        />
-      </svg>
-
-      {/* Left curved accent bar */}
-      <svg className="absolute left-0 top-0 h-full" width="4" preserveAspectRatio="none" viewBox="0 0 4 100">
-        <path
-          d="M2,0 Q4,25 2,50 Q0,75 2,100"
-          stroke="var(--color-primary)"
-          strokeWidth="2.5"
-          fill="none"
-          strokeLinecap="round"
-          opacity="0.3"
-        />
-      </svg>
-
-      <div className="relative px-4 py-3 pl-5">
-        {children}
-      </div>
-    </div>
-  );
-}
-
-/* ── Curved connecting path between cards ── */
-function CurvePath({ index }) {
-  const flip = index % 2 === 0;
-  return (
-    <div className="flex justify-center h-4 -my-1 relative z-0">
-      <svg width="40" height="16" viewBox="0 0 40 16" fill="none">
-        <path
-          d={flip ? "M20,0 Q30,8 20,16" : "M20,0 Q10,8 20,16"}
-          stroke="var(--color-primary)"
-          strokeWidth="1"
-          strokeDasharray="3 3"
-          opacity="0.15"
-        />
-        <circle cx="20" cy="8" r="2" fill="var(--color-primary)" opacity="0.15" />
-      </svg>
-    </div>
-  );
-}
-
-const flipV = {
-  enter: (d) => ({ x: d > 0 ? "18%" : "-18%", opacity: 0, scale: 0.97 }),
-  center: { x: 0, opacity: 1, scale: 1 },
-  exit: (d) => ({ x: d > 0 ? "-18%" : "18%", opacity: 0, scale: 0.97 }),
-};
-
-/* ══════════════════════════════════════════ */
 export default function ExperienceApp() {
   const [page, setPage] = useState(0);
   const [dir, setDir] = useState(1);
@@ -147,88 +76,145 @@ export default function ExperienceApp() {
 
   return (
     <div className="h-full flex flex-col overflow-hidden select-none"
-      style={{
-        fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro", "Segoe UI", sans-serif',
-        background: "var(--window-bg)",
-      }}>
+      style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro", sans-serif', background: "#f2f2f7" }}>
 
-      <div className="flex-1 flex flex-col min-h-0 relative">
-        <AnimatePresence mode="wait" custom={dir}>
-          <motion.div
-            key={page}
-            custom={dir}
-            variants={flipV}
-            initial="enter"
-            animate="center"
-            exit="exit"
-            transition={{ duration: 0.35, ease: [0.4, 0, 0.2, 1] }}
-            className="absolute inset-0 flex flex-col overflow-auto"
-          >
-            {/* ════ HEADER with curved bottom ════ */}
-            <div className="shrink-0 relative">
-              <div className="px-4 pt-3 pb-5 flex items-center gap-3">
-                {exp.image && (
-                  <div className="w-12 h-12 rounded-2xl overflow-hidden shrink-0"
-                    style={{ border: "0.5px solid var(--color-border)" }}>
-                    <img src={exp.image} alt="" className="w-full h-full object-cover" />
-                  </div>
-                )}
-                <div className="flex-1 min-w-0">
-                  <h2 className="text-[14px] font-semibold leading-tight truncate"
-                    style={{ color: "var(--color-text)" }}>
-                    {exp.title}
-                  </h2>
-                  <p className="text-[11px] font-medium truncate mt-0.5"
-                    style={{ color: "var(--color-text-muted)" }}>
-                    {exp.company}
-                  </p>
-                  <div className="flex items-center gap-3 mt-1">
-                    <span className="flex items-center gap-1 text-[10px]"
-                      style={{ color: "var(--color-text-muted)", opacity: 0.6 }}>
-                      <MapPin className="w-3 h-3" />{exp.location}
-                    </span>
-                    <span className="flex items-center gap-1 text-[10px]"
-                      style={{ color: "var(--color-text-muted)", opacity: 0.6 }}>
-                      <Calendar className="w-3 h-3" />{exp.period}
-                    </span>
+      {/* ── Spiral binding ── */}
+      <div className="flex justify-center gap-[10px] py-[3px] shrink-0 relative z-20"
+        style={{ background: "linear-gradient(180deg, #e8e8e8, #d8d8d8)" }}>
+        {Array.from({ length: 18 }).map((_, i) => (
+          <div key={i} className="w-[4px] h-[8px] rounded-full"
+            style={{
+              background: "linear-gradient(180deg, #bbb, #888, #aaa)",
+              boxShadow: "0 1px 2px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.3)",
+            }} />
+        ))}
+      </div>
+
+      {/* ── Page ── */}
+      <div className="flex-1 min-h-0 relative" style={{ perspective: 1200 }}>
+        <AnimatePresence mode="popLayout" custom={dir}>
+          <motion.div key={page} custom={dir}
+            initial={{ rotateX: dir > 0 ? 90 : -60, opacity: 0, scale: 0.95 }}
+            animate={{ rotateX: 0, opacity: 1, scale: 1 }}
+            exit={{
+              rotateX: dir > 0 ? -120 : 60,
+              opacity: 0,
+              scale: 0.92,
+              filter: "brightness(0.85)",
+            }}
+            transition={{
+              duration: 0.6,
+              ease: [0.32, 0.72, 0, 1],
+              opacity: { duration: 0.35 },
+            }}
+            className="absolute inset-0 flex flex-col"
+            style={{
+              transformStyle: "preserve-3d",
+              backfaceVisibility: "hidden",
+              transformOrigin: "top center",
+            }}>
+
+            {/* Paper curl shadow — visible during animation */}
+            <motion.div
+              className="absolute bottom-0 left-0 right-0 pointer-events-none z-50"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 0 }}
+              exit={{ opacity: [0, 0.6, 0] }}
+              transition={{ duration: 0.6 }}
+              style={{
+                height: "40%",
+                background: "linear-gradient(to top, rgba(0,0,0,0.15) 0%, transparent 100%)",
+                borderRadius: "0 0 0 60%",
+              }}
+            />
+
+            {/* ════ TOP — Colored header with company photo area ════ */}
+            <div className="relative shrink-0 overflow-hidden" style={{ height: "38%", background: exp.color }}>
+              {/* Company logo large */}
+              {exp.image && (
+                <div className="absolute inset-0 flex items-center justify-center opacity-15">
+                  <img src={exp.image} alt="" className="w-32 h-32 object-cover rounded-full blur-sm" />
+                </div>
+              )}
+
+              {/* Content */}
+              <div className="relative z-10 h-full flex flex-col px-4 py-3">
+                {/* Nav arrows */}
+                <button onClick={() => go(page - 1)} disabled={page === 0}
+                  className="absolute left-2 top-1/2 -translate-y-1/2 z-20 w-7 h-7 rounded-full flex items-center justify-center bg-white/15 hover:bg-white/25 disabled:opacity-0 cursor-pointer transition">
+                  <ChevronLeft className="w-4 h-4 text-white" />
+                </button>
+                <button onClick={() => go(page + 1)} disabled={page === pages.length - 1}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 z-20 w-7 h-7 rounded-full flex items-center justify-center bg-white/15 hover:bg-white/25 disabled:opacity-0 cursor-pointer transition">
+                  <ChevronRight className="w-4 h-4 text-white" />
+                </button>
+
+                {/* Company info — centered */}
+                <div className="flex items-center justify-center gap-2.5 shrink-0">
+                  {exp.image && (
+                    <img src={exp.image} alt="" className="w-9 h-9 rounded-xl object-cover border-2 border-white/30" />
+                  )}
+                  <div>
+                    <div className="text-[14px] font-bold text-white leading-tight">{exp.title}</div>
+                    <div className="text-[11px] text-white/70 font-medium">{exp.company}</div>
                   </div>
                 </div>
-                <div className="shrink-0">
-                  <MiniCal month={month} year={year} />
+
+                {/* Mini calendar + year */}
+                <div className="flex-1 flex items-end justify-between mt-2">
+                  <div className="w-[120px]">
+                    <MiniCal month={month} year={year} color={exp.color} />
+                  </div>
+                  <div className="text-right">
+                    <div className="text-[36px] font-black text-white/80 leading-none">{year}</div>
+                  </div>
                 </div>
               </div>
 
-              {/* Curved divider */}
-              <svg className="absolute bottom-0 left-0 w-full" height="12" preserveAspectRatio="none" viewBox="0 0 500 12">
-                <path
-                  d="M0,0 Q125,12 250,6 Q375,0 500,8 L500,12 L0,12 Z"
-                  fill="var(--color-border)"
-                  opacity="0.4"
-                />
+              {/* ── Curved bottom cutout ── */}
+              <svg className="absolute bottom-0 left-0 w-full" height="32" preserveAspectRatio="none" viewBox="0 0 500 32">
+                <path d="M0,32 L0,20 Q60,0 150,12 Q250,28 350,8 Q440,0 500,16 L500,32 Z" fill="#fff" />
               </svg>
+
+              {/* Month ribbon — bottom left */}
+              <div className="absolute -bottom-0 left-0 z-10">
+                <svg width="130" height="30" viewBox="0 0 130 30">
+                  <path d="M0,0 L115,0 L105,15 L115,30 L0,30 Z" fill={exp.color} />
+                </svg>
+                <span className="absolute inset-0 flex items-center pl-3 text-[11px] font-black text-white tracking-widest">
+                  {MONTHS[month]}
+                </span>
+              </div>
             </div>
 
-            {/* ════ ACHIEVEMENTS ════ */}
-            <div className="flex-1 px-4 py-3">
-              <div className="flex flex-col gap-0">
+            {/* ════ BOTTOM — Details on white ════ */}
+            <div className="flex-1 bg-white flex flex-col min-h-0 px-5 pt-2 pb-2 overflow-auto">
+              {/* Location + Period — pill badges */}
+              <div className="flex items-center gap-2 mb-3 shrink-0">
+                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full"
+                  style={{ background: `${exp.color}10`, border: `1px solid ${exp.color}25` }}>
+                  <MapPin className="w-3.5 h-3.5" style={{ color: exp.color }} />
+                  <span className="text-[11px] font-semibold" style={{ color: exp.color }}>{exp.location}</span>
+                </div>
+                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full"
+                  style={{ background: `${exp.color}10`, border: `1px solid ${exp.color}25` }}>
+                  <Calendar className="w-3.5 h-3.5" style={{ color: exp.color }} />
+                  <span className="text-[11px] font-semibold" style={{ color: exp.color }}>{exp.period}</span>
+                </div>
+              </div>
+
+              {/* Achievements */}
+              <div className="space-y-3.5 flex-1">
                 {exp.description.map((item, i) => (
                   <motion.div key={i}
-                    initial={{ opacity: 0, y: 14, scale: 0.97 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    transition={{
-                      delay: 0.06 + i * 0.08,
-                      duration: 0.4,
-                      ease: [0.2, 0.8, 0.2, 1],
-                    }}>
-                    {/* Curved connector between cards */}
-                    {i > 0 && <CurvePath index={i} />}
-
-                    <WaveCard index={i} total={exp.description.length}>
-                      <p className="text-[11px] leading-[1.7]"
-                        style={{ color: "var(--color-text)", opacity: 0.85 }}>
-                        {item}
-                      </p>
-                    </WaveCard>
+                    className="flex items-start gap-3 rounded-xl px-3 py-2.5"
+                    initial={{ opacity: 0, x: -14 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.1 + i * 0.08, duration: 0.35 }}
+                    style={{ background: "#f8f8fa" }}>
+                    <div className="w-2 h-2 rounded-full shrink-0 mt-[7px]"
+                      style={{ background: exp.color }} />
+                    <p className="text-[13.5px] leading-[1.75] text-gray-800 font-[420]">{item}</p>
                   </motion.div>
                 ))}
               </div>
@@ -237,39 +223,17 @@ export default function ExperienceApp() {
         </AnimatePresence>
       </div>
 
-      {/* ── Navigation ── */}
-      <div className="shrink-0 relative">
-        {/* Top wave border */}
-        <svg className="absolute -top-[6px] left-0 w-full" height="6" preserveAspectRatio="none" viewBox="0 0 500 6">
-          <path d="M0,6 Q125,0 250,3 Q375,6 500,1 L500,6 Z"
-            fill="var(--color-border)" opacity="0.3" />
-        </svg>
-
-        <div className="flex items-center justify-center gap-3 py-2.5">
-          <button onClick={() => go(page - 1)} disabled={page === 0}
-            className="w-6 h-6 rounded-full flex items-center justify-center transition-opacity disabled:opacity-15 cursor-pointer"
-            style={{ border: "0.5px solid var(--color-border)", color: "var(--color-text-muted)" }}>
-            <ChevronLeft className="w-3.5 h-3.5" />
-          </button>
-
-          <div className="flex gap-1.5">
-            {pages.map((_, i) => (
-              <button key={i} onClick={() => go(i)}
-                className="rounded-full transition-all duration-300 cursor-pointer"
-                style={{
-                  width: i === page ? 20 : 6,
-                  height: 6,
-                  background: i === page ? "var(--color-primary)" : "var(--color-border)",
-                }} />
-            ))}
-          </div>
-
-          <button onClick={() => go(page + 1)} disabled={page === pages.length - 1}
-            className="w-6 h-6 rounded-full flex items-center justify-center transition-opacity disabled:opacity-15 cursor-pointer"
-            style={{ border: "0.5px solid var(--color-border)", color: "var(--color-text-muted)" }}>
-            <ChevronRight className="w-3.5 h-3.5" />
-          </button>
-        </div>
+      {/* ── Page dots ── */}
+      <div className="flex items-center justify-center gap-1.5 py-2 shrink-0 bg-white"
+        style={{ borderTop: "0.5px solid #e5e5e5" }}>
+        {pages.map((p, i) => (
+          <button key={i} onClick={() => go(i)}
+            className="rounded-full transition-all duration-300 cursor-pointer"
+            style={{
+              width: i === page ? 18 : 6, height: 6,
+              background: i === page ? p.color : "#ddd",
+            }} />
+        ))}
       </div>
     </div>
   );
