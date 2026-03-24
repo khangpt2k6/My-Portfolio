@@ -63,5 +63,5 @@ export function ResumeIcon({ size = 52 }) {
 }
 
 export function BrowserIcon({ size = 52 }) {
-  return <ImgIcon src="/browser.png" alt="Safari" size={size} />;
+  return <ImgIcon src="/safari.webp" alt="Safari" size={size} />;
 }

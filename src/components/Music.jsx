@@ -396,21 +396,27 @@ const Music = () => {
                   className="relative w-52 h-52 md:w-64 md:h-64 rounded-2xl overflow-hidden mb-6 shadow-elevated flex-shrink-0"
                   style={{ background: currentTrack.gradient }}
                 >
-                  {/* Overlay pattern */}
-                  <div
-                    className="absolute inset-0 opacity-20"
-                    style={{
-                      backgroundImage:
-                        "radial-gradient(circle at 30% 40%, rgba(255,255,255,0.3) 0%, transparent 60%)",
-                    }}
-                  />
-                  {/* Music note icon */}
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <MusicIcon
-                      className="w-16 h-16 md:w-20 md:h-20 text-white/40"
-                      strokeWidth={1}
-                    />
-                  </div>
+                  {currentTrack.image ? (
+                    <img src={currentTrack.image} alt={currentTrack.title} className="absolute inset-0 w-full h-full object-cover" />
+                  ) : (
+                    <>
+                      {/* Overlay pattern */}
+                      <div
+                        className="absolute inset-0 opacity-20"
+                        style={{
+                          backgroundImage:
+                            "radial-gradient(circle at 30% 40%, rgba(255,255,255,0.3) 0%, transparent 60%)",
+                        }}
+                      />
+                      {/* Music note icon */}
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <MusicIcon
+                          className="w-16 h-16 md:w-20 md:h-20 text-white/40"
+                          strokeWidth={1}
+                        />
+                      </div>
+                    </>
+                  )}
                   {/* Vinyl ring decoration */}
                   <motion.div
                     className="absolute inset-4 rounded-full border border-white/10"
@@ -700,12 +706,16 @@ const Music = () => {
                       {/* Mini album art */}
                       <div
                         className="w-10 h-10 rounded-lg flex-shrink-0 flex items-center justify-center overflow-hidden"
-                        style={{ background: track.gradient }}
+                        style={{ background: track.image ? "none" : track.gradient }}
                       >
-                        <MusicIcon
-                          className="w-4 h-4 text-white/50"
-                          strokeWidth={1.5}
-                        />
+                        {track.image ? (
+                          <img src={track.image} alt={track.title} className="w-full h-full object-cover" />
+                        ) : (
+                          <MusicIcon
+                            className="w-4 h-4 text-white/50"
+                            strokeWidth={1.5}
+                          />
+                        )}
                       </div>
 
                       {/* Track details */}

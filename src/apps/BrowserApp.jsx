@@ -345,7 +345,7 @@ export default function BrowserApp() {
           >
             <div className="mb-8 text-center">
               <img
-                src="/browser.png"
+                src="/safari.webp"
                 alt="Safari"
                 className="w-14 h-14 mx-auto mb-3 rounded-2xl"
                 draggable={false}

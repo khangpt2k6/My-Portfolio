@@ -192,8 +192,10 @@ const MiniPlayer = () => {
               <div className="relative h-14 flex items-center gap-3 px-3" style={{ background: track.gradient }}>
                 <div className="absolute inset-0 bg-black/30" />
                 <div className="relative z-10 flex items-center gap-3 flex-1 min-w-0">
-                  <div className="w-9 h-9 rounded-lg flex items-center justify-center bg-white/20 backdrop-blur-sm flex-shrink-0">
-                    {isPlaying ? <EqBars /> : <Music className="w-4 h-4 text-white" />}
+                  <div className="w-9 h-9 rounded-lg flex items-center justify-center overflow-hidden flex-shrink-0" style={{ background: track.image ? "none" : "rgba(255,255,255,0.2)" }}>
+                    {track.image ? (
+                      <img src={track.image} alt={track.title} className="w-full h-full object-cover" />
+                    ) : isPlaying ? <EqBars /> : <Music className="w-4 h-4 text-white" />}
                   </div>
                   <div className="min-w-0">
                     <p className="text-xs font-bold text-white truncate">{track.title}</p>
@@ -265,10 +267,12 @@ const MiniPlayer = () => {
                       }`}
                     >
                       <div
-                        className="w-6 h-6 rounded flex-shrink-0 flex items-center justify-center"
-                        style={{ background: t.gradient }}
+                        className="w-6 h-6 rounded flex-shrink-0 flex items-center justify-center overflow-hidden"
+                        style={{ background: t.image ? "none" : t.gradient }}
                       >
-                        {active && isPlaying ? (
+                        {t.image ? (
+                          <img src={t.image} alt={t.title} className="w-full h-full object-cover" />
+                        ) : active && isPlaying ? (
                           <EqBars />
                         ) : (
                           <span className="text-[9px] font-bold text-white/80">{String(i + 1).padStart(2, "0")}</span>
