@@ -29,6 +29,7 @@ import LabApp from "./apps/LabApp"
 import MusicApp from "./apps/MusicApp"
 import SettingsApp from "./apps/SettingsApp"
 import ResumeApp from "./apps/ResumeApp"
+import BrowserApp from "./apps/BrowserApp"
 
 const WebPortfolio = lazy(() => import("./components/WebPortfolio"))
 
@@ -43,6 +44,7 @@ const appComponents = {
   music: MusicApp,
   settings: SettingsApp,
   resume: ResumeApp,
+  browser: BrowserApp,
 }
 
 // ── Responsive hook ──

@@ -61,3 +61,7 @@ export function SettingsIcon({ size = 52 }) {
 export function ResumeIcon({ size = 52 }) {
   return <ImgIcon src="/notes-2025-11-13.webp" alt="Resume" size={size} />;
 }
+
+export function BrowserIcon({ size = 52 }) {
+  return <ImgIcon src="/browser.png" alt="Safari" size={size} />;
+}
