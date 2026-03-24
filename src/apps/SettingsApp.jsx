@@ -58,7 +58,7 @@ export default function SettingsApp() {
   };
 
   return (
-    <div className="h-full overflow-auto p-6 space-y-8" style={{ background: "var(--color-surface)" }}>
+    <div className="h-full overflow-auto p-4 space-y-5" style={{ background: "var(--color-surface)" }}>
       {/* Appearance */}
       <section>
         <div className="flex items-center gap-2 mb-4">
@@ -91,7 +91,7 @@ export default function SettingsApp() {
           <Image className="w-5 h-5 text-[var(--color-primary)]" />
           <h3 className="text-lg font-bold text-[var(--color-text)]">Wallpaper</h3>
         </div>
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
           {WALLPAPERS.map((wp) => (
             <button
               key={wp.id}

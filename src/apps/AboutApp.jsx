@@ -53,32 +53,32 @@ const ProfileImage = () => {
 export default function AboutApp() {
   return (
     <div className="p-0">
-      <div className="grid grid-cols-1 md:grid-cols-[260px_1fr]">
+      <div className="flex flex-col sm:flex-row">
         {/* Left — Image */}
-        <div className="p-5 md:p-6">
+        <div className="p-4 sm:p-5 sm:w-[180px] sm:flex-shrink-0">
           <ProfileImage />
         </div>
 
         {/* Right — Content */}
-        <div className="p-5 md:p-6 flex flex-col justify-center md:border-l border-[var(--glass-border)]">
-          <h2 className="text-2xl md:text-3xl font-extrabold text-[var(--color-text)] leading-tight mb-4">
+        <div className="p-4 sm:p-5 flex flex-col justify-center flex-1 min-w-0 sm:border-l border-[var(--glass-border)]">
+          <h2 className="text-xl font-extrabold text-[var(--color-text)] leading-tight mb-3">
             {about.greeting}
           </h2>
-          <p className="text-sm text-[var(--color-text-muted)] leading-relaxed mb-6">
+          <p className="text-xs text-[var(--color-text-muted)] leading-relaxed mb-4">
             {about.bio}
           </p>
 
-          <div className="h-px mb-5" style={{
+          <div className="h-px mb-3" style={{
             background: "linear-gradient(90deg, var(--color-primary), rgba(var(--color-secondary-rgb),0.3), transparent)"
           }} />
 
-          <div className="flex flex-col gap-3 mb-6">
+          <div className="flex flex-col gap-2 mb-4">
             {about.details.map((item) => (
-              <div key={item.label} className="flex items-baseline gap-3">
-                <span className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--color-primary)] w-16 shrink-0">
+              <div key={item.label} className="flex items-baseline gap-2">
+                <span className="text-[10px] font-semibold uppercase tracking-[0.15em] text-[var(--color-primary)] w-14 shrink-0">
                   {item.label}
                 </span>
-                <span className="text-sm text-[var(--color-text)] font-medium">{item.value}</span>
+                <span className="text-xs text-[var(--color-text)] font-medium truncate">{item.value}</span>
               </div>
             ))}
           </div>
