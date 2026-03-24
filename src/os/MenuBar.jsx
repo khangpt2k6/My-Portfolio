@@ -117,8 +117,9 @@ export default function MenuBar() {
             <img
               src="/official_logo.jpg"
               alt="KP"
-              className="w-4 h-4 rounded-full object-cover"
+              className="w-5 h-5 rounded-full object-cover block"
               draggable={false}
+              style={{ imageRendering: "auto" }}
             />
           </button>
 

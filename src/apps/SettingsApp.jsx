@@ -11,7 +11,6 @@ import { CURSOR_STYLES } from "../components/ui/CustomCursor";
    ═══════════════════════════════════════════════════════════════════════ */
 
 const WALLPAPERS = [
-  { id: "dynamic", name: "Dynamic", src: null },
   { id: "bV6xf3", name: "Mountain", src: "/desktop_background/bV6xf3.webp" },
   { id: "icH5Aj", name: "Aurora", src: "/desktop_background/icH5Aj.webp" },
   { id: "lake", name: "Lakeside", src: "/desktop_background/lake-side-trees-live-desktop-jwhxpov3u0jdebb0.jpg" },
@@ -347,23 +346,14 @@ function WallpaperPanel({ wallpaper, applyWallpaper }) {
               className="w-full aspect-[16/10] rounded-lg overflow-hidden"
               style={{ border: "1px solid var(--set-card-border)" }}
             >
-              {wallpaper !== "dynamic" && WALLPAPERS.find((w) => w.id === wallpaper)?.src ? (
-                <img
-                  src={WALLPAPERS.find((w) => w.id === wallpaper).src}
-                  alt="Current wallpaper"
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <div
-                  className="w-full h-full flex items-center justify-center"
-                  style={{ background: "linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%)" }}
-                >
-                  <span className="text-[11px] text-white/50 font-medium">Dynamic</span>
-                </div>
-              )}
+              <img
+                src={WALLPAPERS.find((w) => w.id === wallpaper)?.src || WALLPAPERS[0].src}
+                alt="Current wallpaper"
+                className="w-full h-full object-cover"
+              />
             </div>
             <p className="text-[11px] text-center mt-1.5" style={{ color: "var(--set-text-sec)" }}>
-              {WALLPAPERS.find((w) => w.id === wallpaper)?.name || "Dynamic"}
+              {WALLPAPERS.find((w) => w.id === wallpaper)?.name || "Default"}
             </p>
           </div>
 
@@ -384,21 +374,12 @@ function WallpaperPanel({ wallpaper, applyWallpaper }) {
                   }}
                 >
                   <div className="aspect-[16/10] w-full">
-                    {wp.src ? (
-                      <img
-                        src={wp.src}
-                        alt={wp.name}
-                        className="w-full h-full object-cover"
-                        loading="lazy"
-                      />
-                    ) : (
-                      <div
-                        className="w-full h-full flex items-center justify-center"
-                        style={{ background: "linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%)" }}
-                      >
-                        <span className="text-[8px] text-white/50 font-medium">Dynamic</span>
-                      </div>
-                    )}
+                    <img
+                      src={wp.src}
+                      alt={wp.name}
+                      className="w-full h-full object-cover"
+                      loading="lazy"
+                    />
                   </div>
                   {isActive && (
                     <div className="absolute top-0.5 right-0.5 w-4 h-4 rounded-full flex items-center justify-center"
@@ -570,7 +551,7 @@ export default function SettingsApp() {
   const [active, setActive] = useState("appearance");
   const [accent, setAccent] = useState(() => localStorage.getItem("accent-color") || "Indigo");
   const [cursor, setCursor] = useState(() => localStorage.getItem("cursor-style") || "ring");
-  const [wallpaper, setWallpaper] = useState(() => localStorage.getItem("wallpaper") || "bV6xf3");
+  const [wallpaper, setWallpaper] = useState(() => localStorage.getItem("wallpaper") || "default");
   const [isDark, setIsDark] = useState(() => document.documentElement.classList.contains("dark"));
 
   useEffect(() => {
