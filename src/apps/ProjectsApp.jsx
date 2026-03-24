@@ -108,12 +108,12 @@ export default function ProjectsApp() {
       </div>
 
       {/* Thumbnail strip */}
-      <div className="flex justify-center gap-2 px-4 py-2 border-t border-[var(--color-border)]">
+      <div className="flex justify-start sm:justify-center gap-2 px-4 py-2 border-t border-[var(--color-border)] overflow-x-auto">
         {projects.map((p, i) => (
           <button
             key={p.id}
             onClick={() => { setDir(i > idx ? 1 : -1); setIdx(i); }}
-            className={`w-12 h-8 rounded overflow-hidden border-2 transition-all
+            className={`w-12 h-8 rounded overflow-hidden border-2 transition-all flex-shrink-0
               ${i === idx
                 ? "border-[var(--color-primary)] shadow-sm scale-105"
                 : "border-transparent opacity-50 hover:opacity-80"
