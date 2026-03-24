@@ -114,11 +114,15 @@ export default function MenuBar() {
       <div className="flex items-center gap-5">
         <div className="relative">
           <button
-            className="text-[15px] font-bold opacity-80 hover:opacity-100 transition-opacity leading-none"
-            style={{ fontFamily: "Syne, sans-serif" }}
+            className="opacity-80 hover:opacity-100 transition-opacity leading-none"
             onClick={() => setAppleMenu(!appleMenu)}
           >
-            KP
+            <img
+              src="/official_logo.jpg"
+              alt="KP"
+              className="w-4 h-4 rounded-full object-cover"
+              draggable={false}
+            />
           </button>
 
           <AnimatePresence>

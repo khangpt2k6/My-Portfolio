@@ -327,7 +327,8 @@ const Navbar = () => {
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: -8, scale: 0.95 }}
                     transition={{ duration: 0.15 }}
-                    className="absolute top-12 right-0 z-50 w-[260px] p-4 rounded-xl glass-card backdrop-blur-2xl border border-[var(--color-border)] shadow-[0_12px_40px_rgba(0,0,0,0.15)]"
+                    className="absolute top-12 right-0 z-50 w-[260px] p-4 rounded-xl border border-[var(--color-border)]"
+                    style={{ background: "var(--window-bg)", boxShadow: "0 12px 40px rgba(0,0,0,0.3)" }}
                   >
                     {/* Color swatches */}
                     <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--color-text-muted)] mb-2.5">

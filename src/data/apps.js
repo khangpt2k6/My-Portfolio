@@ -4,7 +4,7 @@
  */
 import {
   AboutIcon, ProjectsIcon, ExperienceIcon, SkillsIcon, MailIcon,
-  TerminalIcon, LabIcon, SettingsIcon, MusicIcon, ResumeIcon,
+  TerminalIcon, LabIcon, SettingsIcon, MusicIcon, ResumeIcon, BrowserIcon,
 } from "../os/AppIcons";
 
 const apps = [
@@ -97,6 +97,15 @@ const apps = [
     dockOrder: 10,
     desktopRow: 4,
     desktopCol: 1,
+  },
+  {
+    id: "browser",
+    title: "Safari",
+    IconComponent: BrowserIcon,
+    defaultSize: { w: 700, h: 480 },
+    dockOrder: 2,
+    desktopRow: 0,
+    desktopCol: 2,
   },
 ];
 

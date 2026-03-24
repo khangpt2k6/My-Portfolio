@@ -29,6 +29,7 @@ import LabApp from "./apps/LabApp"
 import MusicApp from "./apps/MusicApp"
 import SettingsApp from "./apps/SettingsApp"
 import ResumeApp from "./apps/ResumeApp"
+import BrowserApp from "./apps/BrowserApp"
 
 const WebPortfolio = lazy(() => import("./components/WebPortfolio"))
 
@@ -43,6 +44,7 @@ const appComponents = {
   music: MusicApp,
   settings: SettingsApp,
   resume: ResumeApp,
+  browser: BrowserApp,
 }
 
 // ── Responsive hook ──
@@ -125,7 +127,16 @@ function DesktopScreen() {
 // ── Desktop OS mode (with boot + frame) ──
 function DesktopMode() {
   const [booted, setBooted] = useState(false)
+  const [isFullscreen, setIsFullscreen] = useState(false)
   const isMobile = useIsMobile()
+
+  // Escape key to exit fullscreen
+  useEffect(() => {
+    if (!isFullscreen) return
+    const handler = (e) => { if (e.key === "Escape") setIsFullscreen(false) }
+    window.addEventListener("keydown", handler)
+    return () => window.removeEventListener("keydown", handler)
+  }, [isFullscreen])
 
   return (
     <WindowProvider>
@@ -146,8 +157,31 @@ function DesktopMode() {
               <AuroraBg />
               <MobileOS />
             </div>
+          ) : isFullscreen ? (
+            <div className="relative w-full h-screen">
+              <DesktopScreen />
+              {/* Exit fullscreen button */}
+              <motion.button
+                onClick={() => setIsFullscreen(false)}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="fixed top-1 right-3 z-[9999] p-1.5 rounded-lg cursor-pointer opacity-0 hover:opacity-100 transition-opacity duration-300"
+                style={{
+                  color: "rgba(255,255,255,0.6)",
+                  background: "rgba(0,0,0,0.3)",
+                }}
+                title="Exit fullscreen (Esc)"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="4 14 10 14 10 20" />
+                  <polyline points="20 10 14 10 14 4" />
+                  <line x1="14" y1="10" x2="21" y2="3" />
+                  <line x1="3" y1="21" x2="10" y2="14" />
+                </svg>
+              </motion.button>
+            </div>
           ) : (
-            <MacBookFrame>
+            <MacBookFrame onFullscreen={() => setIsFullscreen(true)}>
               <DesktopScreen />
             </MacBookFrame>
           )
