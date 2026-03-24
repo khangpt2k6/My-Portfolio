@@ -126,20 +126,21 @@ export default function Window({ id, title, children }) {
           onMouseDown={() => !isFocused && focusApp(id)}
         >
           <div
-            className={`w-full h-full flex flex-col rounded-xl overflow-hidden
-              border border-[var(--glass-border)]
-              ${isFocused
-                ? "shadow-[0_12px_60px_rgba(0,0,0,0.25)]"
-                : "shadow-[0_4px_24px_rgba(0,0,0,0.12)]"
-              }`}
-            style={{ background: "var(--window-bg)" }}
+            className="w-full h-full flex flex-col rounded-2xl overflow-hidden"
+            style={{
+              background: "var(--lg-window)",
+              backdropFilter: "var(--lg-blur)",
+              WebkitBackdropFilter: "var(--lg-blur)",
+              border: "0.5px solid var(--lg-window-border)",
+              boxShadow: `${isFocused ? "var(--lg-shadow-focus)" : "var(--lg-shadow)"}, var(--lg-highlight)`,
+              transition: "box-shadow 0.2s ease",
+            }}
           >
             {/* ── Title bar ── */}
             <div
               className="flex items-center h-9 px-3 shrink-0 cursor-grab active:cursor-grabbing"
               style={{
-                background: "var(--window-bg)",
-                borderBottom: "1px solid var(--color-border)",
+                borderBottom: "0.5px solid var(--lg-divider)",
               }}
               onMouseDown={onDragStart}
               onDoubleClick={() => maximizeApp(id)}
@@ -195,7 +196,7 @@ export default function Window({ id, title, children }) {
             </div>
 
             {/* ── Content ── */}
-            <div className="flex-1 overflow-auto window-content" style={{ background: "var(--window-bg)" }}>
+            <div className="flex-1 overflow-auto window-content" style={{ background: "var(--lg-window-content)" }}>
               {children}
             </div>
           </div>

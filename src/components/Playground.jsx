@@ -1,30 +1,10 @@
 import { useRef, useEffect, useState, useCallback } from "react";
 import { motion } from "framer-motion";
 import {
-  Pen,
-  Pencil,
-  Eraser,
-  Minus,
-  Square,
-  Circle,
-  Triangle,
-  Type,
-  PaintBucket,
-  Download,
-  Trash2,
-  Undo2,
-  Redo2,
-  Maximize,
-  Minimize,
-  Plus,
-  Pipette,
-  SprayCan,
-  ArrowRight,
-  Star,
-  Hexagon,
-  Diamond,
-  ZoomIn,
-  ZoomOut,
+  Pen, Pencil, Eraser, Minus, Square, Circle, Triangle, Type,
+  PaintBucket, Download, Trash2, Undo2, Redo2, Maximize, Minimize,
+  Pipette, SprayCan, ArrowRight, Star, Hexagon, Diamond,
+  ZoomIn, ZoomOut,
 } from "lucide-react";
 
 /* ── Tool definitions ────────────────────────────────────────────────────── */
@@ -146,7 +126,7 @@ const Playground = ({ embedded = false }) => {
 
   const [tool, setTool] = useState("brush");
   const [color, setColor] = useState("#000000");
-  const [color2, setColor2] = useState("#FFFFFF"); // secondary color (right click)
+  const [color2, setColor2] = useState("#FFFFFF");
   const [brushSize, setBrushSize] = useState(4);
   const [opacity, setOpacity] = useState(100);
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -341,8 +321,8 @@ const Playground = ({ embedded = false }) => {
     isDrawingRef.current = true;
     lastPosRef.current = pos;
 
-    const isShapeTool = ["line", "arrow", "rect", "ellipse", "triangle", "diamond", "star", "hexagon"].includes(tool);
-    if (isShapeTool) {
+    const isShape = ["line", "arrow", "rect", "ellipse", "triangle", "diamond", "star", "hexagon"].includes(tool);
+    if (isShape) {
       shapeStartRef.current = pos;
     } else {
       const canvas = canvasRef.current;
@@ -372,9 +352,9 @@ const Playground = ({ embedded = false }) => {
     if (!isDrawingRef.current) return;
     e.preventDefault();
 
-    const isShapeTool = ["line", "arrow", "rect", "ellipse", "triangle", "diamond", "star", "hexagon"].includes(tool);
+    const isShape = ["line", "arrow", "rect", "ellipse", "triangle", "diamond", "star", "hexagon"].includes(tool);
 
-    if (isShapeTool) {
+    if (isShape) {
       const overlay = overlayRef.current;
       if (!overlay) return;
       const ctx = overlay.getContext("2d");
@@ -408,9 +388,9 @@ const Playground = ({ embedded = false }) => {
     if (!isDrawingRef.current) return;
     isDrawingRef.current = false;
 
-    const isShapeTool = ["line", "arrow", "rect", "ellipse", "triangle", "diamond", "star", "hexagon"].includes(tool);
-    if (isShapeTool) {
-      const pos = e.touches ? getPos(e) : getPos(e);
+    const isShape = ["line", "arrow", "rect", "ellipse", "triangle", "diamond", "star", "hexagon"].includes(tool);
+    if (isShape) {
+      const pos = getPos(e);
       const canvas = canvasRef.current;
       const overlay = overlayRef.current;
       if (canvas && shapeStartRef.current) {
@@ -491,9 +471,11 @@ const Playground = ({ embedded = false }) => {
   const isShapeTool = ["line", "arrow", "rect", "ellipse", "triangle", "diamond", "star", "hexagon"].includes(tool);
   const drawTools = TOOLS.filter(t => t.group === "draw");
   const shapeTools = TOOLS.filter(t => t.group === "shape");
-
   const cursorSize = tool === "pencil" ? 2 : tool === "eraser" ? brushSize + 4 : brushSize;
 
+  /* ══════════════════════════════════════════════════════════════════════════
+     JSX — macOS-native layout
+     ══════════════════════════════════════════════════════════════════════════ */
   return (
     <section className={`relative ${embedded ? "" : "min-h-screen bg-[var(--color-bg)] dark:bg-transparent pt-24 pb-16"}`}>
       <div className={`relative mx-auto ${isFullscreen ? "max-w-none px-0" : embedded ? "" : "max-w-6xl px-4 sm:px-6"}`}>
@@ -507,134 +489,57 @@ const Playground = ({ embedded = false }) => {
           }`}
           style={isFullscreen ? {} : { height: "clamp(520px, 72vh, 850px)" }}
         >
-          {/* ══════ TOP TOOLBAR ══════ */}
-          <div className="shrink-0 bg-[#F5F5F5] dark:bg-[#2b2b2b] border-b border-[#d4d4d4] dark:border-[#404040]">
-            {/* Row 1: Actions */}
-            <div className="flex items-center gap-1 px-2 py-1 border-b border-[#e5e5e5] dark:border-[#333]">
-              <button onClick={undo} disabled={!canUndo} className="p-1 rounded hover:bg-black/5 dark:hover:bg-white/10 disabled:opacity-25" title="Undo (Ctrl+Z)"><Undo2 size={15} className="text-[#555] dark:text-[#bbb]" /></button>
-              <button onClick={redo} disabled={!canRedo} className="p-1 rounded hover:bg-black/5 dark:hover:bg-white/10 disabled:opacity-25" title="Redo (Ctrl+Y)"><Redo2 size={15} className="text-[#555] dark:text-[#bbb]" /></button>
-              <div className="w-px h-4 bg-[#d4d4d4] dark:bg-[#555] mx-1" />
-              <button onClick={clearCanvas} className="p-1 rounded hover:bg-red-100 dark:hover:bg-red-900/30" title="Clear canvas"><Trash2 size={15} className="text-[#555] dark:text-[#bbb]" /></button>
-              <button onClick={toggleFullscreen} className="p-1 rounded hover:bg-black/5 dark:hover:bg-white/10" title="Fullscreen">{isFullscreen ? <Minimize size={15} className="text-[#555] dark:text-[#bbb]" /> : <Maximize size={15} className="text-[#555] dark:text-[#bbb]" />}</button>
-
-              <button onClick={saveImage} className="flex items-center gap-1.5 ml-auto px-3 py-1 rounded-lg text-xs font-semibold text-white shadow-sm hover:brightness-110" style={{ background: "linear-gradient(135deg, #3B82F6, #6366F1)" }} title="Save as PNG (Ctrl+S)">
-                <Download size={13} />Save PNG
-              </button>
+          {/* ── Toolbar ── */}
+          <div className="artpad-toolbar">
+            <div className="flex items-center gap-0.5">
+              <button onClick={undo} disabled={!canUndo} className="artpad-btn" title="Undo (Ctrl+Z)"><Undo2 size={15} /></button>
+              <button onClick={redo} disabled={!canRedo} className="artpad-btn" title="Redo (Ctrl+Y)"><Redo2 size={15} /></button>
             </div>
 
-            {/* Row 2: Tools + Colors */}
-            <div className="flex items-start gap-0 px-1 py-1.5">
-              {/* Drawing tools group */}
-              <div className="flex flex-col items-center px-1">
-                <div className="flex items-center gap-px flex-wrap justify-center max-w-[200px]">
-                  {drawTools.map(t => (
-                    <button key={t.id} onClick={() => setTool(t.id)} className={`p-1.5 rounded-md transition-all ${tool === t.id ? "bg-[#cce4ff] dark:bg-[#264f78] shadow-inner" : "hover:bg-black/5 dark:hover:bg-white/8"}`} title={t.label}>
-                      <t.Icon size={16} className={tool === t.id ? "text-[#0066cc] dark:text-[#69b4ff]" : "text-[#444] dark:text-[#aaa]"} />
-                    </button>
-                  ))}
-                </div>
-                <span className="text-[9px] text-[#888] mt-0.5 font-medium">Tools</span>
-              </div>
+            <div className="artpad-sep" />
 
-              <div className="w-px h-12 bg-[#d4d4d4] dark:bg-[#555] mx-1 self-center" />
-
-              {/* Shape tools group */}
-              <div className="flex flex-col items-center px-1">
-                <div className="flex items-center gap-px flex-wrap justify-center max-w-[220px]">
-                  {shapeTools.map(t => (
-                    <button key={t.id} onClick={() => setTool(t.id)} className={`p-1.5 rounded-md transition-all ${tool === t.id ? "bg-[#cce4ff] dark:bg-[#264f78] shadow-inner" : "hover:bg-black/5 dark:hover:bg-white/8"}`} title={t.label}>
-                      <t.Icon size={16} className={tool === t.id ? "text-[#0066cc] dark:text-[#69b4ff]" : "text-[#444] dark:text-[#aaa]"} />
-                    </button>
-                  ))}
-                  {/* Fill toggle */}
-                  {isShapeTool && (
-                    <button onClick={() => setFillShape(f => !f)} className={`p-1.5 rounded-md transition-all ${fillShape ? "bg-[#cce4ff] dark:bg-[#264f78]" : "hover:bg-black/5 dark:hover:bg-white/8"}`} title={fillShape ? "Filled" : "Outline"}>
-                      <Square size={16} className={fillShape ? "text-[#0066cc] dark:text-[#69b4ff] fill-current" : "text-[#444] dark:text-[#aaa]"} />
-                    </button>
-                  )}
-                </div>
-                <span className="text-[9px] text-[#888] mt-0.5 font-medium">Shapes</span>
-              </div>
-
-              <div className="w-px h-12 bg-[#d4d4d4] dark:bg-[#555] mx-1 self-center" />
-
-              {/* Color palette */}
-              <div className="flex flex-col items-center px-1">
-                <div className="flex items-center gap-1.5">
-                  {/* Primary/Secondary color */}
-                  <div className="relative w-8 h-8 mr-1">
-                    <div className="absolute top-0 left-0 w-6 h-6 rounded-sm border-2 border-white shadow-md z-10 cursor-pointer" style={{ background: color }} title={`Primary: ${color}`} onClick={() => document.getElementById("color-primary")?.click()} />
-                    <div className="absolute bottom-0 right-0 w-6 h-6 rounded-sm border-2 border-white shadow cursor-pointer" style={{ background: color2 }} title={`Secondary: ${color2}`} onClick={() => { const tmp = color; setColor(color2); setColor2(tmp); }} />
-                    <input id="color-primary" type="color" value={color} onChange={(e) => setColor(e.target.value)} className="sr-only" />
-                  </div>
-
-                  {/* Palette grid */}
-                  <div className="flex flex-col gap-px">
-                    <div className="flex gap-px">
-                      {PALETTE_ROW1.map(c => (
-                        <button key={c} onClick={() => setColor(c)} onContextMenu={(e) => { e.preventDefault(); setColor2(c); }}
-                          className="w-[16px] h-[16px] rounded-sm border border-[#aaa] hover:scale-125 transition-transform"
-                          style={{ background: c, outline: color === c ? "2px solid #0066cc" : "none", outlineOffset: "1px" }} title={c} />
-                      ))}
-                    </div>
-                    <div className="flex gap-px">
-                      {PALETTE_ROW2.map(c => (
-                        <button key={c} onClick={() => setColor(c)} onContextMenu={(e) => { e.preventDefault(); setColor2(c); }}
-                          className="w-[16px] h-[16px] rounded-sm border border-[#aaa] hover:scale-125 transition-transform"
-                          style={{ background: c, outline: color === c ? "2px solid #0066cc" : "none", outlineOffset: "1px" }} title={c} />
-                      ))}
-                    </div>
-                  </div>
-                </div>
-                <span className="text-[9px] text-[#888] mt-0.5 font-medium">Colors</span>
-              </div>
+            {/* Draw tools — segmented control */}
+            <div className="artpad-segment">
+              {drawTools.map(t => (
+                <button key={t.id} onClick={() => setTool(t.id)}
+                  className={`artpad-seg-btn${tool === t.id ? " active" : ""}`} title={t.label}>
+                  <t.Icon size={14} />
+                </button>
+              ))}
             </div>
+
+            <div className="artpad-sep" />
+
+            {/* Shape tools — segmented control */}
+            <div className="artpad-segment">
+              {shapeTools.map(t => (
+                <button key={t.id} onClick={() => setTool(t.id)}
+                  className={`artpad-seg-btn${tool === t.id ? " active" : ""}`} title={t.label}>
+                  <t.Icon size={14} />
+                </button>
+              ))}
+              {isShapeTool && (
+                <button onClick={() => setFillShape(f => !f)}
+                  className={`artpad-seg-btn${fillShape ? " active" : ""}`} title={fillShape ? "Filled" : "Outline"}>
+                  <Square size={14} className={fillShape ? "fill-current" : ""} />
+                </button>
+              )}
+            </div>
+
+            <div className="flex-1" />
+
+            <button onClick={clearCanvas} className="artpad-btn" title="Clear canvas"><Trash2 size={15} /></button>
+            <button onClick={toggleFullscreen} className="artpad-btn" title="Fullscreen">
+              {isFullscreen ? <Minimize size={15} /> : <Maximize size={15} />}
+            </button>
+            <button onClick={saveImage} className="artpad-export" title="Save as PNG (Ctrl+S)">
+              <Download size={13} /><span>Export</span>
+            </button>
           </div>
 
-          {/* ══════ MAIN AREA: Sidebar + Canvas ══════ */}
+          {/* ── Main: Canvas + Inspector ── */}
           <div className="flex flex-1 min-h-0">
-            {/* ── Left sidebar: Brush size + Opacity ── */}
-            <div className="w-16 shrink-0 bg-[#F5F5F5] dark:bg-[#2b2b2b] border-r border-[#d4d4d4] dark:border-[#404040] flex flex-col items-center py-3 gap-4">
-              {/* Line widths */}
-              <div className="flex flex-col items-center gap-1">
-                <span className="text-[8px] text-[#888] font-semibold uppercase tracking-wider">Size</span>
-                <div className="flex flex-col gap-0.5 items-center">
-                  {LINE_WIDTHS.map(w => (
-                    <button key={w} onClick={() => setBrushSize(w)}
-                      className={`w-10 h-5 rounded flex items-center justify-center transition-all ${brushSize === w ? "bg-[#cce4ff] dark:bg-[#264f78]" : "hover:bg-black/5 dark:hover:bg-white/8"}`}
-                      title={`${w}px`}
-                    >
-                      <div className="rounded-full bg-[#333] dark:bg-[#ccc]" style={{ width: Math.min(w + 2, 30), height: Math.min(w, 14) }} />
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Brush size slider */}
-              <div className="flex flex-col items-center gap-1 w-full px-2">
-                <span className="text-[8px] text-[#888] font-semibold">{brushSize}px</span>
-                <input
-                  type="range" min="1" max="48" value={brushSize}
-                  onChange={(e) => setBrushSize(Number(e.target.value))}
-                  className="w-full accent-[#0066cc]"
-                  style={{ writingMode: "vertical-lr", height: "80px", direction: "rtl" }}
-                />
-              </div>
-
-              {/* Opacity slider */}
-              <div className="flex flex-col items-center gap-1 w-full px-2">
-                <span className="text-[8px] text-[#888] font-semibold uppercase tracking-wider">Opacity</span>
-                <span className="text-[9px] text-[#666] dark:text-[#aaa] font-mono">{opacity}%</span>
-                <input
-                  type="range" min="5" max="100" value={opacity}
-                  onChange={(e) => setOpacity(Number(e.target.value))}
-                  className="w-full accent-[#0066cc]"
-                  style={{ writingMode: "vertical-lr", height: "60px", direction: "rtl" }}
-                />
-              </div>
-            </div>
-
-            {/* ── Canvas ── */}
+            {/* Canvas */}
             <div ref={canvasAreaRef} className="relative flex-1 overflow-hidden bg-[#E8E8E8] dark:bg-[#1a1a1a]">
               <canvas
                 ref={canvasRef}
@@ -653,27 +558,14 @@ const Playground = ({ embedded = false }) => {
 
               {/* Custom cursor */}
               {isOnCanvas && (
-                <div
-                  className="absolute pointer-events-none z-30"
-                  style={{
-                    left: mousePos.x,
-                    top: mousePos.y,
-                    transform: "translate(-50%, -50%)",
-                  }}
-                >
-                  {/* Crosshair */}
+                <div className="absolute pointer-events-none z-30"
+                  style={{ left: mousePos.x, top: mousePos.y, transform: "translate(-50%, -50%)" }}>
                   <svg width={Math.max(cursorSize + 20, 24)} height={Math.max(cursorSize + 20, 24)}
                     style={{ position: "absolute", left: "50%", top: "50%", transform: "translate(-50%, -50%)" }}>
-                    {/* Brush circle */}
-                    <circle
-                      cx="50%" cy="50%"
-                      r={Math.max(cursorSize / 2, 1)}
+                    <circle cx="50%" cy="50%" r={Math.max(cursorSize / 2, 1)}
                       fill={tool === "eraser" ? "rgba(255,255,255,0.5)" : tool === "picker" ? "none" : `${color}30`}
                       stroke={tool === "eraser" ? "#999" : tool === "picker" ? "#333" : color}
-                      strokeWidth="1"
-                      strokeDasharray={tool === "eraser" ? "3 2" : "none"}
-                    />
-                    {/* Crosshair lines */}
+                      strokeWidth="1" strokeDasharray={tool === "eraser" ? "3 2" : "none"} />
                     <line x1="50%" y1="0" x2="50%" y2={Math.max(cursorSize + 20, 24) / 2 - Math.max(cursorSize / 2, 1) - 2} stroke="#333" strokeWidth="0.5" opacity="0.6" />
                     <line x1="50%" y1={Math.max(cursorSize + 20, 24) / 2 + Math.max(cursorSize / 2, 1) + 2} x2="50%" y2={Math.max(cursorSize + 20, 24)} stroke="#333" strokeWidth="0.5" opacity="0.6" />
                     <line y1="50%" x1="0" y2="50%" x2={Math.max(cursorSize + 20, 24) / 2 - Math.max(cursorSize / 2, 1) - 2} stroke="#333" strokeWidth="0.5" opacity="0.6" />
@@ -682,37 +574,92 @@ const Playground = ({ embedded = false }) => {
                 </div>
               )}
 
-              {/* Text input overlay */}
+              {/* Text input */}
               {textPos && (
                 <div className="absolute z-20" style={{ left: textPos.x, top: textPos.y }}>
-                  <input
-                    type="text" autoFocus value={textInput}
+                  <input type="text" autoFocus value={textInput}
                     onChange={(e) => setTextInput(e.target.value)}
                     onKeyDown={(e) => { if (e.key === "Enter") commitText(); if (e.key === "Escape") { setTextPos(null); setTextInput(""); } }}
                     onBlur={commitText}
                     className="bg-white/90 dark:bg-black/80 border border-dashed border-blue-400 outline-none px-1.5 py-0.5 min-w-[100px] rounded"
                     style={{ color, fontSize: `${Math.max(14, brushSize * 3)}px`, fontFamily: "sans-serif" }}
-                    placeholder="Type here..."
-                  />
+                    placeholder="Type here..." />
                 </div>
               )}
             </div>
+
+            {/* ── Inspector Panel ── */}
+            <div className="artpad-inspector">
+              {/* Color */}
+              <div className="artpad-section">
+                <h4 className="artpad-label">Color</h4>
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="artpad-color-well" style={{ background: color }}
+                    onClick={() => document.getElementById("artpad-color-input")?.click()} title={`Primary: ${color}`} />
+                  <button className="text-[11px] text-[#999] hover:text-[#555] dark:hover:text-[#ccc] px-1 select-none"
+                    onClick={() => { const tmp = color; setColor(color2); setColor2(tmp); }} title="Swap colors">
+                    ⇄
+                  </button>
+                  <div className="artpad-color-well secondary" style={{ background: color2 }}
+                    onClick={() => { const tmp = color; setColor(color2); setColor2(tmp); }} title={`Secondary: ${color2}`} />
+                  <input id="artpad-color-input" type="color" value={color}
+                    onChange={(e) => setColor(e.target.value)} className="sr-only" />
+                </div>
+                <div className="grid grid-cols-6 gap-1">
+                  {[...PALETTE_ROW1, ...PALETTE_ROW2].map(c => (
+                    <button key={c} onClick={() => setColor(c)}
+                      onContextMenu={(e) => { e.preventDefault(); setColor2(c); }}
+                      className="artpad-swatch"
+                      style={{
+                        background: c,
+                        boxShadow: color === c ? "0 0 0 2px var(--color-primary), 0 0 0 3.5px #fff" : "none",
+                      }} title={c} />
+                  ))}
+                </div>
+              </div>
+
+              {/* Stroke Size */}
+              <div className="artpad-section">
+                <div className="flex items-center justify-between mb-2">
+                  <h4 className="artpad-label">Size</h4>
+                  <span className="text-[11px] text-[#666] dark:text-[#aaa] font-mono">{brushSize}px</span>
+                </div>
+                <input type="range" min="1" max="48" value={brushSize}
+                  onChange={(e) => setBrushSize(Number(e.target.value))} className="artpad-slider" />
+                <div className="grid grid-cols-4 gap-1 mt-2">
+                  {LINE_WIDTHS.map(w => (
+                    <button key={w} onClick={() => setBrushSize(w)}
+                      className={`artpad-size-btn${brushSize === w ? " active" : ""}`} title={`${w}px`}>
+                      <div className="rounded-full bg-[#444] dark:bg-[#bbb] mx-auto"
+                        style={{ width: Math.min(w + 2, 22), height: Math.min(Math.max(w, 2), 10) }} />
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Opacity */}
+              <div className="artpad-section">
+                <div className="flex items-center justify-between mb-2">
+                  <h4 className="artpad-label">Opacity</h4>
+                  <span className="text-[11px] text-[#666] dark:text-[#aaa] font-mono">{opacity}%</span>
+                </div>
+                <input type="range" min="5" max="100" value={opacity}
+                  onChange={(e) => setOpacity(Number(e.target.value))} className="artpad-slider" />
+              </div>
+            </div>
           </div>
 
-          {/* ══════ STATUS BAR ══════ */}
-          <div className="flex items-center justify-between px-3 py-1 bg-[#F0F0F0] dark:bg-[#252525] border-t border-[#d4d4d4] dark:border-[#404040] shrink-0">
+          {/* ── Status Bar ── */}
+          <div className="artpad-statusbar">
             <div className="flex items-center gap-3 text-[10px] text-[#666] dark:text-[#999] font-mono">
-              <span className="flex items-center gap-1">
-                <svg width="10" height="10" viewBox="0 0 10 10"><path d="M1 9L1 1 3 1" stroke="currentColor" strokeWidth="1" fill="none" /></svg>
-                {mousePos.x}, {mousePos.y}px
-              </span>
-              <span>|</span>
-              <span>{canvasSize.w} × {canvasSize.h}px</span>
+              <span>{mousePos.x}, {mousePos.y}</span>
+              <span className="text-[#ccc] dark:text-[#444]">|</span>
+              <span>{canvasSize.w} × {canvasSize.h}</span>
             </div>
             <div className="flex items-center gap-1">
-              <button onClick={() => setZoom(z => Math.max(50, z - 25))} className="p-0.5 rounded hover:bg-black/5 dark:hover:bg-white/10"><ZoomOut size={12} className="text-[#666] dark:text-[#999]" /></button>
+              <button onClick={() => setZoom(z => Math.max(50, z - 25))} className="artpad-btn small"><ZoomOut size={11} /></button>
               <span className="text-[10px] text-[#666] dark:text-[#999] font-mono w-8 text-center">{zoom}%</span>
-              <button onClick={() => setZoom(z => Math.min(200, z + 25))} className="p-0.5 rounded hover:bg-black/5 dark:hover:bg-white/10"><ZoomIn size={12} className="text-[#666] dark:text-[#999]" /></button>
+              <button onClick={() => setZoom(z => Math.min(200, z + 25))} className="artpad-btn small"><ZoomIn size={11} /></button>
             </div>
           </div>
         </motion.div>

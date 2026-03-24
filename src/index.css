@@ -34,8 +34,40 @@
   --shadow-card-hover: 0 8px 30px rgba(var(--color-primary-rgb),0.12), 0 16px 40px rgba(0,0,0,0.08);
   --shadow-elevated:   0 12px 40px rgba(var(--color-primary-rgb),0.15), 0 24px 56px rgba(0,0,0,0.10);
 
-  /* OS window background — solid, no transparency */
+  /* OS window background — fallback for app content */
   --window-bg: #F0F0F0;
+
+  /* ── Liquid Glass (2026) ── */
+  --lg-window:         rgba(245, 245, 247, 0.62);
+  --lg-window-content: rgba(245, 245, 247, 0.5);
+  --lg-window-border:  rgba(255, 255, 255, 0.55);
+  --lg-divider:        rgba(0, 0, 0, 0.06);
+  --lg-shadow:         0 8px 32px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04);
+  --lg-shadow-focus:   0 16px 48px rgba(0,0,0,0.14), 0 4px 12px rgba(0,0,0,0.06);
+  --lg-highlight:      inset 0 1px 0 rgba(255,255,255,0.55), inset 0 -0.5px 0 rgba(0,0,0,0.04);
+  --lg-blur:           blur(40px) saturate(180%);
+  --lg-bar:            rgba(245, 245, 247, 0.55);
+  --lg-bar-border:     rgba(0, 0, 0, 0.08);
+  --lg-dock:           rgba(245, 245, 247, 0.3);
+  --lg-dock-border:    rgba(255, 255, 255, 0.45);
+  --lg-dock-shadow:    0 8px 32px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.5);
+  --lg-menu:           rgba(255, 255, 255, 0.82);
+  --lg-menu-border:    rgba(0, 0, 0, 0.1);
+  --lg-menu-shadow:    0 12px 48px rgba(0,0,0,0.12), 0 4px 16px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.4);
+
+  /* About This Mac */
+  --about-bg: #f5f5f7;
+  --about-text: #1d1d1f;
+  --about-text-sec: #6e6e73;
+  --about-text-ter: #aeaeb2;
+  --about-border: #d2d2d7;
+  --about-card: rgba(0,0,0,0.03);
+  --about-card-hover: rgba(0,0,0,0.06);
+  --about-accent-bg: rgba(0,122,255,0.08);
+  --about-btn-bg: #ffffff;
+  --about-btn-border: #c7c7cc;
+  --about-btn-hover: #e9e9e9;
+  --about-tab-active: #ffffff;
 }
 
 /* ══════════════════════════════════════════════════════════
@@ -65,6 +97,38 @@
   --shadow-elevated:   0 12px 40px rgba(var(--color-primary-rgb),0.25), 0 24px 56px rgba(0,0,0,0.5);
 
   --window-bg: #1C1C1E;
+
+  /* ── Liquid Glass (2026 dark) ── */
+  --lg-window:         rgba(50, 50, 54, 0.45);
+  --lg-window-content: rgba(28, 28, 30, 0.6);
+  --lg-window-border:  rgba(255, 255, 255, 0.1);
+  --lg-divider:        rgba(255, 255, 255, 0.06);
+  --lg-shadow:         0 8px 32px rgba(0,0,0,0.3), 0 2px 8px rgba(0,0,0,0.18);
+  --lg-shadow-focus:   0 16px 48px rgba(0,0,0,0.4), 0 4px 12px rgba(0,0,0,0.22);
+  --lg-highlight:      inset 0 1px 0 rgba(255,255,255,0.09), inset 0 -0.5px 0 rgba(0,0,0,0.2);
+  --lg-blur:           blur(50px) saturate(200%);
+  --lg-bar:            rgba(20, 20, 22, 0.45);
+  --lg-bar-border:     rgba(255, 255, 255, 0.06);
+  --lg-dock:           rgba(30, 30, 32, 0.25);
+  --lg-dock-border:    rgba(255, 255, 255, 0.08);
+  --lg-dock-shadow:    0 8px 32px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.06);
+  --lg-menu:           rgba(40, 40, 44, 0.82);
+  --lg-menu-border:    rgba(255, 255, 255, 0.1);
+  --lg-menu-shadow:    0 12px 48px rgba(0,0,0,0.35), 0 4px 16px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.06);
+
+  /* About This Mac */
+  --about-bg: #1c1c1e;
+  --about-text: #f5f5f7;
+  --about-text-sec: #98989d;
+  --about-text-ter: #636366;
+  --about-border: #38383a;
+  --about-card: rgba(255,255,255,0.05);
+  --about-card-hover: rgba(255,255,255,0.08);
+  --about-accent-bg: rgba(100,160,255,0.1);
+  --about-btn-bg: #2c2c2e;
+  --about-btn-border: #48484a;
+  --about-btn-hover: #3a3a3c;
+  --about-tab-active: #2c2c2e;
 }
 
 html {
@@ -473,3 +537,511 @@ html {
   background: transparent;
   opacity: 0;
 }
+
+/* ══════════════════════════════════════════════════════════
+   APP STORE — macOS App Store layout for Skills
+   ══════════════════════════════════════════════════════════ */
+
+.app-store {
+  display: flex;
+  height: 100%;
+  background: var(--window-bg);
+  overflow: hidden;
+}
+
+/* ── Sidebar ── */
+.app-store-sidebar {
+  width: 150px;
+  min-width: 150px;
+  padding: 12px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  border-right: 1px solid var(--glass-border);
+}
+
+.app-store-nav {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  border-radius: 7px;
+  border: none;
+  background: transparent;
+  color: var(--color-text-muted);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.app-store-nav:hover {
+  background: rgba(var(--color-primary-rgb), 0.08);
+  color: var(--color-text);
+}
+
+.app-store-nav.active {
+  background: rgba(var(--color-primary-rgb), 0.15);
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+/* ── Main area ── */
+.app-store-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-width: 0;
+}
+
+.app-store-topbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px 6px;
+}
+
+.app-store-page-title {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--color-text);
+  margin-right: auto;
+  letter-spacing: -0.02em;
+}
+
+.app-store-search {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  border-radius: 8px;
+  background: var(--color-surface2);
+  border: 1px solid var(--glass-border);
+  width: 160px;
+  color: var(--color-text-muted);
+  transition: border-color 0.15s;
+}
+
+.app-store-search:focus-within {
+  border-color: rgba(var(--color-primary-rgb), 0.4);
+}
+
+.app-store-search input {
+  border: none;
+  background: transparent;
+  outline: none;
+  color: var(--color-text);
+  font-size: 12px;
+  width: 100%;
+  font-family: inherit;
+}
+
+.app-store-search input::placeholder {
+  color: var(--color-text-muted);
+}
+
+.app-store-scroll {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 6px 16px 16px;
+}
+
+/* ── Featured cards ── */
+.app-store-featured {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.app-store-feat-card {
+  border-radius: 12px;
+  padding: 14px;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 110px;
+  cursor: default;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  overflow: hidden;
+}
+
+.app-store-feat-card:hover {
+  transform: scale(1.02);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.2);
+}
+
+.app-store-feat-label {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  opacity: 0.7;
+}
+
+.app-store-feat-body {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.app-store-feat-img {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  flex-shrink: 0;
+}
+
+.app-store-feat-tag {
+  font-size: 10px;
+  opacity: 0.8;
+  font-weight: 500;
+}
+
+.app-store-feat-name {
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.app-store-feat-desc {
+  font-size: 10px;
+  opacity: 0.7;
+  line-height: 1.3;
+  margin-top: 2px;
+}
+
+/* ── Section ── */
+.app-store-section {
+  margin-bottom: 18px;
+}
+
+.app-store-sec-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--glass-border);
+  padding-bottom: 6px;
+  margin-bottom: 2px;
+}
+
+.app-store-sec-head h2 {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--color-text);
+  letter-spacing: -0.01em;
+}
+
+.app-store-see-all {
+  font-size: 12px;
+  color: var(--color-primary);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+  font-family: inherit;
+}
+
+.app-store-see-all:hover {
+  text-decoration: underline;
+}
+
+/* ── App list ── */
+.app-store-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.app-store-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 4px;
+  border-bottom: 0.5px solid var(--glass-border);
+  transition: background 0.12s ease;
+}
+
+.app-store-row:last-child {
+  border-bottom: none;
+}
+
+.app-store-row:hover {
+  background: rgba(var(--color-primary-rgb), 0.04);
+}
+
+.app-store-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+
+.app-store-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.app-store-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.app-store-sub {
+  font-size: 11px;
+  color: var(--color-text-muted);
+}
+
+/* ── GET button ── */
+.app-store-get {
+  padding: 4px 18px;
+  border-radius: 14px;
+  border: none;
+  background: rgba(var(--color-primary-rgb), 0.15);
+  color: var(--color-primary);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+  font-family: inherit;
+  letter-spacing: 0.02em;
+}
+
+.app-store-get:hover {
+  background: var(--color-primary);
+  color: #fff;
+}
+
+/* ── Scrollbar inside App Store ── */
+.app-store-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+
+.app-store-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.app-store-scroll::-webkit-scrollbar-thumb {
+  background: rgba(var(--color-primary-rgb), 0.2);
+  border-radius: 3px;
+}
+
+.app-store-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(var(--color-primary-rgb), 0.35);
+}
+
+/* ══════════════════════════════════════════════════════════
+   ARTPAD — macOS-native drawing app
+   ══════════════════════════════════════════════════════════ */
+.artpad-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  background: #F5F5F5;
+  border-bottom: 1px solid #d4d4d4;
+  flex-shrink: 0;
+}
+.dark .artpad-toolbar { background: #2b2b2b; border-color: #404040; }
+
+.artpad-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  color: #555;
+  cursor: pointer;
+  transition: background 0.12s;
+}
+.artpad-btn:hover { background: rgba(0,0,0,0.06); }
+.artpad-btn:disabled { opacity: 0.25; pointer-events: none; }
+.artpad-btn.small { padding: 2px; }
+.dark .artpad-btn { color: #bbb; }
+.dark .artpad-btn:hover { background: rgba(255,255,255,0.08); }
+
+.artpad-sep {
+  width: 1px;
+  height: 20px;
+  background: #d4d4d4;
+  margin: 0 2px;
+  flex-shrink: 0;
+}
+.dark .artpad-sep { background: #555; }
+
+/* Segmented control */
+.artpad-segment {
+  display: flex;
+  background: rgba(0,0,0,0.05);
+  border-radius: 8px;
+  padding: 2px;
+  gap: 1px;
+}
+.dark .artpad-segment { background: rgba(255,255,255,0.06); }
+
+.artpad-seg-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px 7px;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  color: #666;
+  cursor: pointer;
+  transition: all 0.12s ease;
+}
+.artpad-seg-btn:hover { color: #333; }
+.artpad-seg-btn.active {
+  background: #fff;
+  color: #1d1d1f;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1), 0 0.5px 1px rgba(0,0,0,0.06);
+}
+.dark .artpad-seg-btn { color: #999; }
+.dark .artpad-seg-btn:hover { color: #ddd; }
+.dark .artpad-seg-btn.active {
+  background: rgba(255,255,255,0.12);
+  color: #f0f0f0;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+}
+
+.artpad-export {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 12px;
+  border-radius: 8px;
+  border: none;
+  background: linear-gradient(135deg, #3B82F6, #6366F1);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: filter 0.15s;
+  font-family: inherit;
+}
+.artpad-export:hover { filter: brightness(1.1); }
+
+/* Inspector panel */
+.artpad-inspector {
+  width: 190px;
+  flex-shrink: 0;
+  background: #F5F5F5;
+  border-left: 1px solid #d4d4d4;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+.dark .artpad-inspector { background: #2b2b2b; border-color: #404040; }
+
+.artpad-section {
+  padding: 12px;
+  border-bottom: 1px solid #e5e5e5;
+}
+.artpad-section:last-child { border-bottom: none; }
+.dark .artpad-section { border-color: #333; }
+
+.artpad-label {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #888;
+}
+
+/* Color well */
+.artpad-color-well {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2.5px solid #fff;
+  box-shadow: 0 0 0 1px rgba(0,0,0,0.15), 0 1px 3px rgba(0,0,0,0.1);
+  cursor: pointer;
+  transition: transform 0.12s;
+}
+.artpad-color-well:hover { transform: scale(1.1); }
+.artpad-color-well.secondary { width: 22px; height: 22px; }
+.dark .artpad-color-well {
+  border-color: #444;
+  box-shadow: 0 0 0 1px rgba(255,255,255,0.1), 0 1px 3px rgba(0,0,0,0.3);
+}
+
+.artpad-swatch {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 4px;
+  border: 1px solid rgba(0,0,0,0.1);
+  cursor: pointer;
+  transition: transform 0.12s;
+}
+.artpad-swatch:hover { transform: scale(1.15); z-index: 1; }
+.dark .artpad-swatch { border-color: rgba(255,255,255,0.08); }
+
+/* macOS-style slider */
+.artpad-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 4px;
+  border-radius: 2px;
+  background: #d1d5db;
+  outline: none;
+  cursor: pointer;
+}
+.artpad-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #fff;
+  border: 0.5px solid rgba(0,0,0,0.12);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+  cursor: pointer;
+}
+.dark .artpad-slider { background: #444; }
+.dark .artpad-slider::-webkit-slider-thumb {
+  background: #888;
+  border-color: rgba(255,255,255,0.1);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.4);
+}
+
+.artpad-size-btn {
+  padding: 4px 2px;
+  border-radius: 4px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  transition: background 0.12s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 20px;
+}
+.artpad-size-btn:hover { background: rgba(0,0,0,0.05); }
+.artpad-size-btn.active { background: rgba(var(--color-primary-rgb), 0.15); }
+.dark .artpad-size-btn:hover { background: rgba(255,255,255,0.06); }
+
+.artpad-statusbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 3px 10px;
+  background: #F0F0F0;
+  border-top: 1px solid #d4d4d4;
+  flex-shrink: 0;
+}
+.dark .artpad-statusbar { background: #252525; border-color: #404040; }

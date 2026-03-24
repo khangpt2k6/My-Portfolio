@@ -163,7 +163,7 @@ export default function BootScreen({ onComplete }) {
 
   useEffect(() => {
     if (phase === "intro") {
-      const t = setTimeout(() => setPhase("opening"), 800);
+      const t = setTimeout(() => setPhase("opening"), 1500);
       return () => clearTimeout(t);
     }
     if (phase === "opening") {

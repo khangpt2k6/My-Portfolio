@@ -63,14 +63,15 @@ export default function Desktop() {
       <AnimatePresence>
         {ctxMenu && (
           <motion.div
-            className="absolute rounded-lg py-1 min-w-[180px] z-[9999] overflow-hidden"
+            className="absolute rounded-xl py-1 min-w-[180px] z-[9999] overflow-hidden"
             style={{
               top: ctxMenu.y,
               left: ctxMenu.x,
-              background: "rgba(30,30,30,0.85)",
-              backdropFilter: "blur(40px) saturate(180%)",
-              border: "0.5px solid rgba(255,255,255,0.12)",
-              boxShadow: "0 8px 40px rgba(0,0,0,0.4)",
+              background: "var(--lg-menu)",
+              backdropFilter: "var(--lg-blur)",
+              WebkitBackdropFilter: "var(--lg-blur)",
+              border: "0.5px solid var(--lg-menu-border)",
+              boxShadow: "var(--lg-menu-shadow)",
             }}
             initial={{ opacity: 0, scale: 0.92 }}
             animate={{ opacity: 1, scale: 1 }}

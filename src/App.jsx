@@ -64,9 +64,9 @@ function useIsMobile(breakpoint = 768) {
 
 // ── Wallpaper hook ──
 function useWallpaper() {
-  const [wp, setWp] = useState(() => localStorage.getItem("wallpaper") || "dynamic")
+  const [wp, setWp] = useState(() => localStorage.getItem("wallpaper") || "bV6xf3")
   useEffect(() => {
-    const handler = () => setWp(localStorage.getItem("wallpaper") || "dynamic")
+    const handler = () => setWp(localStorage.getItem("wallpaper") || "bV6xf3")
     window.addEventListener("wallpaper-change", handler)
     return () => window.removeEventListener("wallpaper-change", handler)
   }, [])
@@ -80,11 +80,13 @@ function DesktopScreen() {
     ? (() => {
         const map = {
           bV6xf3: "/desktop_background/bV6xf3.webp",
-          sea: "/desktop_background/colourful-textured-background-desktop-sea-600nw-2432936989.webp",
           icH5Aj: "/desktop_background/icH5Aj.webp",
           lake: "/desktop_background/lake-side-trees-live-desktop-jwhxpov3u0jdebb0.jpg",
-          nature: "/desktop_background/nature-background-high-resolution-wallpaper-for-a-serene-and-stunning-view-free-photo.jpg",
-          landscape: "/desktop_background/stunning-high-resolution-nature-and-landscape-backgrounds-breathtaking-scenery-in-hd-free-photo.jpg",
+          default: "/desktop_background/default_background.webp",
+          aesthetic: "/desktop_background/aesthetic-wallpaper-1.jpg",
+          tsHljX: "/desktop_background/tsHljX.webp",
+          wTyWLK: "/desktop_background/wTyWLK.webp",
+          wp33: "/desktop_background/wp3305840.jpg",
         }
         return map[wallpaperId] || null
       })()
