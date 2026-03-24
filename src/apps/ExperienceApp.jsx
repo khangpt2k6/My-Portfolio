@@ -1,90 +1,87 @@
 import { useState, useCallback, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronLeft, ChevronRight, MapPin, Briefcase } from "lucide-react";
+import { ChevronLeft, ChevronRight, MapPin, Calendar } from "lucide-react";
 import experiences from "../data/experiences";
 
 /* ── Constants ── */
-const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 const MS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-const DAYS = ["SUN","MON","TUE","WED","THU","FRI","SAT"];
+const DS = ["S","M","T","W","T","F","S"];
 
-const THEMES = [
-  { main: "#E74C3C", dark: "#C0392B", light: "#FDEDEB", gradient: "linear-gradient(135deg, #E74C3C 0%, #C0392B 60%, #922B21 100%)" },
-  { main: "#2980B9", dark: "#1A5276", light: "#EBF5FB", gradient: "linear-gradient(135deg, #2980B9 0%, #1A5276 60%, #154360 100%)" },
-  { main: "#27AE60", dark: "#1E8449", light: "#EAFAF1", gradient: "linear-gradient(135deg, #27AE60 0%, #1E8449 60%, #196F3D 100%)" },
-  { main: "#8E44AD", dark: "#6C3483", light: "#F4ECF7", gradient: "linear-gradient(135deg, #8E44AD 0%, #6C3483 60%, #512E5F 100%)" },
-];
+const pages = experiences.professional;
 
-const pages = experiences.professional.map((exp, i) => ({
-  ...exp,
-  theme: THEMES[i % THEMES.length],
-}));
-
-/* ── Parse period string to get month/year ── */
+/* ── Parse period ── */
 function parsePeriod(period) {
   const str = period.split(/\s*[–-]\s*/)[0].trim();
-  const parts = str.split(/\s+/);
-  const m = parts[0];
-  const y = parseInt(parts[1]);
+  const [m, y] = str.split(/\s+/);
   const mi = MS.indexOf(m.substring(0, 3));
-  return { month: mi >= 0 ? mi : 0, year: isNaN(y) ? 2025 : y, monthName: MONTHS[mi] || m };
+  return { month: mi >= 0 ? mi : 0, year: parseInt(y) || 2025 };
 }
 
-/* ── Generate calendar grid ── */
-function useCalendarGrid(month, year) {
-  return useMemo(() => {
-    const firstDay = new Date(year, month, 1).getDay();
-    const daysInMonth = new Date(year, month + 1, 0).getDate();
-    const today = new Date();
-    const isCurrentMonth = today.getMonth() === month && today.getFullYear() === year;
-    const todayDate = isCurrentMonth ? today.getDate() : -1;
-
-    const cells = [];
-    // Previous month trailing days
-    const prevDays = new Date(year, month, 0).getDate();
-    for (let i = firstDay - 1; i >= 0; i--) {
-      cells.push({ day: prevDays - i, current: false });
-    }
-    // Current month days
-    for (let d = 1; d <= daysInMonth; d++) {
-      cells.push({ day: d, current: true, isToday: d === todayDate });
-    }
-    // Next month leading days
-    const remaining = 42 - cells.length;
-    for (let d = 1; d <= remaining; d++) {
-      cells.push({ day: d, current: false });
-    }
-
-    return cells;
+/* ── Tiny inline calendar ── */
+function MiniCal({ month, year }) {
+  const { cells, todayD } = useMemo(() => {
+    const first = new Date(year, month, 1).getDay();
+    const dim = new Date(year, month + 1, 0).getDate();
+    const now = new Date();
+    const td = now.getMonth() === month && now.getFullYear() === year ? now.getDate() : -1;
+    const c = [];
+    for (let i = 0; i < first; i++) c.push(null);
+    for (let d = 1; d <= dim; d++) c.push(d);
+    return { cells: c, todayD: td };
   }, [month, year]);
+
+  return (
+    <div className="w-[76px]">
+      <div className="text-[7px] font-bold text-center uppercase tracking-wider mb-0.5"
+        style={{ color: "var(--color-text-muted)", opacity: 0.5 }}>
+        {MS[month]} {year}
+      </div>
+      <div className="grid grid-cols-7 mb-px">
+        {DS.map((d, i) => (
+          <div key={i} className="text-center text-[5px] font-bold"
+            style={{ color: "var(--color-text-muted)", opacity: 0.3 }}>{d}</div>
+        ))}
+      </div>
+      <div className="grid grid-cols-7">
+        {cells.map((d, i) => (
+          <div key={i} className="flex items-center justify-center" style={{ height: 10 }}>
+            {d != null && (
+              <span
+                className="flex items-center justify-center text-[5px] leading-none rounded-full"
+                style={{
+                  color: d === todayD ? "#fff" : "var(--color-text-muted)",
+                  opacity: d === todayD ? 1 : 0.25,
+                  background: d === todayD ? "var(--color-primary)" : "transparent",
+                  width: d === todayD ? 10 : "auto",
+                  height: d === todayD ? 10 : "auto",
+                  fontWeight: d === todayD ? 700 : 400,
+                }}
+              >
+                {d}
+              </span>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
 }
 
-/* ── Page-flip animation ── */
+/* ── Page animation ── */
 const flipV = {
-  enter: (d) => ({
-    rotateX: d > 0 ? -15 : 15,
-    y: d > 0 ? -30 : 30,
-    opacity: 0,
-    scale: 0.95,
-  }),
-  center: { rotateX: 0, y: 0, opacity: 1, scale: 1 },
-  exit: (d) => ({
-    rotateX: d > 0 ? 15 : -15,
-    y: d > 0 ? 30 : -30,
-    opacity: 0,
-    scale: 0.95,
-  }),
+  enter: (d) => ({ x: d > 0 ? "20%" : "-20%", opacity: 0, scale: 0.97 }),
+  center: { x: 0, opacity: 1, scale: 1 },
+  exit: (d) => ({ x: d > 0 ? "-20%" : "20%", opacity: 0, scale: 0.97 }),
 };
 
-/* ══════════════════════════════════════════════
-   Main Calendar App
-   ══════════════════════════════════════════════ */
+/* ══════════════════════════════════════════
+   Experience App
+   ══════════════════════════════════════════ */
 export default function ExperienceApp() {
   const [page, setPage] = useState(0);
   const [dir, setDir] = useState(1);
   const exp = pages[page];
-  const { month, year, monthName } = parsePeriod(exp.period);
-  const cells = useCalendarGrid(month, year);
+  const { month, year } = parsePeriod(exp.period);
 
   const go = useCallback(
     (i) => {
@@ -95,44 +92,16 @@ export default function ExperienceApp() {
     [page],
   );
 
-  // Pick some "event" days to mark on calendar (based on description count)
-  const eventDays = useMemo(() => {
-    const days = [];
-    const count = exp.description.length;
-    const step = Math.floor(28 / (count + 1));
-    for (let i = 0; i < count; i++) {
-      days.push(step * (i + 1));
-    }
-    return days;
-  }, [exp]);
-
   return (
     <div
       className="h-full flex flex-col overflow-hidden select-none"
       style={{
         fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro", "Segoe UI", sans-serif',
-        background: "#f0f0f0",
+        background: "var(--window-bg)",
       }}
     >
-      {/* ── Spiral binding ── */}
-      <div
-        className="flex justify-center gap-[14px] py-[4px] shrink-0 relative z-20"
-        style={{ background: "linear-gradient(180deg, #e0e0e0, #d0d0d0)" }}
-      >
-        {Array.from({ length: 16 }).map((_, i) => (
-          <div
-            key={i}
-            className="w-[5px] h-[10px] rounded-full"
-            style={{
-              background: "linear-gradient(180deg, #c8c8c8, #999, #b0b0b0)",
-              boxShadow: "0 1px 2px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.4)",
-            }}
-          />
-        ))}
-      </div>
-
-      {/* ── Calendar page ── */}
-      <div className="flex-1 flex flex-col min-h-0 relative" style={{ perspective: 1200 }}>
+      {/* ── Content ── */}
+      <div className="flex-1 flex flex-col min-h-0 relative">
         <AnimatePresence mode="wait" custom={dir}>
           <motion.div
             key={page}
@@ -141,219 +110,175 @@ export default function ExperienceApp() {
             initial="enter"
             animate="center"
             exit="exit"
-            transition={{ duration: 0.45, ease: [0.4, 0, 0.2, 1] }}
+            transition={{ duration: 0.35, ease: [0.4, 0, 0.2, 1] }}
             className="absolute inset-0 flex flex-col"
-            style={{ transformStyle: "preserve-3d", backfaceVisibility: "hidden" }}
           >
-            {/* ════ TOP HALF — Photo Header ════ */}
+            {/* ════ HEADER ════ */}
             <div
-              className="relative shrink-0 overflow-hidden"
-              style={{
-                height: "42%",
-                background: exp.theme.gradient,
-              }}
+              className="shrink-0 px-4 py-3 flex items-center gap-3"
+              style={{ borderBottom: "0.5px solid var(--color-border)" }}
             >
-              {/* Decorative wave divider at bottom */}
-              <svg
-                className="absolute bottom-0 left-0 right-0 w-full"
-                viewBox="0 0 1440 60"
-                preserveAspectRatio="none"
-                style={{ height: 30 }}
-              >
-                <path
-                  d="M0,30 C360,60 720,0 1080,30 C1260,45 1380,20 1440,30 L1440,60 L0,60 Z"
-                  fill="white"
-                />
-              </svg>
-
-              {/* Decorative circles */}
-              <div className="absolute -right-10 -top-10 w-40 h-40 rounded-full"
-                style={{ background: "rgba(255,255,255,0.06)" }} />
-              <div className="absolute -left-8 -bottom-12 w-32 h-32 rounded-full"
-                style={{ background: "rgba(255,255,255,0.04)" }} />
-              <div className="absolute right-16 top-4 w-20 h-20 rounded-full"
-                style={{ background: "rgba(255,255,255,0.03)" }} />
-
-              {/* Content */}
-              <div className="relative z-10 h-full flex flex-col px-5 py-3">
-                {/* Top bar: navigation + period */}
-                <div className="flex items-center justify-between mb-2 shrink-0">
-                  <button
-                    onClick={() => go(page - 1)}
-                    disabled={page === 0}
-                    className="w-6 h-6 rounded-full flex items-center justify-center transition-all
-                               bg-white/15 hover:bg-white/25 disabled:opacity-30 cursor-pointer"
-                  >
-                    <ChevronLeft className="w-3.5 h-3.5 text-white" />
-                  </button>
-
-                  <div className="text-center">
-                    <div className="text-[28px] font-light text-white leading-none tracking-tight">
-                      {monthName} <span className="font-bold">{year}</span>
-                    </div>
-                  </div>
-
-                  <button
-                    onClick={() => go(page + 1)}
-                    disabled={page === pages.length - 1}
-                    className="w-6 h-6 rounded-full flex items-center justify-center transition-all
-                               bg-white/15 hover:bg-white/25 disabled:opacity-30 cursor-pointer"
-                  >
-                    <ChevronRight className="w-3.5 h-3.5 text-white" />
-                  </button>
+              {/* Logo */}
+              {exp.image && (
+                <div
+                  className="w-11 h-11 rounded-[12px] overflow-hidden shrink-0"
+                  style={{
+                    border: "0.5px solid var(--color-border)",
+                    boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
+                  }}
+                >
+                  <img src={exp.image} alt="" className="w-full h-full object-cover" />
                 </div>
+              )}
 
-                {/* Company info card */}
-                <div className="flex-1 flex items-center gap-3 min-h-0">
-                  {exp.image && (
-                    <div
-                      className="w-12 h-12 rounded-xl overflow-hidden shrink-0 bg-white/20 backdrop-blur-sm"
-                      style={{
-                        border: "2px solid rgba(255,255,255,0.3)",
-                        boxShadow: "0 4px 15px rgba(0,0,0,0.2)",
-                      }}
-                    >
-                      <img src={exp.image} alt="" className="w-full h-full object-cover" />
-                    </div>
-                  )}
-                  <div className="min-w-0 flex-1">
-                    <h2 className="text-[14px] font-bold text-white leading-tight truncate">
-                      {exp.title}
-                    </h2>
-                    <p className="text-[11px] text-white/80 font-medium truncate">
-                      {exp.company}
-                    </p>
-                    <div className="flex items-center gap-1 mt-0.5">
-                      <MapPin className="w-2.5 h-2.5 text-white/50" />
-                      <span className="text-[9px] text-white/50">{exp.location}</span>
-                    </div>
-                  </div>
-                  <div
-                    className="text-[9px] font-bold text-white/70 px-2 py-0.5 rounded-full shrink-0"
-                    style={{ background: "rgba(255,255,255,0.15)", backdropFilter: "blur(8px)" }}
+              {/* Info */}
+              <div className="flex-1 min-w-0">
+                <h2
+                  className="text-[14px] font-semibold leading-tight truncate"
+                  style={{ color: "var(--color-text)" }}
+                >
+                  {exp.title}
+                </h2>
+                <p
+                  className="text-[11px] font-medium truncate mt-px"
+                  style={{ color: "var(--color-text-muted)" }}
+                >
+                  {exp.company}
+                </p>
+                <div className="flex items-center gap-2.5 mt-1">
+                  <span
+                    className="flex items-center gap-1 text-[10px]"
+                    style={{ color: "var(--color-text-muted)", opacity: 0.7 }}
                   >
+                    <MapPin className="w-3 h-3" />
+                    {exp.location}
+                  </span>
+                  <span
+                    className="flex items-center gap-1 text-[10px]"
+                    style={{ color: "var(--color-text-muted)", opacity: 0.7 }}
+                  >
+                    <Calendar className="w-3 h-3" />
                     {exp.period}
-                  </div>
+                  </span>
                 </div>
+              </div>
+
+              {/* Mini calendar */}
+              <div className="shrink-0 hidden sm:block">
+                <MiniCal month={month} year={year} />
               </div>
             </div>
 
-            {/* ════ BOTTOM HALF — Calendar Grid ════ */}
-            <div className="flex-1 bg-white flex flex-col min-h-0 px-3 pb-2">
-              {/* Day headers */}
-              <div className="grid grid-cols-7 shrink-0 pt-2 pb-1">
-                {DAYS.map((d, i) => (
-                  <div
-                    key={d}
-                    className="text-center text-[9px] font-bold tracking-wider"
-                    style={{
-                      color: i === 0 ? exp.theme.main : "#999",
-                    }}
-                  >
-                    {d}
-                  </div>
-                ))}
+            {/* ════ ACHIEVEMENTS ════ */}
+            <div className="flex-1 overflow-auto px-4 py-3">
+              <div className="flex items-center gap-2 mb-3">
+                <span
+                  className="text-[10px] font-semibold uppercase tracking-[0.1em]"
+                  style={{ color: "var(--color-text-muted)", opacity: 0.5 }}
+                >
+                  Highlights
+                </span>
+                <div className="flex-1 h-px" style={{ background: "var(--color-border)" }} />
+                <span
+                  className="text-[10px] font-medium tabular-nums"
+                  style={{ color: "var(--color-text-muted)", opacity: 0.4 }}
+                >
+                  {exp.description.length}
+                </span>
               </div>
 
-              {/* Separator */}
-              <div className="h-px shrink-0 mx-1" style={{ background: "#e5e5e5" }} />
-
-              {/* Day grid */}
-              <div className="grid grid-cols-7 flex-1 min-h-0">
-                {cells.map((cell, i) => {
-                  const isSunday = i % 7 === 0;
-                  const hasEvent = cell.current && eventDays.includes(cell.day);
-                  const eventIdx = eventDays.indexOf(cell.day);
-
-                  return (
-                    <div
-                      key={i}
-                      className="relative flex flex-col items-center py-[2px] border-b"
-                      style={{ borderColor: "#f5f5f5" }}
-                    >
-                      {/* Day number */}
-                      <span
-                        className="text-[10px] font-medium leading-tight"
-                        style={{
-                          color: !cell.current
-                            ? "#d0d0d0"
-                            : cell.isToday
-                            ? "#fff"
-                            : isSunday
-                            ? exp.theme.main
-                            : "#333",
-                          background: cell.isToday ? exp.theme.main : "transparent",
-                          borderRadius: cell.isToday ? "50%" : 0,
-                          width: cell.isToday ? 18 : "auto",
-                          height: cell.isToday ? 18 : "auto",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                        }}
-                      >
-                        {cell.day}
-                      </span>
-
-                      {/* Event dot */}
-                      {hasEvent && (
-                        <div
-                          className="w-1 h-1 rounded-full mt-[1px]"
-                          style={{ background: exp.theme.main }}
-                          title={exp.description[eventIdx]}
-                        />
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-
-              {/* ── Experience highlights as events ── */}
-              <div className="shrink-0 pt-1.5 pb-1 space-y-1 max-h-[35%] overflow-auto">
+              <div className="space-y-2">
                 {exp.description.map((item, i) => (
                   <motion.div
                     key={i}
-                    className="flex items-start gap-2 px-1"
-                    initial={{ opacity: 0, y: 5 }}
+                    className="flex gap-3 rounded-xl p-3"
+                    initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.2 + i * 0.08 }}
+                    transition={{
+                      delay: 0.06 + i * 0.07,
+                      duration: 0.35,
+                      ease: [0.4, 0, 0.2, 1],
+                    }}
+                    style={{
+                      background: "var(--color-surface2)",
+                      border: "0.5px solid var(--color-border)",
+                    }}
                   >
+                    {/* Number */}
+                    <span
+                      className="text-[18px] font-bold leading-none shrink-0 w-7 text-center tabular-nums pt-0.5"
+                      style={{ color: "var(--color-primary)", opacity: 0.35 }}
+                    >
+                      {String(i + 1).padStart(2, "0")}
+                    </span>
+
+                    {/* Separator */}
                     <div
-                      className="w-[3px] h-[3px] rounded-full shrink-0 mt-[5px]"
-                      style={{ background: exp.theme.main }}
+                      className="w-px self-stretch shrink-0 rounded-full"
+                      style={{ background: "var(--color-primary)", opacity: 0.15 }}
                     />
-                    <p className="text-[9px] leading-snug text-gray-600 line-clamp-2">
+
+                    {/* Text */}
+                    <p
+                      className="text-[11px] leading-[1.65] flex-1"
+                      style={{ color: "var(--color-text)", opacity: 0.8 }}
+                    >
                       {item}
                     </p>
                   </motion.div>
                 ))}
               </div>
             </div>
-
-            {/* Shadow edges for depth */}
-            <div className="absolute bottom-0 left-0 right-0 h-[1px]"
-              style={{ boxShadow: "0 2px 8px rgba(0,0,0,0.1)" }} />
           </motion.div>
         </AnimatePresence>
       </div>
 
-      {/* ── Page indicator ── */}
+      {/* ── Navigation ── */}
       <div
-        className="flex items-center justify-center gap-1.5 py-2 shrink-0"
-        style={{ background: "#f0f0f0" }}
+        className="flex items-center justify-center gap-3 py-2.5 shrink-0"
+        style={{ borderTop: "0.5px solid var(--color-border)" }}
       >
-        {pages.map((p, i) => (
-          <button
-            key={i}
-            onClick={() => go(i)}
-            className="transition-all duration-300 cursor-pointer"
-            style={{
-              width: i === page ? 16 : 6,
-              height: 6,
-              borderRadius: 3,
-              background: i === page ? p.theme.main : "#ccc",
-            }}
-          />
-        ))}
+        <button
+          onClick={() => go(page - 1)}
+          disabled={page === 0}
+          className="w-6 h-6 rounded-full flex items-center justify-center transition-opacity
+                     disabled:opacity-15 cursor-pointer"
+          style={{
+            border: "0.5px solid var(--color-border)",
+            color: "var(--color-text-muted)",
+          }}
+        >
+          <ChevronLeft className="w-3.5 h-3.5" />
+        </button>
+
+        <div className="flex gap-1.5">
+          {pages.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => go(i)}
+              className="rounded-full transition-all duration-300 cursor-pointer"
+              style={{
+                width: i === page ? 18 : 6,
+                height: 6,
+                background:
+                  i === page ? "var(--color-primary)" : "var(--color-border)",
+              }}
+            />
+          ))}
+        </div>
+
+        <button
+          onClick={() => go(page + 1)}
+          disabled={page === pages.length - 1}
+          className="w-6 h-6 rounded-full flex items-center justify-center transition-opacity
+                     disabled:opacity-15 cursor-pointer"
+          style={{
+            border: "0.5px solid var(--color-border)",
+            color: "var(--color-text-muted)",
+          }}
+        >
+          <ChevronRight className="w-3.5 h-3.5" />
+        </button>
       </div>
     </div>
   );

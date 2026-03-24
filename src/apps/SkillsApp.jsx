@@ -1,86 +1,182 @@
-import { Code, Wrench, Cloud, Sparkles, Check } from "lucide-react";
-import skillCategories from "../data/skills";
-
-const CATEGORY_ICONS = {
+import { useState } from "react";
+import {
+  Search,
+  Compass,
   Code,
   Wrench,
   Cloud,
   Sparkles,
-};
+} from "lucide-react";
+import skillCategories from "../data/skills";
 
-const skillIcon = (key) =>
+const NAV = [
+  { id: "discover", label: "Discover", Icon: Compass },
+  { id: 0, label: "Languages", Icon: Code },
+  { id: 1, label: "Frameworks", Icon: Wrench },
+  { id: 2, label: "Cloud & Infra", Icon: Cloud },
+  { id: 3, label: "Data & AI", Icon: Sparkles },
+];
+
+const FEATURED = [
+  {
+    icon: "react",
+    name: "React",
+    tagline: "Build Modern UIs",
+    desc: "Component-based library for building interactive user interfaces.",
+    bg: "linear-gradient(135deg, #6366f1, #a855f7)",
+  },
+  {
+    icon: "python",
+    name: "Python",
+    tagline: "Versatile & Powerful",
+    desc: "From web development to machine learning — Python does it all.",
+    bg: "linear-gradient(135deg, #3b82f6, #06b6d4)",
+  },
+  {
+    icon: "docker",
+    name: "Docker",
+    tagline: "Containerize Everything",
+    desc: "Build, ship, and run applications anywhere with containers.",
+    bg: "linear-gradient(135deg, #f97316, #ef4444)",
+  },
+];
+
+const iconUrl = (key) =>
   `https://skillicons.dev/icons?i=${key}&theme=dark`;
 
 export default function SkillsApp() {
-  return (
-    <div
-      className="h-full overflow-auto p-4 space-y-4"
-      style={{ background: "var(--window-bg)" }}
-    >
-      {skillCategories.map((cat) => {
-        const Icon = CATEGORY_ICONS[cat.icon] || Code;
-        return (
-          <section key={cat.title}>
-            {/* Category header */}
-            <div className="flex items-center gap-2 mb-2.5">
-              <div
-                className="w-6 h-6 rounded-md flex items-center justify-center"
-                style={{ background: "rgba(var(--color-primary-rgb), 0.1)" }}
-              >
-                <Icon
-                  size={13}
-                  style={{ color: "var(--color-primary)" }}
-                />
-              </div>
-              <h3
-                className="text-xs font-bold uppercase tracking-wider"
-                style={{ color: "var(--color-text-muted)" }}
-              >
-                {cat.title}
-              </h3>
-              <span
-                className="text-[10px] ml-auto"
-                style={{ color: "var(--color-text-muted)" }}
-              >
-                {cat.skills.length}
-              </span>
-            </div>
+  const [tab, setTab] = useState("discover");
+  const [query, setQuery] = useState("");
 
-            {/* Skills grid */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5">
-              {cat.skills.map((skill) => (
+  const categories =
+    tab === "discover" ? skillCategories : [skillCategories[tab]];
+
+  const filtered = categories
+    .map((c) => ({
+      ...c,
+      skills: c.skills.filter((s) =>
+        s.name.toLowerCase().includes(query.toLowerCase())
+      ),
+    }))
+    .filter((c) => c.skills.length > 0);
+
+  return (
+    <div className="app-store">
+      {/* ── Sidebar ── */}
+      <nav className="app-store-sidebar">
+        {NAV.map(({ id, label, Icon }) => (
+          <button
+            key={id}
+            className={`app-store-nav${tab === id ? " active" : ""}`}
+            onClick={() => {
+              setTab(id);
+              setQuery("");
+            }}
+          >
+            <Icon size={15} />
+            <span>{label}</span>
+          </button>
+        ))}
+      </nav>
+
+      {/* ── Main ── */}
+      <main className="app-store-main">
+        {/* Top bar */}
+        <div className="app-store-topbar">
+          {typeof tab === "number" && (
+            <h1 className="app-store-page-title">
+              {skillCategories[tab].title}
+            </h1>
+          )}
+          {tab === "discover" && !query && (
+            <h1 className="app-store-page-title">Discover</h1>
+          )}
+          <div className="app-store-search">
+            <Search size={13} />
+            <input
+              placeholder="Search"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+            />
+          </div>
+        </div>
+
+        {/* Scrollable content */}
+        <div className="app-store-scroll">
+          {/* Featured cards — only on discover without search */}
+          {tab === "discover" && !query && (
+            <div className="app-store-featured">
+              {FEATURED.map((f) => (
                 <div
-                  key={skill.name}
-                  className="flex items-center gap-2.5 px-2.5 py-2 rounded-lg border transition-colors hover:border-[var(--color-primary)]/40"
-                  style={{
-                    background: "var(--color-surface2)",
-                    borderColor: "var(--glass-border)",
-                  }}
+                  key={f.icon}
+                  className="app-store-feat-card"
+                  style={{ background: f.bg }}
                 >
-                  <img
-                    src={skillIcon(skill.icon)}
-                    alt={skill.name}
-                    className="w-5 h-5 rounded"
-                    draggable={false}
-                    loading="lazy"
-                  />
-                  <span
-                    className="text-[11px] font-medium flex-1 truncate"
-                    style={{ color: "var(--color-text)" }}
-                  >
-                    {skill.name}
-                  </span>
-                  <Check
-                    size={12}
-                    className="flex-shrink-0"
-                    style={{ color: "var(--color-primary)", opacity: 0.5 }}
-                  />
+                  <span className="app-store-feat-label">FEATURED</span>
+                  <div className="app-store-feat-body">
+                    <img
+                      src={iconUrl(f.icon)}
+                      alt={f.name}
+                      className="app-store-feat-img"
+                      draggable={false}
+                    />
+                    <div>
+                      <div className="app-store-feat-tag">{f.tagline}</div>
+                      <div className="app-store-feat-name">{f.name}</div>
+                      <div className="app-store-feat-desc">{f.desc}</div>
+                    </div>
+                  </div>
                 </div>
               ))}
             </div>
-          </section>
-        );
-      })}
+          )}
+
+          {/* Category sections */}
+          {filtered.map((cat) => {
+            const catIdx = skillCategories.findIndex(
+              (c) => c.title === cat.title
+            );
+            return (
+              <section key={cat.title} className="app-store-section">
+                {/* Section header — show on discover or when searching */}
+                {(tab === "discover" || query) && (
+                  <div className="app-store-sec-head">
+                    <h2>{cat.title}</h2>
+                    {tab === "discover" && !query && (
+                      <button
+                        className="app-store-see-all"
+                        onClick={() => setTab(catIdx)}
+                      >
+                        See All
+                      </button>
+                    )}
+                  </div>
+                )}
+
+                {/* App rows */}
+                <div className="app-store-list">
+                  {cat.skills.map((skill) => (
+                    <div key={skill.name} className="app-store-row">
+                      <img
+                        src={iconUrl(skill.icon)}
+                        alt={skill.name}
+                        className="app-store-icon"
+                        draggable={false}
+                        loading="lazy"
+                      />
+                      <div className="app-store-info">
+                        <span className="app-store-name">{skill.name}</span>
+                        <span className="app-store-sub">{skill.subtitle}</span>
+                      </div>
+                      <button className="app-store-get">GET</button>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            );
+          })}
+        </div>
+      </main>
     </div>
   );
 }

@@ -37,9 +37,9 @@ const apps = [
   },
   {
     id: "skills",
-    title: "Skills",
+    title: "App Store",
     IconComponent: SkillsIcon,
-    defaultSize: { w: 580, h: 360 },
+    defaultSize: { w: 750, h: 480 },
     dockOrder: 4,
     desktopRow: 3,
     desktopCol: 0,

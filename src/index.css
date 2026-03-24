@@ -537,3 +537,307 @@ html {
   background: transparent;
   opacity: 0;
 }
+
+/* ══════════════════════════════════════════════════════════
+   APP STORE — macOS App Store layout for Skills
+   ══════════════════════════════════════════════════════════ */
+
+.app-store {
+  display: flex;
+  height: 100%;
+  background: var(--window-bg);
+  overflow: hidden;
+}
+
+/* ── Sidebar ── */
+.app-store-sidebar {
+  width: 150px;
+  min-width: 150px;
+  padding: 12px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  border-right: 1px solid var(--glass-border);
+}
+
+.app-store-nav {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  border-radius: 7px;
+  border: none;
+  background: transparent;
+  color: var(--color-text-muted);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.app-store-nav:hover {
+  background: rgba(var(--color-primary-rgb), 0.08);
+  color: var(--color-text);
+}
+
+.app-store-nav.active {
+  background: rgba(var(--color-primary-rgb), 0.15);
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+/* ── Main area ── */
+.app-store-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-width: 0;
+}
+
+.app-store-topbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px 6px;
+}
+
+.app-store-page-title {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--color-text);
+  margin-right: auto;
+  letter-spacing: -0.02em;
+}
+
+.app-store-search {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  border-radius: 8px;
+  background: var(--color-surface2);
+  border: 1px solid var(--glass-border);
+  width: 160px;
+  color: var(--color-text-muted);
+  transition: border-color 0.15s;
+}
+
+.app-store-search:focus-within {
+  border-color: rgba(var(--color-primary-rgb), 0.4);
+}
+
+.app-store-search input {
+  border: none;
+  background: transparent;
+  outline: none;
+  color: var(--color-text);
+  font-size: 12px;
+  width: 100%;
+  font-family: inherit;
+}
+
+.app-store-search input::placeholder {
+  color: var(--color-text-muted);
+}
+
+.app-store-scroll {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 6px 16px 16px;
+}
+
+/* ── Featured cards ── */
+.app-store-featured {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.app-store-feat-card {
+  border-radius: 12px;
+  padding: 14px;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 110px;
+  cursor: default;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  overflow: hidden;
+}
+
+.app-store-feat-card:hover {
+  transform: scale(1.02);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.2);
+}
+
+.app-store-feat-label {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  opacity: 0.7;
+}
+
+.app-store-feat-body {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.app-store-feat-img {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  flex-shrink: 0;
+}
+
+.app-store-feat-tag {
+  font-size: 10px;
+  opacity: 0.8;
+  font-weight: 500;
+}
+
+.app-store-feat-name {
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.app-store-feat-desc {
+  font-size: 10px;
+  opacity: 0.7;
+  line-height: 1.3;
+  margin-top: 2px;
+}
+
+/* ── Section ── */
+.app-store-section {
+  margin-bottom: 18px;
+}
+
+.app-store-sec-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--glass-border);
+  padding-bottom: 6px;
+  margin-bottom: 2px;
+}
+
+.app-store-sec-head h2 {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--color-text);
+  letter-spacing: -0.01em;
+}
+
+.app-store-see-all {
+  font-size: 12px;
+  color: var(--color-primary);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+  font-family: inherit;
+}
+
+.app-store-see-all:hover {
+  text-decoration: underline;
+}
+
+/* ── App list ── */
+.app-store-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.app-store-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 4px;
+  border-bottom: 0.5px solid var(--glass-border);
+  transition: background 0.12s ease;
+}
+
+.app-store-row:last-child {
+  border-bottom: none;
+}
+
+.app-store-row:hover {
+  background: rgba(var(--color-primary-rgb), 0.04);
+}
+
+.app-store-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+
+.app-store-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.app-store-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.app-store-sub {
+  font-size: 11px;
+  color: var(--color-text-muted);
+}
+
+/* ── GET button ── */
+.app-store-get {
+  padding: 4px 18px;
+  border-radius: 14px;
+  border: none;
+  background: rgba(var(--color-primary-rgb), 0.15);
+  color: var(--color-primary);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+  font-family: inherit;
+  letter-spacing: 0.02em;
+}
+
+.app-store-get:hover {
+  background: var(--color-primary);
+  color: #fff;
+}
+
+/* ── Scrollbar inside App Store ── */
+.app-store-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+
+.app-store-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.app-store-scroll::-webkit-scrollbar-thumb {
+  background: rgba(var(--color-primary-rgb), 0.2);
+  border-radius: 3px;
+}
+
+.app-store-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(var(--color-primary-rgb), 0.35);
+}
