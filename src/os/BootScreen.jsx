@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef, Suspense, useMemo } from "react";
 import { motion } from "framer-motion";
-import { Canvas, useFrame } from "@react-three/fiber";
+import { Canvas, useFrame, useLoader } from "@react-three/fiber";
 import { useGLTF, Environment, ContactShadows } from "@react-three/drei";
 import * as THREE from "three";
 
@@ -20,11 +20,18 @@ useGLTF.preload(MODEL_URL);
 /* ── 3D MacBook Model ────────────────────────────────────────────────── */
 function MacBook({ phase }) {
   const { scene } = useGLTF(MODEL_URL);
+  const wallpaper = useLoader(
+    THREE.TextureLoader,
+    "/desktop_background/bV6xf3.webp"
+  );
   const lid = useRef(null);
   const screen = useRef(null);
   const lidOpenX = useRef(null);
 
   const model = useMemo(() => {
+    wallpaper.flipY = false;
+    wallpaper.colorSpace = THREE.SRGBColorSpace;
+
     const clone = scene.clone(true);
     clone.traverse((node) => {
       if (node.name === "VCQqxpxkUlzqcJI_62") {
@@ -33,12 +40,15 @@ function MacBook({ phase }) {
       }
       if (node.isMesh && node.material?.name === "sfCQkHOWyrsLmor") {
         node.material = node.material.clone();
+        node.material.emissiveMap = wallpaper;
+        node.material.emissive = new THREE.Color("#ffffff");
         node.material.emissiveIntensity = 0;
+        node.material.needsUpdate = true;
         screen.current = node;
       }
     });
     return clone;
-  }, [scene]);
+  }, [scene, wallpaper]);
 
   useFrame((_, dt) => {
     if (lid.current && lidOpenX.current != null) {

@@ -12,26 +12,27 @@ import {
   Globe,
 } from "lucide-react";
 
+const favicon = (domain) =>
+  `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
+
 const BOOKMARKS = [
-  { name: "Google", url: "https://www.google.com/webhp?igu=1", icon: "🔍" },
-  { name: "Wikipedia", url: "https://en.m.wikipedia.org/wiki/Main_Page", icon: "📚" },
-  { name: "GitHub", url: "https://github.com/khangphan2204", icon: "🐱" },
-  { name: "MDN Docs", url: "https://developer.mozilla.org/en-US/", icon: "📖" },
-  { name: "YouTube", url: "https://www.youtube.com/embed", icon: "▶️" },
-  { name: "Reddit", url: "https://old.reddit.com", icon: "🟠" },
+  { name: "Google", url: "https://www.google.com/webhp?igu=1", domain: "google.com" },
+  { name: "Wikipedia", url: "https://en.m.wikipedia.org/wiki/Main_Page", domain: "wikipedia.org" },
+  { name: "GitHub", url: "https://github.com/khangphan2204", domain: "github.com" },
+  { name: "MDN Docs", url: "https://developer.mozilla.org/en-US/", domain: "developer.mozilla.org" },
+  { name: "YouTube", url: "https://www.youtube.com/embed", domain: "youtube.com" },
+  { name: "Reddit", url: "https://old.reddit.com", domain: "reddit.com" },
 ];
 
-const DEFAULT_URL = "https://www.google.com/webhp?igu=1";
-
 const START_PAGE_SHORTCUTS = [
-  { name: "Google", url: "https://www.google.com/webhp?igu=1", color: "#4285F4" },
-  { name: "GitHub", url: "https://github.com/khangphan2204", color: "#333" },
-  { name: "Wikipedia", url: "https://en.m.wikipedia.org/wiki/Main_Page", color: "#636466" },
-  { name: "YouTube", url: "https://www.youtube.com/embed", color: "#FF0000" },
-  { name: "MDN", url: "https://developer.mozilla.org/en-US/", color: "#1B1B1B" },
-  { name: "Reddit", url: "https://old.reddit.com", color: "#FF4500" },
-  { name: "Stack Overflow", url: "https://stackoverflow.com", color: "#F48024" },
-  { name: "LinkedIn", url: "https://www.linkedin.com", color: "#0A66C2" },
+  { name: "Google", url: "https://www.google.com/webhp?igu=1", domain: "google.com", color: "#4285F4" },
+  { name: "GitHub", url: "https://github.com/khangphan2204", domain: "github.com", color: "#24292e" },
+  { name: "Wikipedia", url: "https://en.m.wikipedia.org/wiki/Main_Page", domain: "wikipedia.org", color: "#f5f5f5" },
+  { name: "YouTube", url: "https://www.youtube.com/embed", domain: "youtube.com", color: "#FF0000" },
+  { name: "MDN", url: "https://developer.mozilla.org/en-US/", domain: "developer.mozilla.org", color: "#1B1B1B" },
+  { name: "Reddit", url: "https://old.reddit.com", domain: "reddit.com", color: "#FF4500" },
+  { name: "Stack Overflow", url: "https://stackoverflow.com", domain: "stackoverflow.com", color: "#F48024" },
+  { name: "LinkedIn", url: "https://www.linkedin.com", domain: "linkedin.com", color: "#0A66C2" },
 ];
 
 export default function BrowserApp() {
@@ -199,7 +200,16 @@ export default function BrowserApp() {
               marginBottom: -1,
             }}
           >
-            <Globe size={10} className="flex-shrink-0 opacity-50" />
+            {tab.url && !tab.isStart ? (
+              <img
+                src={favicon((() => { try { return new URL(tab.url).hostname; } catch { return ""; } })())}
+                alt=""
+                className="w-3 h-3 rounded-sm flex-shrink-0"
+                draggable={false}
+              />
+            ) : (
+              <Globe size={10} className="flex-shrink-0 opacity-50" />
+            )}
             <span className="truncate flex-1">{tab.title}</span>
             {tabs.length > 1 && (
               <button
@@ -308,10 +318,15 @@ export default function BrowserApp() {
           <button
             key={bm.name}
             onClick={() => navigateTo(bm.url)}
-            className="flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-medium whitespace-nowrap hover:bg-[var(--color-text)]/8 transition-colors"
+            className="flex items-center gap-1.5 px-2 py-0.5 rounded text-[10px] font-medium whitespace-nowrap hover:bg-[var(--color-text)]/8 transition-colors"
             style={{ color: "var(--color-text-muted)" }}
           >
-            <span>{bm.icon}</span>
+            <img
+              src={favicon(bm.domain)}
+              alt=""
+              className="w-3.5 h-3.5 rounded-sm"
+              draggable={false}
+            />
             <span>{bm.name}</span>
           </button>
         ))}
@@ -329,8 +344,14 @@ export default function BrowserApp() {
             }}
           >
             <div className="mb-8 text-center">
+              <img
+                src="/browser.png"
+                alt="Safari"
+                className="w-14 h-14 mx-auto mb-3 rounded-2xl"
+                draggable={false}
+              />
               <h2
-                className="text-2xl font-bold mb-1"
+                className="text-xl font-bold mb-1"
                 style={{ color: "var(--color-text)" }}
               >
                 Safari
@@ -384,10 +405,15 @@ export default function BrowserApp() {
                   className="flex flex-col items-center gap-1.5 p-2 rounded-xl transition-all hover:bg-[var(--color-text)]/8 hover:scale-105"
                 >
                   <div
-                    className="w-10 h-10 rounded-xl flex items-center justify-center text-white text-[11px] font-bold"
+                    className="w-10 h-10 rounded-xl flex items-center justify-center overflow-hidden"
                     style={{ background: site.color }}
                   >
-                    {site.name.charAt(0)}
+                    <img
+                      src={favicon(site.domain)}
+                      alt={site.name}
+                      className="w-6 h-6"
+                      draggable={false}
+                    />
                   </div>
                   <span
                     className="text-[9px] font-medium truncate w-full text-center"

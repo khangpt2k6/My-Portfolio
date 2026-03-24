@@ -185,8 +185,8 @@ const MiniPlayer = () => {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -8, scale: 0.95 }}
               transition={{ type: "spring", stiffness: 500, damping: 30 }}
-              className="absolute top-12 right-0 z-50 w-[300px] rounded-xl overflow-hidden glass-card backdrop-blur-2xl border border-[var(--color-border)]"
-              style={{ boxShadow: "0 12px 48px rgba(0,0,0,0.2)" }}
+              className="absolute top-12 right-0 z-50 w-[300px] rounded-xl overflow-hidden border border-[var(--color-border)]"
+              style={{ boxShadow: "0 12px 48px rgba(0,0,0,0.3)", background: "var(--window-bg)" }}
             >
               {/* ── Now playing header ── */}
               <div className="relative h-14 flex items-center gap-3 px-3" style={{ background: track.gradient }}>
