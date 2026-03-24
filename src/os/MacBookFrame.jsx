@@ -1,10 +1,11 @@
 import { motion } from "framer-motion";
+import { Maximize2 } from "lucide-react";
 
 /**
  * Wraps the desktop in a realistic MacBook Pro frame.
  * The children render INSIDE the screen.
  */
-export default function MacBookFrame({ children }) {
+export default function MacBookFrame({ children, onFullscreen }) {
   return (
     <div className="fixed inset-0 flex items-center justify-center overflow-hidden"
       style={{
@@ -57,6 +58,18 @@ export default function MacBookFrame({ children }) {
               style={{ background: "#1a1a1a", boxShadow: "0 0 3px rgba(0,180,0,0.15)" }}
             />
           </div>
+
+          {/* Fullscreen button on bezel */}
+          {onFullscreen && (
+            <button
+              onClick={onFullscreen}
+              className="absolute top-1.5 right-3 z-50 p-1 rounded opacity-0 hover:opacity-100 transition-opacity duration-300 cursor-pointer"
+              style={{ color: "rgba(255,255,255,0.5)" }}
+              title="Enter fullscreen"
+            >
+              <Maximize2 size={12} />
+            </button>
+          )}
 
           {/* Screen viewport — the actual desktop renders here */}
           <div
