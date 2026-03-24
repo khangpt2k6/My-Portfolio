@@ -66,9 +66,14 @@ function DockIcon({ app, mouseX, dockLeft, index }) {
       <AnimatePresence>
         {tooltip && (
           <motion.div
-            className="absolute -top-9 px-3 py-1 rounded-md text-[11px] font-medium whitespace-nowrap
-                       text-white bg-[rgba(30,30,30,0.85)] border border-white/10"
-            style={{ backdropFilter: "blur(12px)" }}
+            className="absolute -top-9 px-3 py-1 rounded-lg text-[11px] font-medium whitespace-nowrap text-white"
+            style={{
+              background: "var(--lg-menu)",
+              backdropFilter: "var(--lg-blur)",
+              WebkitBackdropFilter: "var(--lg-blur)",
+              border: "0.5px solid var(--lg-menu-border)",
+              boxShadow: "var(--lg-menu-shadow)",
+            }}
             initial={{ opacity: 0, y: 4 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 4 }}
@@ -131,18 +136,13 @@ export default function Dock() {
     >
       <div
         ref={dockRef}
-        className="flex items-end gap-[6px] px-3 py-2 rounded-2xl"
+        className="flex items-end gap-[6px] px-3 py-2 rounded-[22px]"
         style={{
-          background: "rgba(30, 30, 30, 0.35)",
-          backdropFilter: "blur(40px) saturate(180%)",
-          WebkitBackdropFilter: "blur(40px) saturate(180%)",
-          border: "1px solid rgba(255,255,255,0.12)",
-          boxShadow: `
-            0 0 0 0.5px rgba(255,255,255,0.06),
-            0 8px 40px rgba(0,0,0,0.4),
-            0 2px 8px rgba(0,0,0,0.2),
-            inset 0 1px 0 rgba(255,255,255,0.05)
-          `,
+          background: "var(--lg-dock)",
+          backdropFilter: "var(--lg-blur)",
+          WebkitBackdropFilter: "var(--lg-blur)",
+          border: "0.5px solid var(--lg-dock-border)",
+          boxShadow: "var(--lg-dock-shadow)",
         }}
         onMouseMove={onMouseMove}
         onMouseLeave={onMouseLeave}

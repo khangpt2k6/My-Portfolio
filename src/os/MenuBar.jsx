@@ -96,14 +96,11 @@ export default function MenuBar() {
     <motion.div
       className="absolute top-0 left-0 right-0 h-7 flex items-center justify-between px-4 z-[9500] select-none"
       style={{
-        background: isDark
-          ? "rgba(20, 20, 20, 0.65)"
-          : "rgba(240, 240, 240, 0.7)",
-        backdropFilter: "blur(40px) saturate(180%)",
-        WebkitBackdropFilter: "blur(40px) saturate(180%)",
-        borderBottom: isDark
-          ? "0.5px solid rgba(255,255,255,0.08)"
-          : "0.5px solid rgba(0,0,0,0.1)",
+        background: "var(--lg-bar)",
+        backdropFilter: "var(--lg-blur)",
+        WebkitBackdropFilter: "var(--lg-blur)",
+        borderBottom: "0.5px solid var(--lg-bar-border)",
+        boxShadow: "var(--lg-highlight)",
         color: isDark ? "#e0e0e0" : "#1a1a1a",
       }}
       initial={{ y: -28 }}
@@ -130,12 +127,13 @@ export default function MenuBar() {
               <>
                 <div className="absolute inset-0 z-[9998]" style={{ position: "fixed" }} onClick={() => setAppleMenu(false)} />
                 <motion.div
-                  className="absolute top-full left-0 mt-1 rounded-lg py-1 min-w-[200px] z-[9999]"
+                  className="absolute top-full left-0 mt-1 rounded-xl py-1 min-w-[200px] z-[9999]"
                   style={{
-                    background: isDark ? "rgba(30,30,30,0.9)" : "rgba(255,255,255,0.9)",
-                    backdropFilter: "blur(40px)",
-                    border: isDark ? "0.5px solid rgba(255,255,255,0.12)" : "0.5px solid rgba(0,0,0,0.12)",
-                    boxShadow: "0 8px 40px rgba(0,0,0,0.3)",
+                    background: "var(--lg-menu)",
+                    backdropFilter: "var(--lg-blur)",
+                    WebkitBackdropFilter: "var(--lg-blur)",
+                    border: "0.5px solid var(--lg-menu-border)",
+                    boxShadow: "var(--lg-menu-shadow)",
                   }}
                   initial={{ opacity: 0, y: -4, scale: 0.96 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -143,7 +141,7 @@ export default function MenuBar() {
                   transition={{ duration: 0.12 }}
                 >
                   <MenuBarItem label="About This Mac" onClick={() => { openApp("about"); setAppleMenu(false); }} />
-                  <div className="h-px mx-2 my-0.5" style={{ background: isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)" }} />
+                  <div className="h-px mx-2 my-0.5" style={{ background: "var(--lg-divider)" }} />
                   <MenuBarItem label="System Settings…" onClick={() => { openApp("settings"); setAppleMenu(false); }} />
                   <MenuBarItem label="Open Terminal" onClick={() => { openApp("terminal"); setAppleMenu(false); }} />
                 </motion.div>

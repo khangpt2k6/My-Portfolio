@@ -10,9 +10,9 @@ import {
 const apps = [
   {
     id: "about",
-    title: "About Me",
+    title: "About This Mac",
     IconComponent: AboutIcon,
-    defaultSize: { w: 520, h: 360 },
+    defaultSize: { w: 500, h: 420 },
     dockOrder: 1,
     desktopRow: 0,
     desktopCol: 0,
@@ -28,9 +28,9 @@ const apps = [
   },
   {
     id: "experience",
-    title: "Experience",
+    title: "Calendar",
     IconComponent: ExperienceIcon,
-    defaultSize: { w: 560, h: 400 },
+    defaultSize: { w: 640, h: 440 },
     dockOrder: 3,
     desktopRow: 2,
     desktopCol: 0,
@@ -82,9 +82,9 @@ const apps = [
   },
   {
     id: "settings",
-    title: "Settings",
+    title: "System Settings",
     IconComponent: SettingsIcon,
-    defaultSize: { w: 400, h: 340 },
+    defaultSize: { w: 640, h: 440 },
     dockOrder: 9,
     desktopRow: 3,
     desktopCol: 1,
