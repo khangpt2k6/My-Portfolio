@@ -24,53 +24,89 @@ function MacBook({ phase }) {
     THREE.TextureLoader,
     "/desktop_background/bV6xf3.webp"
   );
-  const lid = useRef(null);
-  const screen = useRef(null);
-  const lidOpenX = useRef(null);
+  const pivotRef = useRef(null);
+  const screenRef = useRef(null);
+  const setupDone = useRef(false);
 
-  const model = useMemo(() => {
+  /*
+   * One-time setup on the ORIGINAL scene (no clone — clone breaks transforms).
+   * 1. Create a hinge-pivot group so the lid rotates around the correct point.
+   * 2. Swap the screen's emissive texture to the wallpaper.
+   */
+  useEffect(() => {
+    if (setupDone.current) return;
+    setupDone.current = true;
+
     wallpaper.flipY = false;
     wallpaper.colorSpace = THREE.SRGBColorSpace;
+    scene.updateMatrixWorld(true);
 
-    const clone = scene.clone(true);
-    clone.traverse((node) => {
-      if (node.name === "VCQqxpxkUlzqcJI_62") {
-        lid.current = node;
-        lidOpenX.current = node.rotation.x;
-      }
+    let lidNode = null;
+
+    scene.traverse((node) => {
+      if (node.name === "VCQqxpxkUlzqcJI_62") lidNode = node;
       if (node.isMesh && node.material?.name === "sfCQkHOWyrsLmor") {
         node.material = node.material.clone();
         node.material.emissiveMap = wallpaper;
         node.material.emissive = new THREE.Color("#ffffff");
         node.material.emissiveIntensity = 0;
         node.material.needsUpdate = true;
-        screen.current = node;
+        screenRef.current = node;
       }
     });
-    return clone;
+
+    if (lidNode) {
+      /* Compute the hinge point from the lid's world-space bounding box.
+         The hinge is at the BOTTOM of the open lid (min Y), center X & Z. */
+      const lidBox = new THREE.Box3().setFromObject(lidNode);
+      const hingeWorld = new THREE.Vector3(
+        (lidBox.min.x + lidBox.max.x) / 2,
+        lidBox.min.y,
+        (lidBox.min.z + lidBox.max.z) / 2
+      );
+
+      const parent = lidNode.parent;
+      const hingeLocal = parent.worldToLocal(hingeWorld.clone());
+
+      /* Create pivot group AT the hinge in parent-local space */
+      const pivot = new THREE.Group();
+      pivot.name = "lid_hinge_pivot";
+      pivot.position.copy(hingeLocal);
+
+      /* Reparent the lid so the hinge sits at the pivot origin */
+      const lidPos = lidNode.position.clone();
+      parent.remove(lidNode);
+      lidNode.position.copy(lidPos.sub(hingeLocal));
+      pivot.add(lidNode);
+      parent.add(pivot);
+
+      /* Start closed */
+      pivot.rotation.x = Math.PI * 0.47;
+      pivotRef.current = pivot;
+    }
   }, [scene, wallpaper]);
 
   useFrame((_, dt) => {
-    if (lid.current && lidOpenX.current != null) {
-      const open = lidOpenX.current;
-      const closed = open + Math.PI * 0.43;
-      const target = phase === "intro" ? closed : open;
+    /* Lid animation via hinge pivot */
+    if (pivotRef.current) {
+      const openAngle = 0;
+      const closedAngle = Math.PI * 0.47;
+      const target = phase === "intro" ? closedAngle : openAngle;
       const speed = phase === "opening" ? 1.2 : 3;
-      lid.current.rotation.x = THREE.MathUtils.lerp(
-        lid.current.rotation.x,
+      pivotRef.current.rotation.x = THREE.MathUtils.lerp(
+        pivotRef.current.rotation.x,
         target,
         dt * speed
       );
     }
 
-    if (screen.current) {
+    /* Screen brightness */
+    if (screenRef.current) {
       let target;
       switch (phase) {
         case "intro":
-          target = 0;
-          break;
         case "opening":
-          target = 0.3;
+          target = 0;
           break;
         case "booting":
           target = 1;
@@ -78,21 +114,24 @@ function MacBook({ phase }) {
         case "login":
           target = 3;
           break;
+        case "loading":
+          target = 5;
+          break;
         case "zoomIn":
           target = 8;
           break;
         default:
           target = 0;
       }
-      screen.current.material.emissiveIntensity = THREE.MathUtils.lerp(
-        screen.current.material.emissiveIntensity,
+      screenRef.current.material.emissiveIntensity = THREE.MathUtils.lerp(
+        screenRef.current.material.emissiveIntensity,
         target,
         dt * 2
       );
     }
   });
 
-  return <primitive object={model} scale={0.08} position={[0, -0.8, 0]} />;
+  return <primitive object={scene} scale={0.08} position={[0, -0.8, 0]} />;
 }
 
 /* ── Camera zoom on enter ────────────────────────────────────────────── */
@@ -116,6 +155,7 @@ function Loader() {
 export default function BootScreen({ onComplete }) {
   const [phase, setPhase] = useState("intro");
   const [progress, setProgress] = useState(0);
+  const [loadProgress, setLoadProgress] = useState(0);
 
   useEffect(() => {
     if (sessionStorage.getItem("os-booted")) onComplete();
@@ -143,17 +183,33 @@ export default function BootScreen({ onComplete }) {
       }, 30);
       return () => clearInterval(interval);
     }
-  }, [phase]);
+    if (phase === "loading") {
+      setLoadProgress(0);
+      const interval = setInterval(() => {
+        setLoadProgress((p) => {
+          if (p >= 100) {
+            clearInterval(interval);
+            setTimeout(() => {
+              setPhase("zoomIn");
+              setTimeout(onComplete, 1200);
+            }, 300);
+            return 100;
+          }
+          return p + 2;
+        });
+      }, 25);
+      return () => clearInterval(interval);
+    }
+  }, [phase, onComplete]);
 
   const handleEnter = useCallback(() => {
-    setPhase("zoomIn");
     sessionStorage.setItem("os-booted", "1");
-    setTimeout(onComplete, 1200);
-  }, [onComplete]);
+    setPhase("loading");
+  }, []);
 
   const handleSkip = useCallback(() => {
     if (phase === "login") handleEnter();
-    else if (phase !== "zoomIn" && phase !== "done") {
+    else if (phase !== "loading" && phase !== "zoomIn" && phase !== "done") {
       setPhase("login");
       setProgress(100);
     }
@@ -163,7 +219,8 @@ export default function BootScreen({ onComplete }) {
 
   const screenOn = phase !== "intro";
   const showBoot = phase === "booting" || phase === "opening";
-  const showLogin = phase === "login" || phase === "zoomIn";
+  const showLogin = phase === "login";
+  const showLoading = phase === "loading" || phase === "zoomIn";
 
   return (
     <motion.div
@@ -296,7 +353,6 @@ export default function BootScreen({ onComplete }) {
                 />
               </motion.div>
               <h2 className="text-sm font-semibold text-white/90">Khang Phan</h2>
-              <p className="text-[10px] text-white/40">Computer Science @ USF</p>
               <motion.button
                 onClick={(e) => {
                   e.stopPropagation();
@@ -320,11 +376,46 @@ export default function BootScreen({ onComplete }) {
               </motion.button>
             </motion.div>
           )}
+
+          {/* Loading: OS-style spinner + progress */}
+          {showLoading && (
+            <motion.div
+              className="flex flex-col items-center gap-5"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: phase === "zoomIn" ? 0 : 1 }}
+              transition={{ duration: 0.4 }}
+            >
+              <motion.div
+                className="w-12 h-12 rounded-full"
+                style={{
+                  border: "2px solid rgba(255,255,255,0.1)",
+                  borderTop: "2px solid rgba(var(--color-primary-rgb),0.8)",
+                }}
+                animate={{ rotate: 360 }}
+                transition={{ duration: 0.8, repeat: Infinity, ease: "linear" }}
+              />
+              <div className="flex flex-col items-center gap-2">
+                <div className="w-40 h-[3px] rounded-full bg-white/10 overflow-hidden">
+                  <motion.div
+                    className="h-full rounded-full"
+                    style={{
+                      width: `${loadProgress}%`,
+                      background:
+                        "linear-gradient(90deg, rgba(var(--color-primary-rgb),0.6), rgba(var(--color-primary-rgb),1))",
+                    }}
+                  />
+                </div>
+                <p className="text-[10px] text-white/30 font-medium">
+                  Loading KhangOS...
+                </p>
+              </div>
+            </motion.div>
+          )}
         </motion.div>
       </div>
 
       {/* ── Skip hint ── */}
-      {phase !== "zoomIn" && (
+      {phase !== "loading" && phase !== "zoomIn" && (
         <motion.p
           className="absolute bottom-8 left-1/2 -translate-x-1/2 text-[11px] text-white/20"
           initial={{ opacity: 0 }}
