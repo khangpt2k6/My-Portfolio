@@ -841,3 +841,207 @@ html {
 .app-store-scroll::-webkit-scrollbar-thumb:hover {
   background: rgba(var(--color-primary-rgb), 0.35);
 }
+
+/* ══════════════════════════════════════════════════════════
+   ARTPAD — macOS-native drawing app
+   ══════════════════════════════════════════════════════════ */
+.artpad-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  background: #F5F5F5;
+  border-bottom: 1px solid #d4d4d4;
+  flex-shrink: 0;
+}
+.dark .artpad-toolbar { background: #2b2b2b; border-color: #404040; }
+
+.artpad-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  color: #555;
+  cursor: pointer;
+  transition: background 0.12s;
+}
+.artpad-btn:hover { background: rgba(0,0,0,0.06); }
+.artpad-btn:disabled { opacity: 0.25; pointer-events: none; }
+.artpad-btn.small { padding: 2px; }
+.dark .artpad-btn { color: #bbb; }
+.dark .artpad-btn:hover { background: rgba(255,255,255,0.08); }
+
+.artpad-sep {
+  width: 1px;
+  height: 20px;
+  background: #d4d4d4;
+  margin: 0 2px;
+  flex-shrink: 0;
+}
+.dark .artpad-sep { background: #555; }
+
+/* Segmented control */
+.artpad-segment {
+  display: flex;
+  background: rgba(0,0,0,0.05);
+  border-radius: 8px;
+  padding: 2px;
+  gap: 1px;
+}
+.dark .artpad-segment { background: rgba(255,255,255,0.06); }
+
+.artpad-seg-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px 7px;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  color: #666;
+  cursor: pointer;
+  transition: all 0.12s ease;
+}
+.artpad-seg-btn:hover { color: #333; }
+.artpad-seg-btn.active {
+  background: #fff;
+  color: #1d1d1f;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1), 0 0.5px 1px rgba(0,0,0,0.06);
+}
+.dark .artpad-seg-btn { color: #999; }
+.dark .artpad-seg-btn:hover { color: #ddd; }
+.dark .artpad-seg-btn.active {
+  background: rgba(255,255,255,0.12);
+  color: #f0f0f0;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+}
+
+.artpad-export {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 12px;
+  border-radius: 8px;
+  border: none;
+  background: linear-gradient(135deg, #3B82F6, #6366F1);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: filter 0.15s;
+  font-family: inherit;
+}
+.artpad-export:hover { filter: brightness(1.1); }
+
+/* Inspector panel */
+.artpad-inspector {
+  width: 190px;
+  flex-shrink: 0;
+  background: #F5F5F5;
+  border-left: 1px solid #d4d4d4;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+.dark .artpad-inspector { background: #2b2b2b; border-color: #404040; }
+
+.artpad-section {
+  padding: 12px;
+  border-bottom: 1px solid #e5e5e5;
+}
+.artpad-section:last-child { border-bottom: none; }
+.dark .artpad-section { border-color: #333; }
+
+.artpad-label {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #888;
+}
+
+/* Color well */
+.artpad-color-well {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2.5px solid #fff;
+  box-shadow: 0 0 0 1px rgba(0,0,0,0.15), 0 1px 3px rgba(0,0,0,0.1);
+  cursor: pointer;
+  transition: transform 0.12s;
+}
+.artpad-color-well:hover { transform: scale(1.1); }
+.artpad-color-well.secondary { width: 22px; height: 22px; }
+.dark .artpad-color-well {
+  border-color: #444;
+  box-shadow: 0 0 0 1px rgba(255,255,255,0.1), 0 1px 3px rgba(0,0,0,0.3);
+}
+
+.artpad-swatch {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 4px;
+  border: 1px solid rgba(0,0,0,0.1);
+  cursor: pointer;
+  transition: transform 0.12s;
+}
+.artpad-swatch:hover { transform: scale(1.15); z-index: 1; }
+.dark .artpad-swatch { border-color: rgba(255,255,255,0.08); }
+
+/* macOS-style slider */
+.artpad-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 4px;
+  border-radius: 2px;
+  background: #d1d5db;
+  outline: none;
+  cursor: pointer;
+}
+.artpad-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #fff;
+  border: 0.5px solid rgba(0,0,0,0.12);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+  cursor: pointer;
+}
+.dark .artpad-slider { background: #444; }
+.dark .artpad-slider::-webkit-slider-thumb {
+  background: #888;
+  border-color: rgba(255,255,255,0.1);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.4);
+}
+
+.artpad-size-btn {
+  padding: 4px 2px;
+  border-radius: 4px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  transition: background 0.12s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 20px;
+}
+.artpad-size-btn:hover { background: rgba(0,0,0,0.05); }
+.artpad-size-btn.active { background: rgba(var(--color-primary-rgb), 0.15); }
+.dark .artpad-size-btn:hover { background: rgba(255,255,255,0.06); }
+
+.artpad-statusbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 3px 10px;
+  background: #F0F0F0;
+  border-top: 1px solid #d4d4d4;
+  flex-shrink: 0;
+}
+.dark .artpad-statusbar { background: #252525; border-color: #404040; }
