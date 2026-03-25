@@ -85,8 +85,11 @@ export default function MenuBar() {
   }, []);
 
   const toggleTheme = () => {
-    document.documentElement.classList.toggle("dark");
-    setIsDark((d) => !d);
+    const nextIsDark = !document.documentElement.classList.contains("dark");
+    document.documentElement.classList.toggle("dark", nextIsDark);
+    localStorage.setItem("theme", nextIsDark ? "dark" : "light");
+    window.dispatchEvent(new Event("theme-change"));
+    setIsDark(nextIsDark);
   };
 
   const battery = useBattery();

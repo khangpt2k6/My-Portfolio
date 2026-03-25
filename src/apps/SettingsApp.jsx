@@ -587,8 +587,11 @@ export default function SettingsApp() {
   };
 
   const toggleTheme = () => {
-    document.documentElement.classList.toggle("dark");
-    setIsDark((prev) => !prev);
+    const nextIsDark = !document.documentElement.classList.contains("dark");
+    document.documentElement.classList.toggle("dark", nextIsDark);
+    localStorage.setItem("theme", nextIsDark ? "dark" : "light");
+    window.dispatchEvent(new Event("theme-change"));
+    setIsDark(nextIsDark);
   };
 
   const panels = {
