@@ -7,6 +7,7 @@
  *   technologies - Comma-separated tech string
  *   description  - Array of description paragraphs
  *   image        - Path to screenshot in /public (fallback)
+ *   video        - (Optional) Path to demo video in /public
  *   github       - GitHub repo URL
  *   demo         - (Optional) Live demo URL
  *   livePreview  - "chat" | "job-search" | "room-booking" | "finance"
@@ -14,6 +15,20 @@
  */
 
 const projects = [
+  {
+    id: 0,
+    title: "Hirea (CaresLink)",
+    technologies: "React, Node.js, Express, MongoDB, Firebase, Stripe",
+    description: [
+      "A hiring and care-connection platform focused on matching people with the right support opportunities.",
+      "Built responsive user flows, integrated backend services, and shipped a demo-ready product with clean end-to-end navigation.",
+    ],
+    image: "/browser.png",
+    video: "/vid/Hirea.mp4",
+    github: "https://github.com/khangpt2k6/Hirea---CaresLink",
+    demo: "https://cares-link.vercel.app",
+    color: "from-sky-500 to-teal-500",
+  },
   {
     id: 1,
     title: "NaviCV",

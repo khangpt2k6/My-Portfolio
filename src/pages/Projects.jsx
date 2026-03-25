@@ -9,6 +9,9 @@ export default function Projects() {
   const [dir, setDir] = useState(1);
   const project = projects[idx];
   const techs = project.technologies.split(",").map((t) => t.trim());
+  const setDoubleSpeed = (e) => {
+    e.currentTarget.playbackRate = 4;
+  };
 
   const go = (d) => {
     setDir(d);
@@ -60,11 +63,24 @@ export default function Projects() {
             {/* Image */}
             <div className="w-full md:w-1/2 aspect-[16/10] rounded-2xl overflow-hidden shadow-2xl
                             border border-[var(--glass-border)]">
-              <img
-                src={project.image}
-                alt={project.title}
-                className="w-full h-full object-cover"
-              />
+              {project.video ? (
+                <video
+                  src={project.video}
+                  className="w-full h-full object-cover"
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  controls
+                  onLoadedMetadata={setDoubleSpeed}
+                />
+              ) : (
+                <img
+                  src={project.image}
+                  alt={project.title}
+                  className="w-full h-full object-cover"
+                />
+              )}
             </div>
 
             {/* Info */}
@@ -141,7 +157,19 @@ export default function Projects() {
                   : "border-transparent opacity-40 hover:opacity-70"
                 }`}
             >
-              <img src={p.image} alt={p.title} className="w-full h-full object-cover" />
+              {p.video ? (
+                <video
+                  src={p.video}
+                  className="w-full h-full object-cover"
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  onLoadedMetadata={setDoubleSpeed}
+                />
+              ) : (
+                <img src={p.image} alt={p.title} className="w-full h-full object-cover" />
+              )}
             </button>
           ))}
         </div>

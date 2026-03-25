@@ -64,9 +64,9 @@ function useIsMobile(breakpoint = 768) {
 
 // ── Wallpaper hook ──
 function useWallpaper() {
-  const [wp, setWp] = useState(() => localStorage.getItem("wallpaper") || "bV6xf3")
+  const [wp, setWp] = useState(() => localStorage.getItem("wallpaper") || "default")
   useEffect(() => {
-    const handler = () => setWp(localStorage.getItem("wallpaper") || "bV6xf3")
+    const handler = () => setWp(localStorage.getItem("wallpaper") || "default")
     window.addEventListener("wallpaper-change", handler)
     return () => window.removeEventListener("wallpaper-change", handler)
   }, [])
@@ -76,38 +76,27 @@ function useWallpaper() {
 // ── Desktop OS (rendered inside MacBook screen) ──
 function DesktopScreen() {
   const wallpaperId = useWallpaper()
-  const wallpaperSrc = wallpaperId !== "dynamic"
-    ? (() => {
-        const map = {
-          bV6xf3: "/desktop_background/bV6xf3.webp",
-          icH5Aj: "/desktop_background/icH5Aj.webp",
-          lake: "/desktop_background/lake-side-trees-live-desktop-jwhxpov3u0jdebb0.jpg",
-          default: "/desktop_background/default_background.webp",
-          aesthetic: "/desktop_background/aesthetic-wallpaper-1.jpg",
-          tsHljX: "/desktop_background/tsHljX.webp",
-          wTyWLK: "/desktop_background/wTyWLK.webp",
-          wp33: "/desktop_background/wp3305840.jpg",
-        }
-        return map[wallpaperId] || null
-      })()
-    : null
+  const WALLPAPER_MAP = {
+    bV6xf3: "/desktop_background/bV6xf3.webp",
+    icH5Aj: "/desktop_background/icH5Aj.webp",
+    lake: "/desktop_background/lake-side-trees-live-desktop-jwhxpov3u0jdebb0.jpg",
+    default: "/desktop_background/default_background.webp",
+    aesthetic: "/desktop_background/aesthetic-wallpaper-1.jpg",
+    tsHljX: "/desktop_background/tsHljX.webp",
+    wTyWLK: "/desktop_background/wTyWLK.webp",
+    wp33: "/desktop_background/wp3305840.jpg",
+  }
+  const wallpaperSrc = WALLPAPER_MAP[wallpaperId] || WALLPAPER_MAP["default"]
 
   return (
     <div id="macbook-screen" className="relative w-full h-full overflow-hidden bg-white dark:bg-transparent">
       {/* Wallpaper — static image or animated backgrounds */}
-      {wallpaperSrc ? (
-        <img
-          src={wallpaperSrc}
-          alt=""
-          className="absolute inset-0 w-full h-full object-cover"
-          draggable={false}
-        />
-      ) : (
-        <>
-          <StarfieldBg />
-          <AuroraBg />
-        </>
-      )}
+      <img
+        src={wallpaperSrc}
+        alt=""
+        className="absolute inset-0 w-full h-full object-cover"
+        draggable={false}
+      />
 
       <MenuBar />
       <Desktop />

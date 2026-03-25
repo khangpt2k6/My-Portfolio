@@ -7,6 +7,9 @@ export default function ProjectsApp() {
   const [idx, setIdx] = useState(0);
   const [dir, setDir] = useState(1);
   const project = projects[idx];
+  const setDoubleSpeed = (e) => {
+    e.currentTarget.playbackRate = 4;
+  };
 
   const go = (d) => {
     setDir(d);
@@ -48,11 +51,24 @@ export default function ProjectsApp() {
           >
             {/* Image */}
             <div className="w-full aspect-[16/9] rounded-lg overflow-hidden shadow-lg">
-              <img
-                src={project.image}
-                alt={project.title}
-                className="w-full h-full object-cover"
-              />
+              {project.video ? (
+                <video
+                  src={project.video}
+                  className="w-full h-full object-cover"
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  controls
+                  onLoadedMetadata={setDoubleSpeed}
+                />
+              ) : (
+                <img
+                  src={project.image}
+                  alt={project.title}
+                  className="w-full h-full object-cover"
+                />
+              )}
             </div>
 
             {/* Info */}
@@ -119,7 +135,19 @@ export default function ProjectsApp() {
                 : "border-transparent opacity-50 hover:opacity-80"
               }`}
           >
-            <img src={p.image} alt={p.title} className="w-full h-full object-cover" />
+            {p.video ? (
+              <video
+                src={p.video}
+                className="w-full h-full object-cover"
+                autoPlay
+                muted
+                loop
+                playsInline
+                onLoadedMetadata={setDoubleSpeed}
+              />
+            ) : (
+              <img src={p.image} alt={p.title} className="w-full h-full object-cover" />
+            )}
           </button>
         ))}
       </div>
