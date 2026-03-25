@@ -8,7 +8,7 @@ export default function ProjectsApp() {
   const [dir, setDir] = useState(1);
   const project = projects[idx];
   const setDoubleSpeed = (e) => {
-    e.currentTarget.playbackRate = 2;
+    e.currentTarget.playbackRate = 4;
   };
 
   const go = (d) => {

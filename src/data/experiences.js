@@ -24,8 +24,8 @@ const experiences = {
       image: "/moffitt.jpg",
       icon: "Code",
       description: [
-        "Fine-tuned vision transformer models to support tumor detection from oncology imaging data.",
-        "Built an LLM-powered clinical assistant with LangChain and RAG, and developed Django-based genomics dashboards for research teams.",
+        "Helped improve how medical teams review cancer images and spot important patterns more quickly.",
+        "Built internal tools that made research knowledge easier to search and helped teams track findings in a clear dashboard.",
       ],
     },
     {
@@ -37,8 +37,8 @@ const experiences = {
       image: "/prox-shopping.jpg",
       icon: "Code",
       description: [
-        "Built and maintained a distributed scraping pipeline with Playwright, Selenium, and BeautifulSoup, then integrated data into Supabase for product search.",
-        "Improved reliability by migrating to Celery workers, adding Redis-based caching for geospatial lookups, and enforcing CI/CD checks before deployment.",
+        "Built and maintained a system that collects product and price information from many stores to support fast search.",
+        "Improved speed, reliability, and deployment quality so data updates stayed consistent and users could trust the results.",
       ],
     },
     {
@@ -50,8 +50,8 @@ const experiences = {
       image: "/vnpt.png",
       icon: "Code",
       description: [
-        "Built a real-time payment synchronization pipeline with WebSockets and Stripe Webhooks to keep checkout state accurate and consistent.",
-        "Improved dashboard performance by removing redundant Firebase subscriptions and restructuring React components, then added integration tests for race conditions and webhook edge cases.",
+        "Built a real-time payment sync flow so checkout status stayed accurate for customers and support teams.",
+        "Improved dashboard responsiveness and added stronger testing to catch edge cases before release.",
       ],
     },
     {
@@ -63,8 +63,8 @@ const experiences = {
       image: "/rare-lab.jpg",
       icon: "Laptop",
       description: [
-        "Built ETL pipelines with Pandas, NumPy, and PySpark to clean and process robot telemetry from IMU and GPS experiments.",
-        "Developed a RAG-based search workflow and trained transformer models for anomaly detection, supported by monitoring dashboards in Streamlit and Plotly.",
+        "Built data workflows to clean and organize robot experiment information so researchers could analyze results faster.",
+        "Created tools that made experiment logs easier to search and helped identify unusual robot behavior with monitoring dashboards.",
       ],
     },
     {
@@ -76,8 +76,8 @@ const experiences = {
       image: "/acm.jpg",
       icon: "Users",
       description: [
-        "Led technical initiatives and hands-on workshops across Docker, Kafka, Terraform, and Kubernetes while helping organize chapter events and sponsorship efforts.",
-        "Designed a BERT-based semantic matching tool with FAISS to connect student resume skills with standardized role taxonomies.",
+        "Led student initiatives and workshops while helping organize events and support partnerships for the chapter.",
+        "Built a matching tool that helped students better connect their resume strengths with relevant career opportunities.",
       ],
     },
   ],

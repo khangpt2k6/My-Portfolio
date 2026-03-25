@@ -10,7 +10,7 @@ export default function Projects() {
   const project = projects[idx];
   const techs = project.technologies.split(",").map((t) => t.trim());
   const setDoubleSpeed = (e) => {
-    e.currentTarget.playbackRate = 2;
+    e.currentTarget.playbackRate = 4;
   };
 
   const go = (d) => {
