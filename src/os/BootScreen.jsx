@@ -18,6 +18,9 @@ import * as THREE from "three";
 
 const MODEL_URL = "/models/macbook/scene.gltf";
 
+// Preload the model immediately when this module loads
+useGLTF.preload(MODEL_URL);
+
 /* ══════════════════════════════════════════════════════════════════════
    Preload Screen — smooth fake progress, waits for real model too
    ══════════════════════════════════════════════════════════════════════ */
@@ -196,7 +199,7 @@ function PreloadScreen({ onDone }) {
 /* ══════════════════════════════════════════════════════════════════════
    3D MacBook Model
    ══════════════════════════════════════════════════════════════════════ */
-function MacBook({ phase }) {
+function MacBook({ phase, onReady }) {
   const { scene } = useGLTF(MODEL_URL);
   const wallpaper = useLoader(THREE.TextureLoader, "/desktop_background/bV6xf3.webp");
   const pivotRef = useRef(null);
@@ -242,7 +245,10 @@ function MacBook({ phase }) {
       pivot.rotation.x = Math.PI * 0.47;
       pivotRef.current = pivot;
     }
-  }, [scene, wallpaper]);
+
+    // Signal that the 3D model is fully set up
+    if (onReady) onReady();
+  }, [scene, wallpaper, onReady]);
 
   useFrame((_, dt) => {
     if (pivotRef.current) {
@@ -279,6 +285,15 @@ export default function BootScreen({ onComplete }) {
   const [phase, setPhase] = useState("intro");
   const [progress, setProgress] = useState(0);
   const [loadProgress, setLoadProgress] = useState(0);
+  const [modelReady, setModelReady] = useState(false);
+  const timerDone = useRef(false);
+
+  const handleModelReady = useCallback(() => setModelReady(true), []);
+
+  // When model becomes ready after timer already finished, proceed
+  useEffect(() => {
+    if (modelReady && timerDone.current && !preloaded) setPreloaded(true);
+  }, [modelReady, preloaded]);
 
   // Skip boot if already booted this session
   useEffect(() => {
@@ -364,17 +379,17 @@ export default function BootScreen({ onComplete }) {
           <directionalLight position={[5, 8, 3]} intensity={1.5} />
           <pointLight position={[-4, 2, 4]} intensity={0.4} color="#818CF8" />
           <spotLight position={[0, 5, 5]} angle={0.3} penumbra={0.8} intensity={0.6} color="#c4b5fd" />
-          <MacBook phase={preloaded ? phase : "intro"} />
+          <MacBook phase={preloaded ? phase : "intro"} onReady={handleModelReady} />
           <CameraController phase={phase} />
           <ContactShadows position={[0, -0.82, 0]} opacity={0.4} scale={10} blur={2.5} far={4} />
           <Environment preset="city" background={false} />
         </Suspense>
       </Canvas>
 
-      {/* Preload screen — sits on top, hides everything until ready */}
+      {/* Preload screen — sits on top, hides everything until model is ready */}
       <AnimatePresence>
         {!preloaded && (
-          <PreloadScreen onDone={() => setPreloaded(true)} />
+          <PreloadScreen onDone={() => { timerDone.current = true; if (modelReady) setPreloaded(true); }} />
         )}
       </AnimatePresence>
 
