@@ -48,11 +48,23 @@ export default function ProjectsApp() {
           >
             {/* Image */}
             <div className="w-full aspect-[16/9] rounded-lg overflow-hidden shadow-lg">
-              <img
-                src={project.image}
-                alt={project.title}
-                className="w-full h-full object-cover"
-              />
+              {project.video ? (
+                <video
+                  src={project.video}
+                  className="w-full h-full object-cover"
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  controls
+                />
+              ) : (
+                <img
+                  src={project.image}
+                  alt={project.title}
+                  className="w-full h-full object-cover"
+                />
+              )}
             </div>
 
             {/* Info */}

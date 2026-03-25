@@ -60,11 +60,23 @@ export default function Projects() {
             {/* Image */}
             <div className="w-full md:w-1/2 aspect-[16/10] rounded-2xl overflow-hidden shadow-2xl
                             border border-[var(--glass-border)]">
-              <img
-                src={project.image}
-                alt={project.title}
-                className="w-full h-full object-cover"
-              />
+              {project.video ? (
+                <video
+                  src={project.video}
+                  className="w-full h-full object-cover"
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  controls
+                />
+              ) : (
+                <img
+                  src={project.image}
+                  alt={project.title}
+                  className="w-full h-full object-cover"
+                />
+              )}
             </div>
 
             {/* Info */}
