@@ -7,6 +7,9 @@ export default function ProjectsApp() {
   const [idx, setIdx] = useState(0);
   const [dir, setDir] = useState(1);
   const project = projects[idx];
+  const setDoubleSpeed = (e) => {
+    e.currentTarget.playbackRate = 2;
+  };
 
   const go = (d) => {
     setDir(d);
@@ -57,6 +60,7 @@ export default function ProjectsApp() {
                   loop
                   playsInline
                   controls
+                  onLoadedMetadata={setDoubleSpeed}
                 />
               ) : (
                 <img
@@ -131,7 +135,19 @@ export default function ProjectsApp() {
                 : "border-transparent opacity-50 hover:opacity-80"
               }`}
           >
-            <img src={p.image} alt={p.title} className="w-full h-full object-cover" />
+            {p.video ? (
+              <video
+                src={p.video}
+                className="w-full h-full object-cover"
+                autoPlay
+                muted
+                loop
+                playsInline
+                onLoadedMetadata={setDoubleSpeed}
+              />
+            ) : (
+              <img src={p.image} alt={p.title} className="w-full h-full object-cover" />
+            )}
           </button>
         ))}
       </div>
