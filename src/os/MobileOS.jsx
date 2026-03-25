@@ -80,8 +80,8 @@ export default function MobileOS() {
                 <div className="w-14 h-14 drop-shadow-lg">
                   <IconComp size={56} />
                 </div>
-                <span className="text-[10px] font-medium line-clamp-1 max-w-[60px] text-center"
-                      style={{ color: "var(--lg-icon-text)", textShadow: "var(--lg-icon-shadow)" }}>
+                <span className="text-[10px] font-medium text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.6)]
+                               line-clamp-1 max-w-[60px] text-center">
                   {app.title}
                 </span>
               </motion.button>

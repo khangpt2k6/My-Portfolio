@@ -66,7 +66,7 @@ function DockIcon({ app, mouseX, dockLeft, index }) {
       <AnimatePresence>
         {tooltip && (
           <motion.div
-            className="absolute -top-9 px-3 py-1 rounded-lg text-[11px] font-medium whitespace-nowrap text-white"
+            className="absolute -top-9 px-3 py-1 rounded-lg text-[11px] font-medium whitespace-nowrap text-black/80 dark:text-white"
             style={{
               background: "var(--lg-menu)",
               backdropFilter: "var(--lg-blur)",
