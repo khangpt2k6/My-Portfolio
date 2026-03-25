@@ -54,6 +54,8 @@
   --lg-menu:           rgba(255, 255, 255, 0.82);
   --lg-menu-border:    rgba(0, 0, 0, 0.1);
   --lg-menu-shadow:    0 12px 48px rgba(0,0,0,0.12), 0 4px 16px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.4);
+  --lg-icon-text:      rgba(0, 0, 0, 0.85);
+  --lg-icon-shadow:    0 1px 3px rgba(255,255,255,0.7);
 
   /* About This Mac */
   --about-bg: #f5f5f7;
@@ -115,6 +117,8 @@
   --lg-menu:           rgba(40, 40, 44, 0.82);
   --lg-menu-border:    rgba(255, 255, 255, 0.1);
   --lg-menu-shadow:    0 12px 48px rgba(0,0,0,0.35), 0 4px 16px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.06);
+  --lg-icon-text:      rgba(255, 255, 255, 0.85);
+  --lg-icon-shadow:    0 1px 3px rgba(0,0,0,0.7);
 
   /* About This Mac */
   --about-bg: #1c1c1e;

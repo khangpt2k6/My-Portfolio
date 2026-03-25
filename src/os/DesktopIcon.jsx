@@ -22,8 +22,8 @@ export default function DesktopIcon({ app, index }) {
         className="text-[10px] font-medium text-center leading-tight
                    line-clamp-1 max-w-[64px]"
         style={{
-          color: "rgba(255,255,255,0.85)",
-          textShadow: "0 1px 3px rgba(0,0,0,0.7)",
+          color: "var(--lg-icon-text)",
+          textShadow: "var(--lg-icon-shadow)",
         }}
       >
         {app.title}
