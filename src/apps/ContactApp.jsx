@@ -1,5 +1,5 @@
-import { useState, useRef, useEffect } from "react";
-import { motion } from "framer-motion";
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Send,
   CheckCircle,
@@ -9,62 +9,16 @@ import {
   Phone,
   Github,
   Linkedin,
-  MapPin,
+  Paperclip,
+  Type,
 } from "lucide-react";
-import L from "leaflet";
-import "leaflet/dist/leaflet.css";
 
 const WEB3FORMS_KEY = import.meta.env.VITE_WEB3FORMS_KEY;
-const MY_LOCATION = { lat: 27.9506, lng: -82.4572 };
-
-/* ── Compact map ── */
-function MiniMap({ isDark }) {
-  const ref = useRef(null);
-  const mapRef = useRef(null);
-
-  useEffect(() => {
-    if (!ref.current) return;
-    if (mapRef.current) { mapRef.current.remove(); mapRef.current = null; }
-
-    const tile = isDark
-      ? "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-      : "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png";
-
-    const map = L.map(ref.current, {
-      center: [MY_LOCATION.lat, MY_LOCATION.lng],
-      zoom: 5,
-      zoomControl: false,
-      attributionControl: false,
-    });
-    mapRef.current = map;
-
-    L.tileLayer(tile, { maxZoom: 18, subdomains: "abcd" }).addTo(map);
-
-    const icon = L.divIcon({
-      className: "",
-      html: `<div style="position:relative;width:20px;height:20px;">
-        <div style="position:absolute;inset:0;border-radius:50%;background:rgb(var(--color-primary-rgb));opacity:0.3;animation:mp 2s ease-in-out infinite;"></div>
-        <div style="position:absolute;inset:4px;border-radius:50%;background:rgb(var(--color-primary-rgb));border:2px solid white;"></div>
-      </div>`,
-      iconSize: [20, 20],
-      iconAnchor: [10, 10],
-    });
-    L.marker([MY_LOCATION.lat, MY_LOCATION.lng], { icon }).addTo(map);
-
-    return () => { map.remove(); mapRef.current = null; };
-  }, [isDark]);
-
-  return (
-    <div className="relative w-full h-full min-h-0 rounded-lg overflow-hidden">
-      <div ref={ref} className="absolute inset-0" />
-      <style>{`@keyframes mp{0%,100%{transform:scale(1);opacity:.3}50%{transform:scale(2);opacity:0}}.leaflet-container{background:transparent!important}`}</style>
-    </div>
-  );
-}
 
 export default function ContactApp() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [subject, setSubject] = useState("");
   const [message, setMessage] = useState("");
   const [status, setStatus] = useState("idle");
   const [isDark, setIsDark] = useState(false);
@@ -77,8 +31,7 @@ export default function ContactApp() {
     return () => obs.disconnect();
   }, []);
 
-  const handleSend = async (e) => {
-    e.preventDefault();
+  const handleSend = async () => {
     if (!message.trim() || status === "sending") return;
     setStatus("sending");
     try {
@@ -90,13 +43,19 @@ export default function ContactApp() {
           name: name || "Anonymous",
           email: email || "no-reply@portfolio.com",
           message,
-          subject: `Portfolio Message from ${name || "a visitor"}`,
+          subject: subject || `Portfolio Message from ${name || "a visitor"}`,
         }),
       });
       const data = await res.json();
       if (data.success) {
         setStatus("success");
-        setTimeout(() => { setStatus("idle"); setName(""); setEmail(""); setMessage(""); }, 3000);
+        setTimeout(() => {
+          setStatus("idle");
+          setName("");
+          setEmail("");
+          setSubject("");
+          setMessage("");
+        }, 3000);
       } else {
         setStatus("error");
         setTimeout(() => setStatus("idle"), 3000);
@@ -107,96 +66,206 @@ export default function ContactApp() {
     }
   };
 
-  const inputCls =
-    "w-full px-3 py-2 text-xs rounded-lg bg-[var(--color-bg)] border border-[var(--color-border)] text-[var(--color-text)] placeholder:text-[var(--color-text-muted)]/50 focus:outline-none focus:border-[var(--color-primary)] transition-all";
+  const div = isDark ? "#3a3a3c" : "#e5e5ea";
+  const label = isDark ? "#98989d" : "#8e8e93";
+  const text = isDark ? "#f5f5f7" : "#1d1d1f";
+  const bg = isDark ? "#2c2c2e" : "#ffffff";
+  const toolbar = isDark ? "#1c1c1e" : "#f5f5f7";
+  const inputPlaceholder = isDark ? "#636366" : "#aeaeb2";
 
   return (
-    <div className="h-full flex flex-col overflow-auto" style={{ background: "var(--window-bg)" }}>
-      {/* Header */}
-      <div className="px-4 pt-4 pb-2">
-        <h2 className="text-lg font-bold text-[var(--color-text)]">Get In Touch</h2>
-        <p className="text-[10px] text-[var(--color-text-muted)]">
-          Send me a message or find me on socials
-        </p>
+    <div className="h-full flex flex-col" style={{ background: bg }}>
+      {/* ── Toolbar ── */}
+      <div
+        className="flex items-center px-3 py-1.5 shrink-0 gap-2"
+        style={{ background: toolbar, borderBottom: `0.5px solid ${div}` }}
+      >
+        <motion.button
+          onClick={handleSend}
+          disabled={!message.trim() || status === "sending"}
+          whileTap={{ scale: 0.92 }}
+          className="flex items-center justify-center w-7 h-7 rounded-md disabled:opacity-30 cursor-pointer transition-opacity"
+          style={{ background: "var(--color-primary)" }}
+          title="Send"
+        >
+          {status === "sending" ? (
+            <Loader2 size={14} className="animate-spin text-white" />
+          ) : (
+            <Send size={14} className="text-white" style={{ transform: "translateX(1px)" }} />
+          )}
+        </motion.button>
+
+        <div className="w-px h-4 mx-0.5" style={{ background: div }} />
+
+        <button className="p-1.5 rounded-md transition-colors hover:bg-black/5 dark:hover:bg-white/10 cursor-default" title="Attach">
+          <Paperclip size={14} style={{ color: label }} />
+        </button>
+        <button className="p-1.5 rounded-md transition-colors hover:bg-black/5 dark:hover:bg-white/10 cursor-default" title="Format">
+          <Type size={14} style={{ color: label }} />
+        </button>
+
+        <div className="flex-1" />
+
+        <div className="flex items-center gap-0.5">
+          <a
+            href="https://github.com/khangpt2k6"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="p-1.5 rounded-md transition-colors hover:bg-black/5 dark:hover:bg-white/10"
+          >
+            <Github size={13} style={{ color: label }} />
+          </a>
+          <a
+            href="https://linkedin.com/in/kvphan27"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="p-1.5 rounded-md transition-colors hover:bg-black/5 dark:hover:bg-white/10"
+          >
+            <Linkedin size={13} style={{ color: label }} />
+          </a>
+        </div>
       </div>
 
-      {/* Content: form + map side by side or stacked */}
-      <div className="flex-1 flex flex-col min-h-0 px-4 pb-4 gap-3">
-        <div className="flex-1 flex gap-3 min-h-0">
-          {/* Form */}
-          <div className="flex-1 min-w-0">
-            {status === "success" ? (
-              <div className="flex flex-col items-center justify-center h-full gap-2">
-                <CheckCircle className="w-10 h-10 text-emerald-500" />
-                <p className="text-sm font-bold text-[var(--color-text)]">Sent!</p>
-              </div>
-            ) : status === "error" ? (
-              <div className="flex flex-col items-center justify-center h-full gap-2">
-                <AlertCircle className="w-10 h-10 text-red-500" />
-                <p className="text-sm font-bold text-[var(--color-text)]">Failed</p>
-              </div>
-            ) : (
-              <form onSubmit={handleSend} className="flex flex-col gap-2 h-full">
-                <div className="flex gap-2">
-                  <input type="text" placeholder="Name" value={name}
-                    onChange={(e) => setName(e.target.value)} className={inputCls} />
-                  <input type="email" placeholder="Email" value={email}
-                    onChange={(e) => setEmail(e.target.value)} className={inputCls} />
-                </div>
-                <textarea
-                  placeholder="Your message..."
-                  value={message}
-                  onChange={(e) => setMessage(e.target.value)}
-                  className={`${inputCls} flex-1 resize-none min-h-[60px]`}
-                  required
-                />
-                <motion.button
-                  type="submit"
-                  disabled={!message.trim() || status === "sending"}
-                  whileTap={{ scale: 0.98 }}
-                  className="w-full py-2 rounded-lg text-xs font-bold text-white flex items-center justify-center gap-1.5 disabled:opacity-40"
-                  style={{
-                    background: "linear-gradient(135deg, rgb(var(--color-primary-rgb)), rgb(var(--color-secondary-rgb)))",
-                  }}
-                >
-                  {status === "sending" ? (
-                    <><Loader2 size={12} className="animate-spin" /> Sending...</>
-                  ) : (
-                    <><Send size={12} /> Send Message</>
-                  )}
-                </motion.button>
-              </form>
-            )}
+      {/* ── Mail fields ── */}
+      <div className="shrink-0">
+        <div
+          className="flex items-center px-3 py-2"
+          style={{ borderBottom: `0.5px solid ${div}` }}
+        >
+          <span className="text-[12px] font-medium w-16 shrink-0" style={{ color: label }}>
+            To:
+          </span>
+          <div
+            className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[11px] font-medium"
+            style={{
+              background: isDark ? "rgba(10,132,255,0.15)" : "rgba(0,122,255,0.08)",
+              color: "var(--color-primary)",
+            }}
+          >
+            Khang Phan
           </div>
-
-          {/* Map */}
-          <div className="w-[40%] min-w-[140px] max-w-[240px] rounded-lg overflow-hidden border border-[var(--color-border)] hidden sm:block"
-            style={{ minHeight: 140 }}>
-            <MiniMap isDark={isDark} />
-          </div>
+          <span className="text-[11px] ml-1.5" style={{ color: label }}>
+            &lt;khang18@usf.edu&gt;
+          </span>
         </div>
 
-        {/* Contact row */}
-        <div className="flex gap-2 flex-wrap">
-          <a href="mailto:khang18@usf.edu"
-            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[10px] font-medium border border-[var(--color-border)] hover:bg-[var(--color-primary)]/10 transition-colors"
-            style={{ color: "var(--color-text-muted)" }}>
-            <Mail size={11} style={{ color: "var(--color-primary)" }} /> khang18@usf.edu
-          </a>
-          <a href="tel:8135704370"
-            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[10px] font-medium border border-[var(--color-border)] hover:bg-[var(--color-primary)]/10 transition-colors"
-            style={{ color: "var(--color-text-muted)" }}>
-            <Phone size={11} style={{ color: "var(--color-primary)" }} /> 813-570-4370
-          </a>
-          <a href="https://github.com/khangpt2k6" target="_blank" rel="noopener noreferrer"
-            className="flex items-center justify-center w-7 h-7 rounded-lg border border-[var(--color-border)] hover:bg-[var(--color-primary)]/10 transition-colors">
-            <Github size={12} style={{ color: "var(--color-text-muted)" }} />
-          </a>
-          <a href="https://linkedin.com/in/kvphan27" target="_blank" rel="noopener noreferrer"
-            className="flex items-center justify-center w-7 h-7 rounded-lg border border-[var(--color-border)] hover:bg-[var(--color-primary)]/10 transition-colors">
-            <Linkedin size={12} style={{ color: "var(--color-text-muted)" }} />
-          </a>
+        <div
+          className="flex items-center px-3 py-2 gap-2"
+          style={{ borderBottom: `0.5px solid ${div}` }}
+        >
+          <span className="text-[12px] font-medium w-16 shrink-0" style={{ color: label }}>
+            From:
+          </span>
+          <input
+            type="text"
+            placeholder="Your Name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            className="text-[12px] bg-transparent outline-none min-w-0"
+            style={{ color: text, flex: "0 1 120px", "::placeholder": { color: inputPlaceholder } }}
+          />
+          <span className="text-[11px]" style={{ color: label }}>&lt;</span>
+          <input
+            type="email"
+            placeholder="your@email.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="text-[12px] bg-transparent outline-none flex-1 min-w-0"
+            style={{ color: text }}
+          />
+          <span className="text-[11px]" style={{ color: label }}>&gt;</span>
         </div>
+
+        <div
+          className="flex items-center px-3 py-2"
+          style={{ borderBottom: `0.5px solid ${div}` }}
+        >
+          <span className="text-[12px] font-medium w-16 shrink-0" style={{ color: label }}>
+            Subject:
+          </span>
+          <input
+            type="text"
+            placeholder="Portfolio Message"
+            value={subject}
+            onChange={(e) => setSubject(e.target.value)}
+            className="text-[12px] bg-transparent outline-none flex-1"
+            style={{ color: text }}
+          />
+        </div>
+      </div>
+
+      {/* ── Compose body ── */}
+      <div className="flex-1 min-h-0 relative">
+        <AnimatePresence mode="wait">
+          {status === "success" ? (
+            <motion.div
+              key="success"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              className="absolute inset-0 flex flex-col items-center justify-center gap-2"
+            >
+              <CheckCircle className="w-10 h-10 text-emerald-500" />
+              <p className="text-sm font-bold" style={{ color: text }}>
+                Message Sent!
+              </p>
+              <p className="text-[11px]" style={{ color: label }}>
+                Thanks for reaching out
+              </p>
+            </motion.div>
+          ) : status === "error" ? (
+            <motion.div
+              key="error"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              className="absolute inset-0 flex flex-col items-center justify-center gap-2"
+            >
+              <AlertCircle className="w-10 h-10 text-red-500" />
+              <p className="text-sm font-bold" style={{ color: text }}>
+                Failed to Send
+              </p>
+              <p className="text-[11px]" style={{ color: label }}>
+                Please try again later
+              </p>
+            </motion.div>
+          ) : (
+            <motion.textarea
+              key="compose"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              placeholder="Write your message..."
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              className="w-full h-full p-3 text-[12px] leading-relaxed bg-transparent outline-none resize-none"
+              style={{ color: text }}
+            />
+          )}
+        </AnimatePresence>
+      </div>
+
+      {/* ── Footer ── */}
+      <div
+        className="flex items-center gap-3 px-3 py-2 shrink-0"
+        style={{ borderTop: `0.5px solid ${div}`, background: toolbar }}
+      >
+        <a
+          href="mailto:khang18@usf.edu"
+          className="flex items-center gap-1.5 text-[10px] font-medium transition-opacity hover:opacity-70"
+          style={{ color: label }}
+        >
+          <Mail size={11} style={{ color: "var(--color-primary)" }} />
+          khang18@usf.edu
+        </a>
+        <a
+          href="tel:8135704370"
+          className="flex items-center gap-1.5 text-[10px] font-medium transition-opacity hover:opacity-70"
+          style={{ color: label }}
+        >
+          <Phone size={11} style={{ color: "var(--color-primary)" }} />
+          813-570-4370
+        </a>
       </div>
     </div>
   );

@@ -437,26 +437,65 @@ function AccentPanel({ isDark, accent, applyAccent }) {
         </div>
       </Section>
 
-      {/* Preview */}
-      <Section title="Preview">
-        <div className="p-3.5 flex items-center gap-3">
-          <div className="px-3 py-1.5 rounded-md text-[11px] font-medium text-white"
-            style={{ background: "var(--color-primary)" }}>
-            Button
-          </div>
-          <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ background: "var(--set-card-border)" }}>
-            <div className="h-full w-2/3 rounded-full" style={{ background: "var(--color-primary)" }} />
-          </div>
-          <div
-            className="w-10 h-5 rounded-full relative cursor-pointer"
-            style={{ background: "var(--color-primary)" }}
-          >
-            <div className="absolute right-0.5 top-0.5 w-4 h-4 rounded-full bg-white" />
-          </div>
-        </div>
-      </Section>
     </div>
   );
+}
+
+/* ── Cursor thumbnails ── */
+function CursorThumb({ id, isActive }) {
+  const primary = "var(--color-primary)";
+  const muted = "var(--set-text-sec)";
+  const color = isActive ? primary : muted;
+
+  const thumbs = {
+    ring: (
+      <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+        <circle cx="18" cy="18" r="10" stroke={color} strokeWidth="2" opacity="0.5" />
+        <circle cx="18" cy="18" r="2" fill={color} />
+      </svg>
+    ),
+    spotlight: (
+      <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+        <defs>
+          <radialGradient id={`sp-${isActive}`}>
+            <stop offset="0%" stopColor={isActive ? "rgb(var(--color-primary-rgb))" : "#888"} stopOpacity="0.4" />
+            <stop offset="100%" stopColor={isActive ? "rgb(var(--color-primary-rgb))" : "#888"} stopOpacity="0" />
+          </radialGradient>
+        </defs>
+        <circle cx="18" cy="18" r="14" fill={`url(#sp-${isActive})`} />
+        <circle cx="18" cy="18" r="2" fill={color} />
+      </svg>
+    ),
+    trail: (
+      <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+        <circle cx="10" cy="24" r="2" fill={color} opacity="0.15" />
+        <circle cx="14" cy="20" r="2.2" fill={color} opacity="0.3" />
+        <circle cx="19" cy="16" r="2.5" fill={color} opacity="0.5" />
+        <circle cx="24" cy="13" r="2.8" fill={color} opacity="0.75" />
+        <circle cx="28" cy="11" r="3" fill={color} />
+      </svg>
+    ),
+    neon: (
+      <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+        <circle cx="18" cy="18" r="8" fill={isActive ? "rgb(var(--color-primary-rgb))" : "#888"} opacity="0.15" />
+        <circle cx="18" cy="18" r="5" fill={isActive ? "rgb(var(--color-primary-rgb))" : "#888"} opacity="0.3" />
+        <circle cx="18" cy="18" r="3" fill={color} />
+        <circle cx="18" cy="18" r="1.5" fill="#fff" opacity="0.8" />
+      </svg>
+    ),
+    default: (
+      <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+        <path
+          d="M14 10 L14 26 L18.5 22 L23 28 L25 27 L20.5 21 L26 20 Z"
+          fill={color}
+          stroke={isActive ? "#fff" : "var(--set-card)"} strokeWidth="1"
+          opacity="0.9"
+        />
+      </svg>
+    ),
+  };
+
+  return thumbs[id] || thumbs.default;
 }
 
 /* ── Cursor panel ── */
@@ -479,20 +518,26 @@ function CursorPanel({ cursor, applyCursor }) {
               >
                 <div className="flex items-center gap-3">
                   <div
-                    className="w-8 h-8 rounded-lg flex items-center justify-center"
+                    className="w-9 h-9 rounded-lg flex items-center justify-center overflow-hidden"
                     style={{ background: "var(--set-icon-bg)" }}
                   >
-                    <MousePointer
-                      className="w-4 h-4"
-                      style={{ color: isActive ? "var(--color-primary)" : "var(--set-text-sec)" }}
-                    />
+                    <CursorThumb id={s.id} isActive={isActive} />
                   </div>
-                  <span
-                    className="text-[12px] font-medium capitalize"
-                    style={{ color: "var(--set-text)" }}
-                  >
-                    {s.label}
-                  </span>
+                  <div className="text-left">
+                    <span
+                      className="text-[12px] font-medium capitalize block"
+                      style={{ color: "var(--set-text)" }}
+                    >
+                      {s.label}
+                    </span>
+                    <span className="text-[10px] block" style={{ color: "var(--set-text-sec)" }}>
+                      {s.id === "ring" && "Circle follows cursor"}
+                      {s.id === "spotlight" && "Soft glow around cursor"}
+                      {s.id === "trail" && "Particles trail behind"}
+                      {s.id === "neon" && "Glowing neon dot"}
+                      {s.id === "default" && "System default cursor"}
+                    </span>
+                  </div>
                 </div>
                 {isActive && (
                   <Check className="w-4 h-4" style={{ color: "var(--color-primary)" }} />

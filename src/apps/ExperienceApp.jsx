@@ -180,9 +180,26 @@ export default function ExperienceApp() {
                 </div>
               </div>
 
-              {/* ── Curved bottom cutout ── */}
-              <svg className="absolute bottom-0 left-0 w-full" height="32" preserveAspectRatio="none" viewBox="0 0 500 32">
-                <path d="M0,32 L0,20 Q60,0 150,12 Q250,28 350,8 Q440,0 500,16 L500,32 Z" fill={isDark ? "#2c2c2e" : "#fff"} />
+              {/* ── Cloud / wave cutout ── */}
+              <svg
+                className="absolute bottom-0 left-0 w-full"
+                height="40"
+                viewBox="0 0 500 40"
+                preserveAspectRatio="none"
+                style={{ filter: "drop-shadow(0 -2px 3px rgba(0,0,0,0.06))" }}
+              >
+                <path
+                  d={
+                    "M0,40 L0,28 " +
+                    "C20,28 25,18 50,18 C75,18 78,26 95,26 " +
+                    "C112,26 120,12 145,12 C170,12 175,22 195,22 " +
+                    "C215,22 225,8 255,8 C285,8 290,20 315,20 " +
+                    "C340,20 348,14 370,14 C392,14 400,24 425,24 " +
+                    "C450,24 460,16 480,16 C495,16 500,22 500,22 " +
+                    "L500,40 Z"
+                  }
+                  fill={isDark ? "#2c2c2e" : "#fff"}
+                />
               </svg>
 
               {/* Month ribbon — bottom left */}

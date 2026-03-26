@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import {
   Search,
   Compass,
@@ -47,6 +47,20 @@ const iconUrl = (key) =>
 export default function SkillsApp() {
   const [tab, setTab] = useState("discover");
   const [query, setQuery] = useState("");
+  const [downloading, setDownloading] = useState(new Set());
+  const [downloaded, setDownloaded] = useState(new Set());
+
+  const handleGet = useCallback((skillName) => {
+    setDownloading((prev) => new Set(prev).add(skillName));
+    setTimeout(() => {
+      setDownloading((prev) => {
+        const next = new Set(prev);
+        next.delete(skillName);
+        return next;
+      });
+      setDownloaded((prev) => new Set(prev).add(skillName));
+    }, 1500);
+  }, []);
 
   const categories =
     tab === "discover" ? skillCategories : [skillCategories[tab]];
@@ -168,7 +182,20 @@ export default function SkillsApp() {
                         <span className="app-store-name">{skill.name}</span>
                         <span className="app-store-sub">{skill.subtitle}</span>
                       </div>
-                      <button className="app-store-get">GET</button>
+                      {downloading.has(skill.name) ? (
+                        <div className="app-store-get-loading">
+                          <svg className="app-store-spinner" viewBox="0 0 36 36">
+                            <circle cx="18" cy="18" r="14" fill="none" stroke="currentColor" strokeWidth="3" opacity="0.2" />
+                            <circle cx="18" cy="18" r="14" fill="none" stroke="currentColor" strokeWidth="3"
+                              strokeDasharray="88" strokeDashoffset="22" strokeLinecap="round" />
+                          </svg>
+                          <div className="app-store-stop" />
+                        </div>
+                      ) : downloaded.has(skill.name) ? (
+                        <button className="app-store-open">OPEN</button>
+                      ) : (
+                        <button className="app-store-get" onClick={() => handleGet(skill.name)}>GET</button>
+                      )}
                     </div>
                   ))}
                 </div>
