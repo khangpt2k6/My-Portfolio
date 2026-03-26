@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight, MapPin, Calendar } from "lucide-react";
 import experiences from "../data/experiences";
@@ -18,7 +18,7 @@ function parsePeriod(period) {
 }
 
 /* ── Mini calendar grid ── */
-function MiniCal({ month, year, color }) {
+function MiniCal({ month, year, color, isDark }) {
   const { cells, todayD } = useMemo(() => {
     const first = new Date(year, month, 1).getDay();
     const dim = new Date(year, month + 1, 0).getDate();
@@ -65,8 +65,17 @@ function MiniCal({ month, year, color }) {
 export default function ExperienceApp() {
   const [page, setPage] = useState(0);
   const [dir, setDir] = useState(1);
+  const [isDark, setIsDark] = useState(() => document.documentElement.classList.contains("dark"));
   const exp = pages[page];
   const { month, year } = parsePeriod(exp.period);
+
+  useEffect(() => {
+    const obs = new MutationObserver(() => {
+      setIsDark(document.documentElement.classList.contains("dark"));
+    });
+    obs.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+    return () => obs.disconnect();
+  }, []);
 
   const go = useCallback((i) => {
     if (i === page || i < 0 || i >= pages.length) return;
@@ -76,15 +85,15 @@ export default function ExperienceApp() {
 
   return (
     <div className="h-full flex flex-col overflow-hidden select-none"
-      style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro", sans-serif', background: "#f2f2f7" }}>
+      style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro", sans-serif', background: isDark ? "#1c1c1e" : "#f2f2f7" }}>
 
       {/* ── Spiral binding ── */}
       <div className="flex justify-center gap-[10px] py-[3px] shrink-0 relative z-20"
-        style={{ background: "linear-gradient(180deg, #e8e8e8, #d8d8d8)" }}>
+        style={{ background: isDark ? "linear-gradient(180deg, #3a3a3c, #2c2c2e)" : "linear-gradient(180deg, #e8e8e8, #d8d8d8)" }}>
         {Array.from({ length: 18 }).map((_, i) => (
           <div key={i} className="w-[4px] h-[8px] rounded-full"
             style={{
-              background: "linear-gradient(180deg, #bbb, #888, #aaa)",
+              background: isDark ? "linear-gradient(180deg, #666, #444, #555)" : "linear-gradient(180deg, #bbb, #888, #aaa)",
               boxShadow: "0 1px 2px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.3)",
             }} />
         ))}
@@ -163,7 +172,7 @@ export default function ExperienceApp() {
                 {/* Mini calendar + year */}
                 <div className="flex-1 flex items-end justify-between mt-2">
                   <div className="w-[120px]">
-                    <MiniCal month={month} year={year} color={exp.color} />
+                    <MiniCal month={month} year={year} color={exp.color} isDark={isDark} />
                   </div>
                   <div className="text-right">
                     <div className="text-[36px] font-black text-white/80 leading-none">{year}</div>
@@ -173,7 +182,7 @@ export default function ExperienceApp() {
 
               {/* ── Curved bottom cutout ── */}
               <svg className="absolute bottom-0 left-0 w-full" height="32" preserveAspectRatio="none" viewBox="0 0 500 32">
-                <path d="M0,32 L0,20 Q60,0 150,12 Q250,28 350,8 Q440,0 500,16 L500,32 Z" fill="#fff" />
+                <path d="M0,32 L0,20 Q60,0 150,12 Q250,28 350,8 Q440,0 500,16 L500,32 Z" fill={isDark ? "#2c2c2e" : "#fff"} />
               </svg>
 
               {/* Month ribbon — bottom left */}
@@ -187,8 +196,9 @@ export default function ExperienceApp() {
               </div>
             </div>
 
-            {/* ════ BOTTOM — Details on white ════ */}
-            <div className="flex-1 bg-white flex flex-col min-h-0 px-5 pt-2 pb-2 overflow-auto">
+            {/* ════ BOTTOM — Details ════ */}
+            <div className="flex-1 flex flex-col min-h-0 px-5 pt-2 pb-2 overflow-auto"
+              style={{ background: isDark ? "#2c2c2e" : "#fff" }}>
               {/* Location + Period — pill badges */}
               <div className="flex items-center gap-2 mb-3 shrink-0">
                 <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full"
@@ -211,10 +221,11 @@ export default function ExperienceApp() {
                     initial={{ opacity: 0, x: -14 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.1 + i * 0.08, duration: 0.35 }}
-                    style={{ background: "#f8f8fa" }}>
+                    style={{ background: isDark ? "#3a3a3c" : "#f8f8fa" }}>
                     <div className="w-2 h-2 rounded-full shrink-0 mt-[7px]"
                       style={{ background: exp.color }} />
-                    <p className="text-[13.5px] leading-[1.75] text-gray-800 font-[420]">{item}</p>
+                    <p className="text-[13.5px] leading-[1.75] font-[420]"
+                      style={{ color: isDark ? "#e5e5e7" : "#1f2937" }}>{item}</p>
                   </motion.div>
                 ))}
               </div>
@@ -224,14 +235,14 @@ export default function ExperienceApp() {
       </div>
 
       {/* ── Page dots ── */}
-      <div className="flex items-center justify-center gap-1.5 py-2 shrink-0 bg-white"
-        style={{ borderTop: "0.5px solid #e5e5e5" }}>
+      <div className="flex items-center justify-center gap-1.5 py-2 shrink-0"
+        style={{ background: isDark ? "#2c2c2e" : "#fff", borderTop: isDark ? "0.5px solid #3a3a3c" : "0.5px solid #e5e5e5" }}>
         {pages.map((p, i) => (
           <button key={i} onClick={() => go(i)}
             className="rounded-full transition-all duration-300 cursor-pointer"
             style={{
               width: i === page ? 18 : 6, height: 6,
-              background: i === page ? p.color : "#ddd",
+              background: i === page ? p.color : isDark ? "#555" : "#ddd",
             }} />
         ))}
       </div>

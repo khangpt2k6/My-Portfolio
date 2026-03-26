@@ -80,10 +80,10 @@ export default function Desktop() {
             onClick={(e) => e.stopPropagation()}
           >
             <CtxItem label="About This Mac" onClick={() => { openApp("about"); closeCtx(); }} />
-            <div className="h-px mx-2 my-0.5 bg-white/8" />
+            <div className="h-px mx-2 my-0.5 bg-black/8 dark:bg-white/8" />
             <CtxItem label="Open Terminal" onClick={() => { openApp("terminal"); closeCtx(); }} />
             <CtxItem label="Open Settings" onClick={() => { openApp("settings"); closeCtx(); }} />
-            <div className="h-px mx-2 my-0.5 bg-white/8" />
+            <div className="h-px mx-2 my-0.5 bg-black/8 dark:bg-white/8" />
             <CtxItem label="Change Wallpaper…" onClick={() => { openApp("settings"); closeCtx(); }} />
           </motion.div>
         )}
@@ -95,7 +95,7 @@ export default function Desktop() {
 function CtxItem({ label, onClick }) {
   return (
     <button
-      className="w-full text-left px-3 py-1 text-[13px] text-white/80
+      className="w-full text-left px-3 py-1 text-[13px] text-black/80 dark:text-white/80
                  hover:bg-[var(--color-primary)] hover:text-white rounded-[4px] mx-1 transition-colors"
       style={{ width: "calc(100% - 8px)" }}
       onClick={onClick}
