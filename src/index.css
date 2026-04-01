@@ -551,6 +551,7 @@ html {
   height: 100%;
   background: var(--window-bg);
   overflow: hidden;
+  position: relative;
 }
 
 /* ── Sidebar ── */
@@ -897,6 +898,115 @@ html {
 
 .app-store-scroll::-webkit-scrollbar-thumb:hover {
   background: rgba(var(--color-primary-rgb), 0.35);
+}
+
+/* ── Pip Install Terminal Overlay ── */
+.pip-terminal-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  animation: pip-fade-in 0.2s ease;
+}
+
+@keyframes pip-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.pip-terminal {
+  width: 520px;
+  max-width: 90%;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+  font-family: "Menlo", "Monaco", "Courier New", monospace;
+  font-size: 11.5px;
+  animation: pip-slide-up 0.3s ease;
+}
+
+@keyframes pip-slide-up {
+  from { transform: translateY(16px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.pip-terminal-titlebar {
+  background: #3a3a3a;
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+}
+
+.pip-terminal-traffic {
+  display: flex;
+  gap: 7px;
+}
+
+.pip-traffic-btn {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  display: inline-block;
+  cursor: default;
+}
+
+.pip-traffic-btn:first-child {
+  cursor: pointer;
+}
+
+.pip-terminal-title {
+  flex: 1;
+  text-align: center;
+  color: #aaa;
+  font-size: 12px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  user-select: none;
+}
+
+.pip-terminal-body {
+  background: #1e1e1e;
+  padding: 10px 14px;
+  min-height: 160px;
+  max-height: 260px;
+  overflow-y: auto;
+  line-height: 1.6;
+  color: #ccc;
+}
+
+.pip-terminal-body::-webkit-scrollbar { width: 5px; }
+.pip-terminal-body::-webkit-scrollbar-track { background: transparent; }
+.pip-terminal-body::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 3px; }
+
+.pip-line {
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.pip-prompt {
+  color: #4ec9b0;
+  font-weight: 600;
+}
+
+.pip-success {
+  color: #4ec9b0;
+}
+
+.pip-cursor {
+  display: inline-block;
+  width: 7px;
+  height: 13px;
+  background: #ccc;
+  vertical-align: text-bottom;
+  margin-left: 1px;
+  animation: pip-blink 1s step-end infinite;
+}
+
+@keyframes pip-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
 }
 
 /* ══════════════════════════════════════════════════════════

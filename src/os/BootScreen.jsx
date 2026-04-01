@@ -22,53 +22,85 @@ const MODEL_URL = "/models/macbook/scene.gltf";
 useGLTF.preload(MODEL_URL);
 
 /* ══════════════════════════════════════════════════════════════════════
-   Preload Screen — smooth fake progress, waits for real model too
+   Preload Screen — macOS-style terminal with pip install animation
    ══════════════════════════════════════════════════════════════════════ */
-const PACKAGES = [
-  { name: "system-core.framework", label: "System Core" },
-  { name: "macbook-pro.gltf", label: "3D Model" },
-  { name: "environment.hdr", label: "Lighting" },
-  { name: "textures.pack", label: "Materials" },
-  { name: "desktop-wallpaper.webp", label: "Desktop" },
-  { name: "khangos-ui.bundle", label: "Interface" },
-];
-
-const MIN_LOAD_MS = 2400;
-
 function PreloadScreen({ onDone }) {
-  const [fakeProgress, setFakeProgress] = useState(0);
+  const [lines, setLines] = useState([]);
+  const [typingText, setTypingText] = useState("");
+  const [termPhase, setTermPhase] = useState("typing"); // typing → running → done
   const [exiting, setExiting] = useState(false);
-  const startTime = useRef(Date.now());
+  const bodyRef = useRef(null);
 
-  // Simple fake progress: ramp to 100% over MIN_LOAD_MS, smooth easeOut
+  // Auto-scroll terminal body
   useEffect(() => {
-    let raf;
-    const tick = () => {
-      const elapsed = Date.now() - startTime.current;
-      const t = Math.min(elapsed / MIN_LOAD_MS, 1);
-      // easeOutQuart for smooth deceleration
-      const eased = 1 - Math.pow(1 - t, 4);
-      setFakeProgress(eased * 100);
-      if (t < 1) raf = requestAnimationFrame(tick);
-    };
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
-  }, []);
+    if (bodyRef.current) bodyRef.current.scrollTop = bodyRef.current.scrollHeight;
+  }, [lines, termPhase]);
 
-  // Exit when done
   useEffect(() => {
-    if (fakeProgress >= 99.9 && !exiting) {
+    const ids = [];
+    let d = 0;
+
+    const cmd = "pip3 install khangos";
+
+    // Phase 1: type the command character by character
+    for (let i = 0; i <= cmd.length; i++) {
+      const text = cmd.slice(0, i);
+      ids.push(setTimeout(() => setTypingText(text), d));
+      d += 30 + Math.random() * 25;
+    }
+
+    // Phase 2: "press enter" — move command into output
+    d += 350;
+    ids.push(setTimeout(() => {
+      setTermPhase("running");
+      setLines([{ text: cmd, isCmd: true }]);
+    }, d));
+
+    // Output lines — realistic pip output
+    const outputLines = [
+      "Collecting khangos",
+      "  Downloading khangos-1.0.0-py3-none-any.whl (2.4 MB)",
+      "     \u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501 2.4/2.4 MB 5.2 MB/s eta 0:00:00",
+      "Collecting system-core>=1.2 (from khangos)",
+      "  Downloading system_core-1.2.0-py3-none-any.whl (856 kB)",
+      "Collecting macbook-renderer>=2.0 (from khangos)",
+      "  Using cached macbook_renderer-2.1.0-py3-none-any.whl (1.2 MB)",
+      "Collecting environment-hdr>=1.0 (from khangos)",
+      "  Using cached environment_hdr-1.0.3-py3-none-any.whl (420 kB)",
+      "Collecting khangos-ui>=1.0 (from khangos)",
+      "  Downloading khangos_ui-1.0.0-py3-none-any.whl (512 kB)",
+      "Installing collected packages: system-core, macbook-renderer,",
+      "  environment-hdr, khangos-ui, khangos",
+    ];
+
+    for (const text of outputLines) {
+      d += 80 + Math.random() * 60;
+      ids.push(setTimeout(() => setLines((prev) => [...prev, { text }]), d));
+    }
+
+    // Success line (green)
+    d += 200;
+    ids.push(setTimeout(() => setLines((prev) => [...prev, {
+      text: "Successfully installed khangos-1.0.0 system-core-1.2.0 macbook-renderer-2.1.0 environment-hdr-1.0.3 khangos-ui-1.0.0",
+      success: true,
+    }]), d));
+
+    // Show a fresh prompt
+    d += 400;
+    ids.push(setTimeout(() => setTermPhase("done"), d));
+
+    // Exit
+    d += 600;
+    ids.push(setTimeout(() => {
       setExiting(true);
       setTimeout(onDone, 500);
-    }
-  }, [fakeProgress, exiting, onDone]);
+    }, d));
 
-  const activeIdx = Math.min(Math.floor(fakeProgress / (100 / PACKAGES.length)), PACKAGES.length - 1);
-  const [dots, setDots] = useState("");
-  useEffect(() => {
-    const id = setInterval(() => setDots((d) => (d.length >= 3 ? "" : d + ".")), 400);
-    return () => clearInterval(id);
-  }, []);
+    return () => ids.forEach(clearTimeout);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const promptStyle = { color: "#4ec9b0", fontWeight: 600 };
+  const lineStyle = { whiteSpace: "pre-wrap", wordBreak: "break-all" };
 
   return (
     <motion.div
@@ -93,102 +125,67 @@ function PreloadScreen({ onDone }) {
         />
       </div>
 
-      <div className="relative flex flex-col items-center gap-8 px-8">
-        {/* Logo */}
+      <div className="relative flex flex-col items-center px-4 w-full" style={{ maxWidth: 700 }}>
+        {/* macOS Terminal Window */}
         <motion.div
-          initial={{ opacity: 0, y: -15, scale: 0.9 }}
+          className="w-full rounded-xl overflow-hidden"
+          style={{ boxShadow: "0 25px 80px rgba(0,0,0,0.6), 0 0 40px rgba(var(--color-primary-rgb),0.08)" }}
+          initial={{ opacity: 0, y: 20, scale: 0.96 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
-          transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+          transition={{ duration: 0.6, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
         >
-          <div className="text-3xl font-black tracking-tight"
-            style={{
-              fontFamily: "Syne, sans-serif",
-              background: "linear-gradient(135deg, rgba(var(--color-primary-rgb),0.9) 0%, #fff 100%)",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-            }}>
-            KhangOS
-          </div>
-          <div className="text-[10px] text-center text-white/20 mt-1 font-medium tracking-widest uppercase">
-            Portfolio System
-          </div>
-        </motion.div>
-
-        {/* Package list */}
-        <motion.div className="w-72 space-y-1"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.6 }}>
-          {PACKAGES.map((pkg, i) => {
-            const threshold = ((i + 1) / PACKAGES.length) * 100;
-            const done = fakeProgress >= threshold;
-            const current = i === activeIdx && !done;
-            return (
-              <motion.div key={pkg.name}
-                className="flex items-center gap-2.5 px-3 py-[6px] rounded-lg transition-colors duration-300"
-                style={{
-                  background: current ? "rgba(var(--color-primary-rgb),0.05)" : "transparent",
-                  borderLeft: current ? "2px solid rgba(var(--color-primary-rgb),0.4)" : "2px solid transparent",
-                }}
-                initial={{ opacity: 0, x: -8 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.7 + i * 0.08 }}>
-                {/* Icon */}
-                <div className="w-4 h-4 flex items-center justify-center shrink-0">
-                  {done ? (
-                    <motion.svg width="14" height="14" viewBox="0 0 14 14" fill="none"
-                      initial={{ scale: 0, rotate: -90 }}
-                      animate={{ scale: 1, rotate: 0 }}
-                      transition={{ type: "spring", stiffness: 500, damping: 18 }}>
-                      <circle cx="7" cy="7" r="6" fill="rgba(var(--color-primary-rgb),0.12)" stroke="rgba(var(--color-primary-rgb),0.35)" strokeWidth="0.5" />
-                      <path d="M4 7L6 9L10 5" stroke="rgba(var(--color-primary-rgb),0.8)" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-                    </motion.svg>
-                  ) : current ? (
-                    <motion.div className="w-3 h-3 rounded-full"
-                      style={{ border: "1.5px solid rgba(var(--color-primary-rgb),0.4)", borderTopColor: "transparent" }}
-                      animate={{ rotate: 360 }}
-                      transition={{ duration: 0.7, repeat: Infinity, ease: "linear" }} />
-                  ) : (
-                    <div className="w-1 h-1 rounded-full bg-white/15" />
-                  )}
-                </div>
-                {/* Name */}
-                <span className="text-[11px] font-mono flex-1 truncate transition-colors duration-300" style={{
-                  color: done ? "rgba(255,255,255,0.3)" : current ? "rgba(255,255,255,0.65)" : "rgba(255,255,255,0.15)",
-                }}>
-                  {pkg.name}
-                </span>
-                {/* Status */}
-                <span className="text-[9px] shrink-0 font-medium transition-colors duration-300" style={{
-                  color: done ? "rgba(var(--color-primary-rgb),0.45)" : "rgba(255,255,255,0.1)",
-                }}>
-                  {done ? "Ready" : pkg.label}
-                </span>
-              </motion.div>
-            );
-          })}
-        </motion.div>
-
-        {/* Progress bar */}
-        <motion.div className="w-72"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1 }}>
-          <div className="w-full h-[2px] rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.05)" }}>
-            <div className="h-full rounded-full transition-[width] duration-100 ease-out"
-              style={{
-                width: `${Math.min(fakeProgress, 100)}%`,
-                background: "linear-gradient(90deg, rgba(var(--color-primary-rgb),0.4), rgba(var(--color-primary-rgb),0.9))",
-                boxShadow: "0 0 10px rgba(var(--color-primary-rgb),0.25)",
-              }} />
-          </div>
-          <div className="flex justify-between mt-2">
-            <span className="text-[10px] font-mono text-white/20">
-              Initializing{dots}
+          {/* Title bar with traffic lights */}
+          <div style={{ background: "#2d2d2d", padding: "12px 16px", display: "flex", alignItems: "center" }}>
+            <div style={{ display: "flex", gap: 8 }}>
+              <span style={{ width: 14, height: 14, borderRadius: "50%", background: "#ff5f57", display: "inline-block" }} />
+              <span style={{ width: 14, height: 14, borderRadius: "50%", background: "#febc2e", display: "inline-block" }} />
+              <span style={{ width: 14, height: 14, borderRadius: "50%", background: "#28c840", display: "inline-block" }} />
+            </div>
+            <span style={{ flex: 1, textAlign: "center", color: "#999", fontSize: 13, fontFamily: "-apple-system, BlinkMacSystemFont, sans-serif", userSelect: "none" }}>
+              khang — pip3 — 80×24
             </span>
-            <span className="text-[10px] font-mono tabular-nums text-white/25">
-              {Math.round(Math.min(fakeProgress, 100))}%
-            </span>
+            <div style={{ width: 58 }} />
+          </div>
+
+          {/* Terminal body */}
+          <div ref={bodyRef} style={{
+            background: "#1a1a1a",
+            padding: "16px 20px",
+            minHeight: 300,
+            maxHeight: 440,
+            overflowY: "auto",
+            fontFamily: "'Menlo', 'Monaco', 'Courier New', monospace",
+            fontSize: 14,
+            lineHeight: 1.7,
+            color: "#ccc",
+          }}>
+            {termPhase === "typing" && (
+              <div style={lineStyle}>
+                <span style={promptStyle}>khang@MacBook-Pro ~ % </span>
+                <span>{typingText}</span>
+                <motion.span
+                  style={{ display: "inline-block", width: 7, height: 14, background: "#ccc", verticalAlign: "text-bottom", marginLeft: 1 }}
+                  animate={{ opacity: [1, 1, 0, 0] }}
+                  transition={{ duration: 1, repeat: Infinity, times: [0, 0.5, 0.5, 1] }}
+                />
+              </div>
+            )}
+            {termPhase !== "typing" && lines.map((line, i) => (
+              <div key={i} style={{ ...lineStyle, color: line.success ? "#4ec9b0" : "#ccc" }}>
+                {line.isCmd && <span style={promptStyle}>khang@MacBook-Pro ~ % </span>}
+                {line.text}
+              </div>
+            ))}
+            {termPhase === "done" && (
+              <div style={lineStyle}>
+                <span style={promptStyle}>khang@MacBook-Pro ~ % </span>
+                <motion.span
+                  style={{ display: "inline-block", width: 7, height: 14, background: "#ccc", verticalAlign: "text-bottom", marginLeft: 1 }}
+                  animate={{ opacity: [1, 1, 0, 0] }}
+                  transition={{ duration: 1, repeat: Infinity, times: [0, 0.5, 0.5, 1] }}
+                />
+              </div>
+            )}
           </div>
         </motion.div>
       </div>
@@ -286,14 +283,14 @@ export default function BootScreen({ onComplete }) {
   const [progress, setProgress] = useState(0);
   const [loadProgress, setLoadProgress] = useState(0);
   const [modelReady, setModelReady] = useState(false);
-  const timerDone = useRef(false);
+  const [timerDone, setTimerDone] = useState(false);
 
   const handleModelReady = useCallback(() => setModelReady(true), []);
 
-  // When model becomes ready after timer already finished, proceed
+  // When both model is ready AND terminal animation finished, proceed
   useEffect(() => {
-    if (modelReady && timerDone.current && !preloaded) setPreloaded(true);
-  }, [modelReady, preloaded]);
+    if (modelReady && timerDone && !preloaded) setPreloaded(true);
+  }, [modelReady, timerDone, preloaded]);
 
   // Skip boot if already booted this session
   useEffect(() => {
@@ -389,7 +386,7 @@ export default function BootScreen({ onComplete }) {
       {/* Preload screen — sits on top, hides everything until model is ready */}
       <AnimatePresence>
         {!preloaded && (
-          <PreloadScreen onDone={() => { timerDone.current = true; if (modelReady) setPreloaded(true); }} />
+          <PreloadScreen onDone={() => setTimerDone(true)} />
         )}
       </AnimatePresence>
 
@@ -468,12 +465,6 @@ export default function BootScreen({ onComplete }) {
         </div>
       )}
 
-      {preloaded && phase !== "loading" && phase !== "zoomIn" && (
-        <motion.p className="absolute bottom-8 left-1/2 -translate-x-1/2 text-[11px] text-white/20"
-          initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 2 }}>
-          Click anywhere to skip
-        </motion.p>
-      )}
     </motion.div>
   );
 }
