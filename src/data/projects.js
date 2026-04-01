@@ -17,6 +17,18 @@
 const projects = [
   {
     id: 0,
+    title: "Sentinel",
+    technologies: "Python, FastAPI, React, Three.js, WebSocket, Google ADK, Google Gemini API",
+    description: [
+      "A real-time 3D space dashboard that tracks orbital objects and uses AI agents to predict collisions and recommend avoidance maneuvers.",
+    ],
+    image: "/Sentinel.mp4",
+    video: "/Sentinel.mp4",
+    github: "https://github.com/DinhPhucLe/sentinel",
+    color: "from-purple-500 to-indigo-600",
+  },
+  {
+    id: 1,
     title: "NaviCV",
     livePreview: "job-search",
     technologies: "Python, FastAPI, Vector Search, Transformers, Docker, Firebase, GitHub Actions",
@@ -30,7 +42,7 @@ const projects = [
     color: "from-indigo-500 to-cyan-600",
   },
   {
-    id: 1,
+    id: 2,
     title: "BullSpace",
     livePreview: "room-booking",
     technologies: "React Native, Node.js, Express, MongoDB, Redis, RabbitMQ, Socket.IO",
@@ -44,7 +56,7 @@ const projects = [
     color: "from-emerald-500 to-green-600",
   },
   {
-    id: 2,
+    id: 3,
     title: "CampusConnect",
     livePreview: "chat",
     technologies: "TypeScript, Next.js, RabbitMQ, Cloudinary, Socket.IO, MongoDB, Docker, AWS",
@@ -56,18 +68,6 @@ const projects = [
     image: "/campusconnect.jpg",
     github: "https://github.com/khangpt2k6/CampusConnect",
     color: "from-blue-500 to-cyan-600",
-  },
-  {
-    id: 3,
-    title: "Sentinel",
-    technologies: "Python, FastAPI, React, Three.js, WebSocket, Google ADK, Google Gemini API",
-    description: [
-      "A real-time 3D space dashboard that tracks orbital objects and uses AI agents to predict collisions and recommend avoidance maneuvers.",
-    ],
-    image: "/Sentinel.mp4",
-    video: "/Sentinel.mp4",
-    github: "https://github.com/DinhPhucLe/sentinel",
-    color: "from-purple-500 to-indigo-600",
   },
   {
     id: 4,
