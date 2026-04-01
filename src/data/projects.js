@@ -59,6 +59,18 @@ const projects = [
   },
   {
     id: 3,
+    title: "Sentinel",
+    technologies: "Python, FastAPI, React, Three.js, WebSocket, Google ADK, Google Gemini API",
+    description: [
+      "A real-time 3D space dashboard that tracks orbital objects and uses AI agents to predict collisions and recommend avoidance maneuvers.",
+    ],
+    image: "/Sentinel.mp4",
+    video: "/Sentinel.mp4",
+    github: "https://github.com/DinhPhucLe/sentinel",
+    color: "from-purple-500 to-indigo-600",
+  },
+  {
+    id: 4,
     title: "VaultX",
     livePreview: "finance",
     technologies: "Java, Spring Boot, PostgreSQL, H2 Database, Maven, React, Bootstrap",

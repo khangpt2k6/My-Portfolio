@@ -24,8 +24,8 @@ const experiences = {
       image: "/moffitt.jpg",
       icon: "Code",
       description: [
-        "Helped improve how medical teams review cancer images and spot important patterns more quickly.",
-        "Built internal tools that made research knowledge easier to search and helped teams track findings in a clear dashboard.",
+        "Built an interactive gene network dashboard in R Shiny to visualize molecular interactions and surface Bayesian model predictions guiding clinical trials.",
+        "Fine-tuned a medical vision-language model on clinical images and engineered data augmentation pipelines to train effectively on limited datasets.",
       ],
     },
     {
@@ -37,8 +37,8 @@ const experiences = {
       image: "/prox-shopping.jpg",
       icon: "Code",
       description: [
-        "Built and maintained a system that collects product and price information from many stores to support fast search.",
-        "Improved speed, reliability, and deployment quality so data updates stayed consistent and users could trust the results.",
+        "Built a distributed web scraping pipeline with headless browser automation to collect product data and power real-time price search.",
+        "Rearchitected the geospatial pipeline to concurrent workers with Redis caching, and containerized services on AWS with CI/CD and monitoring.",
       ],
     },
     {
@@ -50,8 +50,8 @@ const experiences = {
       image: "/vnpt.png",
       icon: "Code",
       description: [
-        "Built a real-time payment sync flow so checkout status stayed accurate for customers and support teams.",
-        "Improved dashboard responsiveness and added stronger testing to catch edge cases before release.",
+        "Built an AI recruitment agent with Claude function calling and tool integrations to automate candidate sourcing, verification, and outreach.",
+        "Developed a real-time interview platform with live speech-to-text and implemented semantic candidate search using embeddings and vector similarity.",
       ],
     },
     {
@@ -68,16 +68,16 @@ const experiences = {
       ],
     },
     {
-      title: "Technical Lead",
+      title: "Software Lead",
       company: "Association for Computing Machinery (ACM), USF Chapter",
       location: "Tampa, FL",
-      period: "May 2025 – Feb 2026",
-      year: "2026",
+      period: "May 2025 – Dec 2025",
+      year: "2025",
       image: "/acm.jpg",
       icon: "Users",
       description: [
-        "Led student initiatives and workshops while helping organize events and support partnerships for the chapter.",
-        "Built a matching tool that helped students better connect their resume strengths with relevant career opportunities.",
+        "Led technical initiatives and a workshop series on Docker and Kubernetes, and helped organize events and secure sponsor funding.",
+        "Designed a semantic matching engine linking resume skills to taxonomy entries, helping students discover better-fit roles.",
       ],
     },
   ],
