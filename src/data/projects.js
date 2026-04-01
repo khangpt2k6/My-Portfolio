@@ -17,20 +17,6 @@
 const projects = [
   {
     id: 0,
-    title: "Hirea (CaresLink)",
-    technologies: "React, Node.js, Express, MongoDB, Firebase, Stripe",
-    description: [
-      "A hiring and care-connection platform focused on matching people with the right support opportunities.",
-      "Built responsive user flows, integrated backend services, and shipped a demo-ready product with clean end-to-end navigation.",
-    ],
-    image: "/browser.png",
-    video: "/vid/Hirea.mp4",
-    github: "https://github.com/khangpt2k6/Hirea---CaresLink",
-    demo: "https://cares-link.vercel.app",
-    color: "from-sky-500 to-teal-500",
-  },
-  {
-    id: 1,
     title: "NaviCV",
     livePreview: "job-search",
     technologies: "Python, FastAPI, Vector Search, Transformers, Docker, Firebase, GitHub Actions",
@@ -44,7 +30,7 @@ const projects = [
     color: "from-indigo-500 to-cyan-600",
   },
   {
-    id: 2,
+    id: 1,
     title: "BullSpace",
     livePreview: "room-booking",
     technologies: "React Native, Node.js, Express, MongoDB, Redis, RabbitMQ, Socket.IO",
@@ -58,7 +44,7 @@ const projects = [
     color: "from-emerald-500 to-green-600",
   },
   {
-    id: 3,
+    id: 2,
     title: "CampusConnect",
     livePreview: "chat",
     technologies: "TypeScript, Next.js, RabbitMQ, Cloudinary, Socket.IO, MongoDB, Docker, AWS",
@@ -72,7 +58,7 @@ const projects = [
     color: "from-blue-500 to-cyan-600",
   },
   {
-    id: 4,
+    id: 3,
     title: "VaultX",
     livePreview: "finance",
     technologies: "Java, Spring Boot, PostgreSQL, H2 Database, Maven, React, Bootstrap",

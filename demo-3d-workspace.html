@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Developer Workspace 3D</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{overflow:hidden;background:#000;font-family:'Segoe UI',system-ui,sans-serif}
+        canvas{display:block}
+        #info{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);color:rgba(255,255,255,0.35);font-family:'Courier New',monospace;font-size:11px;pointer-events:none;z-index:10;text-align:center}
+        #tooltip{position:fixed;display:none;pointer-events:none;z-index:100;background:rgba(10,10,20,0.88);backdrop-filter:blur(12px);border:1px solid rgba(100,200,255,0.25);border-radius:10px;padding:10px 16px;max-width:220px;box-shadow:0 4px 24px rgba(0,0,0,0.5)}
+        .tt-name{color:#7dd3fc;font-size:13px;font-weight:600;margin-bottom:3px}
+        .tt-desc{color:rgba(255,255,255,0.6);font-size:11px;line-height:1.4}
+    </style>
+</head>
+<body>
+    <div id="info">Drag to orbit &bull; Scroll to zoom &bull; Hover objects to interact</div>
+    <div id="tooltip"><div class="tt-name"></div><div class="tt-desc"></div></div>
+    <script type="importmap">{"imports":{"three":"https://unpkg.com/three@0.160.0/build/three.module.js","three/addons/":"https://unpkg.com/three@0.160.0/examples/jsm/"}}</script>
+    <script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+
+// ==================== SCENE ====================
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x1a1c24);
+
+const camera = new THREE.PerspectiveCamera(50, innerWidth/innerHeight, 0.1, 100);
+camera.position.set(3, 2.4, 3.5);
+
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setSize(innerWidth, innerHeight);
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.4;
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+document.body.appendChild(renderer.domElement);
+
+const composer = new EffectComposer(renderer);
+composer.addPass(new RenderPass(scene, camera));
+composer.addPass(new UnrealBloomPass(new THREE.Vector2(innerWidth, innerHeight), 0.12, 0.3, 0.93));
+composer.addPass(new OutputPass());
+
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.target.set(0, 1.0, -1.5);
+controls.enableDamping = true;
+controls.dampingFactor = 0.05;
+controls.minDistance = 0.5;
+controls.maxDistance = 10;
+controls.update();
+
+// Camera override via URL
+const _p = new URLSearchParams(location.search).get('cam');
+if (_p) { const v = _p.split(',').map(Number); camera.position.set(v[0],v[1],v[2]); controls.target.set(v[3],v[4],v[5]); controls.update(); }
+
+// ==================== INTERACTIVITY ====================
+const raycaster = new THREE.Raycaster();
+const mouse = new THREE.Vector2(-10,-10);
+const interactives = [];
+let hovered = null, origEmissive = 0;
+const tip = document.getElementById('tooltip');
+const tipN = tip.querySelector('.tt-name'), tipD = tip.querySelector('.tt-desc');
+
+function tag(m, name, desc) { m.userData = {name, desc}; interactives.push(m); return m; }
+addEventListener('mousemove', e => { mouse.x = (e.clientX/innerWidth)*2-1; mouse.y = -(e.clientY/innerHeight)*2+1; tip.style.left=(e.clientX+16)+'px'; tip.style.top=(e.clientY-10)+'px'; });
+addEventListener('click', () => { if(hovered){const p=new THREE.Vector3();hovered.getWorldPosition(p);controls.target.lerp(p,0.5);}});
+
+// ==================== STATE ====================
+const fans = [];
+const clock = new THREE.Clock();
+
+// MacBook GLB animation state
+let macLidGroup, macScreenMat, macScreenLight;
+let macLoaded = false, macLoadTime = 0;
+let macLidAngle = Math.PI * 0.5; // start closed
+const macLidTarget = -Math.PI * 0.2; // open angle
+
+// ==================== HELPERS ====================
+function rBox(w,h,d,r=0.01,s=3){return new RoundedBoxGeometry(w,h,d,s,r)}
+function addM(g,m,x,y,z,cs=true,rs=true){const o=new THREE.Mesh(g,m);o.position.set(x,y,z);o.castShadow=cs;o.receiveShadow=rs;scene.add(o);return o}
+
+// ==================== TEXTURES ====================
+function woodTex(base, grain, reps) {
+    const c = document.createElement('canvas'); c.width=c.height=512;
+    const x = c.getContext('2d'); x.fillStyle=base; x.fillRect(0,0,512,512);
+    for(let i=0;i<80;i++){const gc=parseInt(grain.slice(1),16);const r=((gc>>16)&255)+(Math.random()-.5)*30;const g=((gc>>8)&255)+(Math.random()-.5)*20;const b=(gc&255)+(Math.random()-.5)*15;x.strokeStyle=`rgba(${r},${g},${b},${.08+Math.random()*.12})`;x.lineWidth=.5+Math.random()*3;x.beginPath();const y2=Math.random()*512;x.moveTo(0,y2);for(let xx=0;xx<512;xx+=6)x.lineTo(xx,y2+Math.sin(xx*.012+Math.random()*.5)*5);x.stroke()}
+    const t=new THREE.CanvasTexture(c);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set(reps,reps);return t;
+}
+
+function vscodeScreen() {
+    const c = document.createElement('canvas'); c.width=640;c.height=400;
+    const x = c.getContext('2d');
+    x.fillStyle='#1e1e1e';x.fillRect(0,0,640,400);
+    // Activity bar
+    x.fillStyle='#333333';x.fillRect(0,0,44,400);
+    x.fillStyle='#ffffff';x.fillRect(12,14,20,20);
+    x.fillStyle='#808080';for(let i=1;i<5;i++)x.fillRect(12,14+i*36,20,20);
+    // Sidebar
+    x.fillStyle='#252526';x.fillRect(44,0,120,400);
+    x.fillStyle='#cccccc';x.font='bold 10px monospace';x.fillText('EXPLORER',52,16);
+    x.font='9px monospace';x.fillStyle='#bbbbbb';
+    ['\u25BC src','    index.ts','    app.tsx','    utils.ts','\u25BC components','    Header.tsx','    Scene.tsx','\u25B6 styles','\u25B6 public'].forEach((f,i)=>{
+        if(i===2){x.fillStyle='#264f78';x.fillRect(44,25+i*15,120,15);x.fillStyle='#ffffff'}else x.fillStyle='#bbbbbb';
+        x.fillText(f,52,36+i*15);
+    });
+    // Tabs
+    x.fillStyle='#2d2d2d';x.fillRect(164,0,476,26);
+    x.fillStyle='#1e1e1e';x.fillRect(164,0,90,26);
+    x.fillStyle='#007acc';x.fillRect(164,24,90,2);
+    x.fillStyle='#ffffff';x.font='10px monospace';x.fillText('  app.tsx',172,16);
+    x.fillStyle='#888888';x.fillText('  utils.ts',262,16);
+    // Code - make it BRIGHT and readable
+    const lines=[
+        [{t:'import ',c:'#c586c0'},{t:'{ useState }',c:'#9cdcfe'},{t:' from ',c:'#c586c0'},{t:"'react'",c:'#ce9178'}],
+        [{t:'import ',c:'#c586c0'},{t:'* as THREE',c:'#9cdcfe'},{t:' from ',c:'#c586c0'},{t:"'three'",c:'#ce9178'}],
+        [{t:'import ',c:'#c586c0'},{t:'{ OrbitControls }',c:'#9cdcfe'},{t:' from ',c:'#c586c0'},{t:"'three/addons'",c:'#ce9178'}],
+        [],
+        [{t:'interface ',c:'#569cd6'},{t:'SceneConfig',c:'#4ec9b0'},{t:' {',c:'#d4d4d4'}],
+        [{t:'  width',c:'#9cdcfe'},{t:': ',c:'#d4d4d4'},{t:'number',c:'#4ec9b0'}],
+        [{t:'  height',c:'#9cdcfe'},{t:': ',c:'#d4d4d4'},{t:'number',c:'#4ec9b0'}],
+        [{t:'}',c:'#d4d4d4'}],
+        [],
+        [{t:'export const ',c:'#569cd6'},{t:'Scene',c:'#dcdcaa'},{t:' = () => {',c:'#d4d4d4'}],
+        [{t:'  const ',c:'#569cd6'},{t:'[scene]',c:'#9cdcfe'},{t:' = ',c:'#d4d4d4'},{t:'useState',c:'#dcdcaa'},{t:'(',c:'#d4d4d4'},{t:'null',c:'#569cd6'},{t:')',c:'#d4d4d4'}],
+        [{t:'  const ',c:'#569cd6'},{t:'ref',c:'#9cdcfe'},{t:' = ',c:'#d4d4d4'},{t:'useRef',c:'#dcdcaa'},{t:'(null)',c:'#d4d4d4'}],
+        [],
+        [{t:'  // Initialize renderer',c:'#6a9955'}],
+        [{t:'  useEffect',c:'#dcdcaa'},{t:'(() => {',c:'#d4d4d4'}],
+        [{t:'    const ',c:'#569cd6'},{t:'cam',c:'#9cdcfe'},{t:' = new ',c:'#d4d4d4'},{t:'THREE',c:'#4ec9b0'},{t:'.PerspectiveCamera()',c:'#d4d4d4'}],
+        [{t:'    const ',c:'#569cd6'},{t:'geo',c:'#9cdcfe'},{t:' = new ',c:'#d4d4d4'},{t:'THREE',c:'#4ec9b0'},{t:'.BoxGeometry(1,1,1)',c:'#d4d4d4'}],
+        [{t:'    scene.add(mesh)',c:'#d4d4d4'}],
+        [{t:'  }, [])',c:'#d4d4d4'}],
+        [{t:'  return ',c:'#c586c0'},{t:'<canvas ',c:'#808080'},{t:'ref',c:'#9cdcfe'},{t:'={ref} />',c:'#808080'}],
+        [{t:'}',c:'#d4d4d4'}],
+    ];
+    x.font='9px monospace';
+    lines.forEach((ln,i)=>{
+        x.fillStyle='#858585';x.fillText(String(i+1).padStart(3),169,42+i*14);
+        let px=198;ln.forEach(tk=>{x.fillStyle=tk.c;x.fillText(tk.t,px,42+i*14);px+=x.measureText(tk.t).width});
+    });
+    // Status bar
+    x.fillStyle='#007acc';x.fillRect(0,382,640,18);
+    x.fillStyle='#ffffff';x.font='9px monospace';x.fillText(' main  \u2713  TypeScript  UTF-8  Ln 10, Col 28',8,394);
+    // Minimap
+    x.fillStyle='#252526';x.fillRect(600,26,40,356);
+    for(let i=0;i<60;i++){x.fillStyle=`rgba(200,200,200,${.06+Math.random()*.1})`;x.fillRect(604,30+i*5,6+Math.random()*22,2)}
+    return new THREE.CanvasTexture(c);
+}
+
+function termScreen() {
+    const c = document.createElement('canvas'); c.width=640;c.height=400;
+    const x = c.getContext('2d');
+    x.fillStyle='#0c0c0c';x.fillRect(0,0,640,400);
+    x.fillStyle='#1e1e1e';x.fillRect(0,0,640,24);
+    x.fillStyle='#cccccc';x.font='10px monospace';x.fillText('  Terminal \u2013 bash',12,15);
+    ['#ff5f56','#ffbd2e','#27c93f'].forEach((c2,i)=>{x.fillStyle=c2;x.beginPath();x.arc(590+i*18,12,5,0,Math.PI*2);x.fill()});
+    const lines=[
+        {p:'~ $ ',pc:'#27c93f',t:'npm run dev',tc:'#fff'},
+        {p:'',pc:'',t:'',tc:''},
+        {p:'  VITE v5.4.2  ready in ',pc:'#aaa',t:'284ms',tc:'#27c93f'},
+        {p:'',pc:'',t:'',tc:''},
+        {p:'  \u279C  Local:   ',pc:'#aaa',t:'http://localhost:5173/',tc:'#569cd6'},
+        {p:'  \u279C  Network: ',pc:'#aaa',t:'http://192.168.1.42:5173/',tc:'#569cd6'},
+        {p:'',pc:'',t:'',tc:''},
+        {p:'\u2713 ',pc:'#27c93f',t:'47 modules transformed.',tc:'#aaa'},
+        {p:'\u2713 ',pc:'#27c93f',t:'built in 1.1s',tc:'#aaa'},
+        {p:'',pc:'',t:'',tc:''},
+        {p:'~ $ ',pc:'#27c93f',t:'git log --oneline -5',tc:'#fff'},
+        {p:'a3f21b8 ',pc:'#ffbd2e',t:'feat: add 3D workspace scene',tc:'#fff'},
+        {p:'b92c4d1 ',pc:'#ffbd2e',t:'fix: lighting and shadows',tc:'#fff'},
+        {p:'e18fa93 ',pc:'#ffbd2e',t:'refactor: components',tc:'#fff'},
+        {p:'d44b127 ',pc:'#ffbd2e',t:'style: color palette',tc:'#fff'},
+        {p:'',pc:'',t:'',tc:''},
+        {p:'~ $ ',pc:'#27c93f',t:'\u2588',tc:'#fff'},
+    ];
+    x.font='10px monospace';
+    lines.forEach((l,i)=>{const y=44+i*18;if(l.p){x.fillStyle=l.pc;x.fillText(l.p,12,y)}if(l.t){x.fillStyle=l.tc;x.fillText(l.t,12+x.measureText(l.p).width,y)}});
+    return new THREE.CanvasTexture(c);
+}
+
+function cityTex() {
+    const c = document.createElement('canvas'); c.width=640;c.height=320;
+    const x = c.getContext('2d');
+    const g = x.createLinearGradient(0,0,0,320);
+    g.addColorStop(0,'#080820');g.addColorStop(0.4,'#0c0c2a');g.addColorStop(1,'#1a1a40');
+    x.fillStyle=g;x.fillRect(0,0,640,320);
+    for(let i=0;i<150;i++){x.fillStyle=`rgba(255,255,255,${Math.random()*.7+.2})`;x.beginPath();x.arc(Math.random()*640,Math.random()*180,Math.random()*1.2,0,Math.PI*2);x.fill()}
+    // Moon
+    const mg=x.createRadialGradient(500,55,12,500,55,55);mg.addColorStop(0,'rgba(240,235,210,1)');mg.addColorStop(.3,'rgba(200,195,170,.3)');mg.addColorStop(1,'transparent');x.fillStyle=mg;x.beginPath();x.arc(500,55,55,0,Math.PI*2);x.fill();x.fillStyle='#eeeacc';x.beginPath();x.arc(500,55,14,0,Math.PI*2);x.fill();
+    // Buildings
+    for(let i=0;i<35;i++){const bx=i*20+(Math.random()-.5)*10;const h=30+Math.random()*130;const w=8+Math.random()*20;x.fillStyle=['#06060f','#0a0a1a','#0e0e22'][Math.floor(Math.random()*3)];x.fillRect(bx,320-h,w,h);
+    for(let wy=320-h+4;wy<316;wy+=6)for(let wx=bx+2;wx<bx+w-2;wx+=4)if(Math.random()>.3){x.fillStyle=(Math.random()>.6?'#ffcc44':'#aabbff')+Math.floor(40+Math.random()*80).toString(16).padStart(2,'0');x.fillRect(wx,wy,2,3)}}
+    return new THREE.CanvasTexture(c);
+}
+
+// ==================== MATERIALS (COLORFUL!) ====================
+const floorMat = new THREE.MeshStandardMaterial({map:woodTex('#B89B72','#CCAE88',6),roughness:.65,metalness:.03});
+const deskMat = new THREE.MeshStandardMaterial({color:0xf0ece5,roughness:.4,metalness:.02}); // White/cream desk
+const wallMat = new THREE.MeshStandardMaterial({color:0xe8e4dd,roughness:.92,metalness:0});
+const metalMat = new THREE.MeshStandardMaterial({color:0x888890,roughness:.25,metalness:.85}); // Silver metal
+const darkMetal = new THREE.MeshStandardMaterial({color:0x444448,roughness:.3,metalness:.8});
+const chairBlack = new THREE.MeshStandardMaterial({color:0x222228,roughness:.85,metalness:.02});
+const chairTeal = new THREE.MeshStandardMaterial({color:0x00aacc,roughness:.6,metalness:.05}); // TEAL accents!
+const chairTealBright = new THREE.MeshStandardMaterial({color:0x00ddff,emissive:new THREE.Color(0x00bbdd),emissiveIntensity:.15,roughness:.5,metalness:.1});
+const pcWhiteMat = new THREE.MeshStandardMaterial({color:0xe0e0e8,roughness:.35,metalness:.15}); // White PC case
+const bezelMat = new THREE.MeshStandardMaterial({color:0x2a2a30,roughness:.35,metalness:.3}); // Dark gray bezels
+const kbDarkMat = new THREE.MeshStandardMaterial({color:0x252530,roughness:.4,metalness:.2});
+const whitePlastic = new THREE.MeshStandardMaterial({color:0xe8e8ee,roughness:.35,metalness:.1});
+
+// ==================== ROOM ====================
+// Floor
+const floor = new THREE.Mesh(new THREE.PlaneGeometry(6,5), floorMat);
+floor.rotation.x=-Math.PI/2; floor.receiveShadow=true; scene.add(floor);
+// Ceiling
+const ceil = new THREE.Mesh(new THREE.PlaneGeometry(6,5), new THREE.MeshStandardMaterial({color:0xeae7e2,roughness:.95}));
+ceil.rotation.x=Math.PI/2; ceil.position.y=3; ceil.receiveShadow=true; scene.add(ceil);
+// Back wall
+addM(new THREE.PlaneGeometry(6,3),wallMat,0,1.5,-2.5,false,true);
+// Right wall
+const rw=addM(new THREE.PlaneGeometry(5,3),wallMat,3,1.5,0,false,true); rw.rotation.y=-Math.PI/2;
+// Left wall segments (window hole)
+[{w:5,h:.8,y:.4},{w:5,h:.8,y:2.6},{w:1.5,h:1.4,y:1.5,z:-1.75},{w:1.5,h:1.4,y:1.5,z:1.75}].forEach(p=>{
+    const m=addM(new THREE.PlaneGeometry(p.w,p.h),wallMat,-3,p.y,p.z||0,false,true);m.rotation.y=Math.PI/2;
+});
+// Window frame
+const frameMat=new THREE.MeshStandardMaterial({color:0x555555,roughness:.35,metalness:.5});
+addM(rBox(.05,1.5,2.1,.015),frameMat,-2.98,1.5,0,false,false);
+addM(rBox(.04,1.4,.025,.008),frameMat,-2.97,1.5,0,false,false);
+addM(rBox(.04,.025,2,.008),frameMat,-2.97,1.5,0,false,false);
+// Skyline
+const sky=new THREE.Mesh(new THREE.PlaneGeometry(2.2,1.5),new THREE.MeshBasicMaterial({map:cityTex()}));
+sky.rotation.y=Math.PI/2;sky.position.set(-3.2,1.5,0);scene.add(sky);
+// Window glass
+const wg=new THREE.Mesh(new THREE.PlaneGeometry(2,1.4),new THREE.MeshPhysicalMaterial({color:0x4466aa,transparent:true,opacity:.06,roughness:0,metalness:.3,side:THREE.DoubleSide}));
+wg.rotation.y=Math.PI/2;wg.position.set(-2.96,1.5,0);scene.add(wg);
+
+// ==================== DESK (white/cream - VISIBLE) ====================
+const DY=0.74, DZ=-1.9;
+const deskTop=tag(addM(rBox(1.85,.04,.82,.015),deskMat,0,DY,DZ),'Standing Desk','White laminate desktop with cable management');
+// Metal legs (silver, visible)
+const fM=metalMat;
+[[-0.85,-0.32],[-0.85,0.32],[0.85,-0.32],[0.85,0.32]].forEach(([lx,lz])=>addM(rBox(.05,DY-.04,.05,.012),fM,lx,DY/2,DZ+lz));
+addM(rBox(.05,.05,.68,.012),fM,-0.85,.025,DZ);
+addM(rBox(.05,.05,.68,.012),fM,0.85,.025,DZ);
+// Cable tray
+addM(rBox(.6,.03,.08,.01),darkMetal,0,DY-.06,DZ-.1);
+
+// ==================== MONITORS (bright screens!) ====================
+const MY=DY+.38, MZ=DZ-.22;
+function makeMon(mx,scrMat,name,desc){
+    // Stand neck (thick, dark)
+    const neck=new THREE.Mesh(rBox(.04,.22,.04,.01),darkMetal);
+    neck.position.set(mx,DY+.14,MZ);neck.castShadow=true;scene.add(neck);
+    // V-shaped stand base (like reference)
+    const baseMat=new THREE.MeshStandardMaterial({color:0x444448,roughness:.25,metalness:.8});
+    const baseL=new THREE.Mesh(rBox(.12,.012,.04,.006),baseMat);
+    baseL.position.set(mx-.05,DY+.006,MZ+.03);baseL.rotation.y=-.4;baseL.castShadow=true;scene.add(baseL);
+    const baseR=new THREE.Mesh(rBox(.12,.012,.04,.006),baseMat);
+    baseR.position.set(mx+.05,DY+.006,MZ+.03);baseR.rotation.y=.4;baseR.castShadow=true;scene.add(baseR);
+    // Center join
+    const baseC=new THREE.Mesh(rBox(.04,.015,.05,.008),baseMat);
+    baseC.position.set(mx,DY+.008,MZ);baseC.castShadow=true;scene.add(baseC);
+    // Monitor body (dark gray, not black)
+    const bz=addM(rBox(.58,.36,.025,.012),bezelMat,mx,MY,MZ-.01);
+    tag(bz,name,desc);
+    // Screen plane - VERY bright emissive
+    const scr=new THREE.Mesh(new THREE.PlaneGeometry(.55,.33),scrMat);
+    scr.position.set(mx,MY,MZ+.004);scene.add(scr);
+    return bz;
+}
+
+const vsTex=vscodeScreen();
+const vsMatl=new THREE.MeshBasicMaterial({map:vsTex}); // BasicMaterial = always full brightness!
+const tmTex=termScreen();
+const tmMatl=new THREE.MeshBasicMaterial({map:tmTex}); // BasicMaterial = always visible!
+
+makeMon(-.32,vsMatl,'Left Monitor','27" 4K \u2013 VS Code with React + Three.js project');
+makeMon(.32,tmMatl,'Right Monitor','27" 4K \u2013 Terminal with dev server running');
+
+// Screen glow lights
+const mGL=new THREE.PointLight(0x4488cc,.3,1.2);mGL.position.set(-.32,MY,MZ+.15);scene.add(mGL);
+const mGR=new THREE.PointLight(0x22cc66,.25,1.2);mGR.position.set(.32,MY,MZ+.15);scene.add(mGR);
+
+// ==================== KEYBOARD (dark gray + RGB-lit keys) ====================
+const KY=DY+.02, KZ=DZ+.18;
+const kbBody=tag(addM(rBox(.4,.014,.14,.008),kbDarkMat,0,KY,KZ),'Mechanical Keyboard','Custom with tactile switches and per-key RGB');
+// Keys with VISIBLE RGB colors
+const keyHues=[0,30,60,120,180,240,280,320];
+for(let row=0;row<5;row++){for(let col=0;col<15;col++){
+    const hue=keyHues[(row+col)%keyHues.length];
+    const kc=new THREE.Color().setHSL(hue/360,.8,.35);
+    const km=new THREE.MeshStandardMaterial({color:0x333338,emissive:kc,emissiveIntensity:.4,roughness:.5,metalness:.15});
+    addM(rBox(.018,.007,.016,.003),km,-.175+col*.025,KY+.011,KZ-.048+row*.025,false,false);
+}}
+const kbRGB=new THREE.PointLight(0x00ff88,.25,.4);kbRGB.position.set(0,DY+.005,KZ);scene.add(kbRGB);
+
+// ==================== MOUSE (white, visible) ====================
+addM(rBox(.26,.004,.22,.015),new THREE.MeshStandardMaterial({color:0x111114,roughness:.85}),0.34,DY+.003,KZ+.02,false,true);
+const mouseM=new THREE.Mesh(new THREE.CapsuleGeometry(.02,.04,12,20),whitePlastic);
+mouseM.rotation.set(Math.PI/2,0,Math.PI/2);mouseM.position.set(.34,DY+.022,KZ+.02);mouseM.castShadow=true;scene.add(mouseM);
+tag(mouseM,'Gaming Mouse','Lightweight wireless \u2013 white edition');
+// Scroll wheel
+const sw=new THREE.Mesh(new THREE.CylinderGeometry(.004,.004,.012,12),darkMetal);sw.rotation.z=Math.PI/2;sw.position.set(.34,DY+.038,KZ+.01);scene.add(sw);
+// Mouse RGB
+const mouseRGB=addM(rBox(.004,.003,.025,.001),new THREE.MeshStandardMaterial({color:0x00ff88,emissive:new THREE.Color(0x00ff88),emissiveIntensity:.6}),.34,DY+.038,KZ+.025);
+
+// ==================== PC CASE (DARK gaming build like reference) ====================
+const PX=1.1,PY=.26,PZ=DZ-.05;
+const pcCaseMat=new THREE.MeshStandardMaterial({color:0x1a1a1e,roughness:.35,metalness:.6});
+// Main case body
+const pcCase=tag(addM(rBox(.24,.5,.46,.015),pcCaseMat,PX,PY,PZ),'Gaming PC','RTX 4080 \u2013 Ryzen 9 \u2013 64GB RAM \u2013 custom build');
+// Top panel (slightly lighter, with vents)
+addM(rBox(.24,.008,.46,.01),new THREE.MeshStandardMaterial({color:0x252528,roughness:.3,metalness:.5}),PX,PY+.254,PZ,false,false);
+// Top vents (mesh pattern)
+for(let r=0;r<3;r++)for(let c=0;c<8;c++){
+    const v=new THREE.Mesh(rBox(.008,.002,.03,.002),new THREE.MeshStandardMaterial({color:0x333338,roughness:.4,metalness:.5}));
+    v.position.set(PX-.06+c*.018,PY+.259,PZ-.12+r*.06);scene.add(v);
+}
+// LARGE glass side panel (key visual - shows internals)
+const glassSide=new THREE.Mesh(rBox(.44,.46,.003,.012),new THREE.MeshPhysicalMaterial({color:0x556688,transparent:true,opacity:.15,roughness:0,metalness:.15,side:THREE.DoubleSide}));
+glassSide.rotation.y=Math.PI/2;glassSide.position.set(PX-.121,PY,PZ);scene.add(glassSide);
+// Glass frame edge (dark trim)
+const gfMat=new THREE.MeshStandardMaterial({color:0x111114,roughness:.3,metalness:.7});
+addM(rBox(.003,.5,.02,.002),gfMat,PX-.122,PY,PZ+.22,false,false);
+addM(rBox(.003,.5,.02,.002),gfMat,PX-.122,PY,PZ-.22,false,false);
+addM(rBox(.003,.02,.46,.002),gfMat,PX-.122,PY+.25,PZ,false,false);
+addM(rBox(.003,.02,.46,.002),gfMat,PX-.122,PY-.25,PZ,false,false);
+// Front panel (dark mesh area)
+addM(rBox(.22,.48,.008,.01),new THREE.MeshStandardMaterial({color:0x151518,roughness:.5,metalness:.4}),PX,PY,PZ+.23,false,false);
+// Front mesh ventilation (hexagonal pattern look)
+for(let r=0;r<10;r++)for(let c=0;c<6;c++){
+    const d=new THREE.Mesh(new THREE.CircleGeometry(.005,6),new THREE.MeshStandardMaterial({color:0x222226,roughness:.4,metalness:.5}));
+    d.position.set(PX-.05+c*.022,PY-.15+r*.04,PZ+.235);scene.add(d);
+}
+// Front RGB strip (accent line)
+const frontRGB=addM(rBox(.005,.38,.003,.001),new THREE.MeshStandardMaterial({color:0x00aaff,emissive:new THREE.Color(0x00aaff),emissiveIntensity:.8}),PX+.11,PY,PZ+.234,false,false);
+// Power button
+addM(new THREE.CircleGeometry(.008,16),new THREE.MeshStandardMaterial({color:0xffffff,emissive:new THREE.Color(0xffffff),emissiveIntensity:.3}),PX+.08,PY+.22,PZ+.235,false,false);
+// I/O ports (USB etc)
+for(let i=0;i<2;i++){addM(rBox(.012,.006,.004,.001),new THREE.MeshStandardMaterial({color:0x333338}),PX+.05,PY+.2-i*.015,PZ+.235,false,false)}
+// PSU rear vent
+addM(rBox(.18,.06,.005,.005),new THREE.MeshStandardMaterial({color:0x222226}),PX,PY-.2,PZ-.23,false,false);
+// Internal motherboard (visible through glass)
+addM(rBox(.01,.34,.36,.005),new THREE.MeshStandardMaterial({color:0x1a3322,roughness:.6,metalness:.3}),PX+.06,PY+.02,PZ,false,false);
+// GPU (visible through glass - with red accent)
+const gpuMat=new THREE.MeshStandardMaterial({color:0x222222,roughness:.25,metalness:.7});
+addM(rBox(.08,.03,.3,.006),gpuMat,PX-.02,PY-.06,PZ,false,false);
+addM(rBox(.08,.005,.3,.003),new THREE.MeshStandardMaterial({color:0xcc2222,emissive:new THREE.Color(0xcc2222),emissiveIntensity:.3}),PX-.02,PY-.04,PZ,false,false); // Red GPU accent
+// RAM sticks (with RGB tops)
+for(let i=0;i<4;i++){
+    addM(rBox(.003,.08,.01,.001),new THREE.MeshStandardMaterial({color:0x333333,roughness:.4,metalness:.5}),PX+.04,PY+.08,PZ-.08+i*.018,false,false);
+    addM(rBox(.003,.005,.01,.001),new THREE.MeshStandardMaterial({color:0x00ff88,emissive:new THREE.Color(0x00ff88),emissiveIntensity:.4}),PX+.04,PY+.12,PZ-.08+i*.018,false,false);
+}
+
+// RGB Fans (BIGGER, brighter, more visible through glass)
+function makeFan(fx,fy,fz,color){
+    const grp=new THREE.Group();
+    // Outer housing
+    grp.add(new THREE.Mesh(new THREE.TorusGeometry(.05,.008,10,28),new THREE.MeshStandardMaterial({color:0x333338,roughness:.3,metalness:.6})));
+    // RGB ring (bright!)
+    grp.add(new THREE.Mesh(new THREE.TorusGeometry(.052,.005,10,36),new THREE.MeshStandardMaterial({color,emissive:new THREE.Color(color),emissiveIntensity:.8,roughness:.2})));
+    // Inner ring
+    grp.add(new THREE.Mesh(new THREE.TorusGeometry(.02,.003,8,20),new THREE.MeshStandardMaterial({color,emissive:new THREE.Color(color),emissiveIntensity:.5,roughness:.3})));
+    // Fan blades
+    const bg=new THREE.Group();
+    for(let i=0;i<9;i++){const a=(i/9)*Math.PI*2;const b=new THREE.Mesh(new THREE.CapsuleGeometry(.004,.04,4,8),new THREE.MeshStandardMaterial({color,emissive:new THREE.Color(color),emissiveIntensity:.25,transparent:true,opacity:.55}));b.rotation.z=a;b.position.set(Math.cos(a)*.015,Math.sin(a)*.015,0);bg.add(b)}
+    grp.add(bg);
+    // Stronger light
+    grp.add(new THREE.PointLight(color,.2,.5));
+    grp.position.set(fx,fy,fz);grp.rotation.y=Math.PI/2;scene.add(grp);fans.push(bg);
+}
+// 3 front intake fans (visible through glass, like reference)
+makeFan(PX-.11,PY+.12,PZ-.1,0x00ffcc);
+makeFan(PX-.11,PY+.12,PZ+.1,0xff44cc);
+makeFan(PX-.11,PY-.1,PZ,0x4488ff);
+// Internal RGB glow
+const pcGlow=new THREE.PointLight(0x8844ff,.3,.7);pcGlow.position.set(PX,PY,PZ);scene.add(pcGlow);
+
+// ==================== CHAIR (COLORFUL - black + teal) ====================
+const cG=new THREE.Group();
+// Seat - thick rounded cushion, VISIBLE
+const seat=new THREE.Mesh(rBox(.48,.08,.45,.028),chairBlack);seat.position.y=.47;seat.castShadow=true;cG.add(seat);
+// Seat edge accent (teal piping)
+const seatEdge=new THREE.Mesh(rBox(.5,.015,.47,.02),chairTeal);seatEdge.position.y=.44;cG.add(seatEdge);
+// Backrest
+const back=new THREE.Mesh(rBox(.46,.58,.06,.028),chairBlack);back.position.set(0,.8,-.21);back.rotation.x=-.08;back.castShadow=true;cG.add(back);
+// Side bolsters (teal!)
+[-1,1].forEach(s=>{const b=new THREE.Mesh(rBox(.06,.48,.08,.022),chairTeal);b.position.set(s*.22,.78,-.2);b.rotation.x=-.08;b.rotation.z=s*.08;cG.add(b)});
+// Center accent stripe (bright teal)
+const stripe=new THREE.Mesh(rBox(.1,.42,.003,.005),chairTealBright);stripe.position.set(0,.8,-.179);stripe.rotation.x=-.08;cG.add(stripe);
+// Lumbar
+const lum=new THREE.Mesh(new THREE.SphereGeometry(.08,16,12),chairBlack);lum.scale.set(2.2,.6,.5);lum.position.set(0,.58,-.2);cG.add(lum);
+// Headrest (teal!)
+const hr=new THREE.Mesh(rBox(.22,.1,.06,.025),chairTeal);hr.position.set(0,1.15,-.24);hr.rotation.x=-.12;cG.add(hr);
+// Headrest mounts
+[-.05,.05].forEach(hx=>{const hm=new THREE.Mesh(new THREE.CylinderGeometry(.006,.006,.08,8),metalMat);hm.position.set(hx,1.08,-.22);cG.add(hm)});
+// Gas cylinder + cover
+const gasCyl=new THREE.Mesh(new THREE.CylinderGeometry(.02,.025,.25,16),metalMat);gasCyl.position.set(0,.31,0);cG.add(gasCyl);
+const gasCov=new THREE.Mesh(new THREE.CylinderGeometry(.035,.03,.12,12),chairBlack);gasCov.position.set(0,.38,0);cG.add(gasCov);
+// 5-star base (curved tube arms)
+for(let i=0;i<5;i++){const a=(i/5)*Math.PI*2;
+    const curve=new THREE.CatmullRomCurve3([new THREE.Vector3(0,.17,0),new THREE.Vector3(Math.sin(a)*.12,.16,Math.cos(a)*.12),new THREE.Vector3(Math.sin(a)*.27,.145,Math.cos(a)*.27)]);
+    cG.add(new THREE.Mesh(new THREE.TubeGeometry(curve,12,.012,8),metalMat));
+    const whl=new THREE.Mesh(new THREE.SphereGeometry(.02,12,10),darkMetal);whl.position.set(Math.sin(a)*.27,.13,Math.cos(a)*.27);cG.add(whl);
+    const whs=new THREE.Mesh(new THREE.CylinderGeometry(.014,.017,.018,10),metalMat);whs.position.set(Math.sin(a)*.27,.145,Math.cos(a)*.27);cG.add(whs);
+}
+// Armrests (silver metal + dark pad)
+[-1,1].forEach(s=>{
+    const pad=new THREE.Mesh(rBox(.06,.02,.22,.008),chairBlack);pad.position.set(s*.26,.64,-.04);cG.add(pad);
+    const sup=new THREE.CatmullRomCurve3([new THREE.Vector3(s*.26,.48,.04),new THREE.Vector3(s*.26,.58,0),new THREE.Vector3(s*.26,.63,-.04)]);
+    cG.add(new THREE.Mesh(new THREE.TubeGeometry(sup,8,.01,8),metalMat));
+});
+cG.position.set(0,0,-.65);cG.rotation.y=.15;scene.add(cG);
+tag(seat,'Gaming Chair','Ergonomic with teal accents \u2013 adjustable everything');
+
+// ==================== MACBOOK PRO (3D GLB Model) ====================
+const macGroup = new THREE.Group();
+macLidGroup = new THREE.Group();
+const macBottomGroup = new THREE.Group();
+macGroup.add(macLidGroup);
+macGroup.add(macBottomGroup);
+const macScale = 0.0095;
+macGroup.scale.set(macScale, macScale, macScale);
+macGroup.position.set(-0.68, DY + 0.022, DZ + 0.12);
+macGroup.rotation.y = 0.15;
+scene.add(macGroup);
+
+// MacBook materials
+const macDarkPlastic = new THREE.MeshStandardMaterial({color:0x000000, roughness:.9, metalness:.9});
+const macBaseMetal = new THREE.MeshStandardMaterial({color:0xC8C9CD, roughness:.25, metalness:.75});
+const macLogoMat = new THREE.MeshBasicMaterial({color:0xffffff});
+const macCameraMat = new THREE.MeshBasicMaterial({color:0x333333});
+
+// Screen texture
+const macTexLoader = new THREE.TextureLoader();
+const macScreenTex = macTexLoader.load("https://ksenia-k.com/img/threejs/macbook-screen-texture.png", tex => {
+    tex.flipY = false;
+    tex.wrapS = THREE.RepeatWrapping;
+    tex.repeat.y = tex.image.width / tex.image.height / 29.4 * 20;
+});
+macScreenMat = new THREE.MeshBasicMaterial({map:macScreenTex, transparent:true, opacity:0, side:THREE.BackSide});
+
+// Keyboard overlay texture
+const macKbTex = macTexLoader.load("https://ksenia-k.com/img/threejs/keyboard-overlay.png");
+const macKbMat = new THREE.MeshBasicMaterial({color:0xffffff, alphaMap:macKbTex, transparent:true});
+
+// Load MacBook GLB model
+new GLTFLoader().load("https://ksenia-k.com/models/mac-noUv.glb", glb => {
+    [...glb.scene.children].forEach(child => {
+        if (child.name === "_top") {
+            macLidGroup.add(child);
+            [...child.children].forEach(mesh => {
+                if (mesh.name === "lid") mesh.material = macBaseMetal;
+                else if (mesh.name === "logo") mesh.material = macLogoMat;
+                else if (mesh.name === "screen-frame") mesh.material = macDarkPlastic;
+                else if (mesh.name === "camera") mesh.material = macCameraMat;
+            });
+        } else if (child.name === "_bottom") {
+            macBottomGroup.add(child);
+            [...child.children].forEach(mesh => {
+                if (mesh.name === "base") { mesh.material = macBaseMetal; tag(mesh,'MacBook Pro','16-inch M3 Pro \u2013 secondary development machine'); }
+                else mesh.material = macDarkPlastic;
+            });
+        }
+    });
+    // Enable shadows
+    macGroup.traverse(obj => { if(obj.isMesh){obj.castShadow=true;obj.receiveShadow=true} });
+    // Screen plane
+    const scrMesh = new THREE.Mesh(new THREE.PlaneGeometry(29.4, 20), macScreenMat);
+    scrMesh.position.set(0, 10.5, -0.11);
+    scrMesh.rotation.set(Math.PI, 0, 0);
+    macLidGroup.add(scrMesh);
+    // Dark screen backing
+    const darkScr = scrMesh.clone();
+    darkScr.position.z = -0.111;
+    darkScr.rotation.set(Math.PI, Math.PI, 0);
+    darkScr.material = macDarkPlastic;
+    macLidGroup.add(darkScr);
+    // Keyboard overlay
+    const kbKeys = new THREE.Mesh(new THREE.PlaneGeometry(27.7, 11.6), macKbMat);
+    kbKeys.rotation.set(-Math.PI * 0.5, 0, 0);
+    kbKeys.position.set(0, 0.045, 7.21);
+    macBottomGroup.add(kbKeys);
+    // Screen glow light
+    macScreenLight = new THREE.PointLight(0x4488cc, 0, 0.8);
+    macScreenLight.position.set(-0.68, DY + 0.18, DZ + 0.2);
+    scene.add(macScreenLight);
+    // Start lid closed, trigger animation
+    macLidGroup.rotation.x = Math.PI * 0.5;
+    macLoaded = true;
+    macLoadTime = clock.getElapsedTime();
+});
+
+// ==================== COFFEE MUG (RED - colorful!) ====================
+const mugProf=[new THREE.Vector2(0,0),new THREE.Vector2(.028,0),new THREE.Vector2(.031,.005),new THREE.Vector2(.033,.015),new THREE.Vector2(.035,.035),new THREE.Vector2(.036,.055),new THREE.Vector2(.037,.075),new THREE.Vector2(.038,.085),new THREE.Vector2(.036,.09),new THREE.Vector2(.033,.088)];
+const mugMat=new THREE.MeshStandardMaterial({color:0xdd3333,roughness:.35,metalness:.08}); // RED mug!
+const mugM=new THREE.Mesh(new THREE.LatheGeometry(mugProf,24),mugMat);mugM.position.set(.65,DY+.02,DZ+.22);mugM.castShadow=true;scene.add(mugM);
+tag(mugM,'Coffee Mug','Third cup today \u2013 fuel for debugging');
+// Handle
+const mh=new THREE.Mesh(new THREE.TorusGeometry(.018,.005,8,16,Math.PI),mugMat);mh.rotation.y=Math.PI/2;mh.position.set(.688,DY+.065,DZ+.22);scene.add(mh);
+// Coffee
+const cf=new THREE.Mesh(new THREE.CircleGeometry(.033,20),new THREE.MeshStandardMaterial({color:0x3a1f0b,roughness:.1}));cf.rotation.x=-Math.PI/2;cf.position.set(.65,DY+.107,DZ+.22);scene.add(cf);
+
+// ==================== NOTEBOOK (bright cobalt blue) ====================
+const NX=-.38,NZ=DZ+.28;
+const nb=tag(addM(rBox(.15,.01,.21,.006),new THREE.MeshStandardMaterial({color:0x2244aa,roughness:.65,metalness:.05}),NX,DY+.025,NZ),'Notebook','Moleskine \u2013 architecture sketches');
+nb.rotation.y=.15;
+const pg=addM(rBox(.14,.007,.2,.004),new THREE.MeshStandardMaterial({color:0xf5f5ee,roughness:.9}),NX+.002,DY+.02,NZ);pg.rotation.y=.15;
+const eb=addM(rBox(.003,.012,.21,.001),new THREE.MeshStandardMaterial({color:0xff4444,roughness:.6}),NX+.04,DY+.027,NZ);eb.rotation.y=.15;
+// Pen (orange!)
+const pen=new THREE.Mesh(new THREE.CylinderGeometry(.004,.003,.14,12),new THREE.MeshStandardMaterial({color:0xff6600,roughness:.3,metalness:.4}));
+pen.position.set(NX+.1,DY+.028,NZ);pen.rotation.set(0,.3,Math.PI/2);pen.castShadow=true;scene.add(pen);
+const penTip=new THREE.Mesh(new THREE.ConeGeometry(.003,.015,8),metalMat);penTip.position.set(NX+.168,DY+.028,NZ+.02);penTip.rotation.z=-Math.PI/2;scene.add(penTip);
+
+// ==================== LED STRIP ====================
+const ledCurve=new THREE.CatmullRomCurve3([new THREE.Vector3(-.85,DY+.25,-2.44),new THREE.Vector3(-.4,DY+.28,-2.44),new THREE.Vector3(0,DY+.3,-2.44),new THREE.Vector3(.4,DY+.28,-2.44),new THREE.Vector3(.85,DY+.25,-2.44)]);
+const ledMat=new THREE.MeshStandardMaterial({color:0xff00ff,emissive:new THREE.Color(0xff00ff),emissiveIntensity:.6});
+scene.add(new THREE.Mesh(new THREE.TubeGeometry(ledCurve,32,.008,8,false),ledMat));
+const ledL1=new THREE.PointLight(0xff00ff,.3,1.5);ledL1.position.set(-.4,DY+.3,-2.38);scene.add(ledL1);
+const ledL2=new THREE.PointLight(0x00ffff,.3,1.5);ledL2.position.set(.4,DY+.3,-2.38);scene.add(ledL2);
+
+// ==================== BOOKSHELF ====================
+const sG=new THREE.Group();
+const sMat=new THREE.MeshStandardMaterial({color:0x9B7B5E,roughness:.65,metalness:.05}); // LIGHTER wood
+[-.4,.4].forEach(sx=>{const s=new THREE.Mesh(rBox(.02,1.8,.28,.005),sMat);s.position.set(sx,.9,0);s.castShadow=true;sG.add(s)});
+const sBack=new THREE.Mesh(rBox(.8,1.8,.01,.003),new THREE.MeshStandardMaterial({color:0x8B6B4E,roughness:.8}));sBack.position.set(0,.9,-.135);sG.add(sBack);
+for(let i=0;i<5;i++){const b=new THREE.Mesh(rBox(.8,.02,.28,.005),sMat);b.position.y=i*.4+.1;b.receiveShadow=true;sG.add(b)}
+// COLORFUL books
+const bkC=[0xee3333,0x3366ee,0x33bb44,0xff8800,0xaa33dd,0xdd6633,0x33aaaa,0xdd3377,0x7733dd,0xddaa22,0x3399dd,0xdd4444,0x44bb88,0xffcc00,0x9944ff];
+for(let sh=0;sh<4;sh++){let bx=-.35;const by=sh*.4+.12;
+for(let b=0;b<(6+Math.floor(Math.random()*4))&&bx<.33;b++){const bw=.016+Math.random()*.025;const bh=.2+Math.random()*.14;const bd=.16+Math.random()*.06;
+const bk=new THREE.Mesh(rBox(bw,bh,bd,.004),new THREE.MeshStandardMaterial({color:bkC[Math.floor(Math.random()*bkC.length)],roughness:.65,metalness:.05}));
+bk.position.set(bx+bw/2,by+bh/2,0);bk.rotation.z=(Math.random()-.5)*.07;bk.castShadow=true;sG.add(bk);bx+=bw+.003}}
+sG.position.set(2.7,0,.5);sG.rotation.y=-Math.PI/2;scene.add(sG);
+
+// ==================== PLANT ====================
+const PLX=.78,PLZ=DZ-.22;
+const potProf=[new THREE.Vector2(0,0),new THREE.Vector2(.024,0),new THREE.Vector2(.026,.004),new THREE.Vector2(.03,.015),new THREE.Vector2(.035,.035),new THREE.Vector2(.04,.055),new THREE.Vector2(.042,.06),new THREE.Vector2(.044,.063),new THREE.Vector2(.042,.065),new THREE.Vector2(.038,.063)];
+const potM=new THREE.Mesh(new THREE.LatheGeometry(potProf,20),new THREE.MeshStandardMaterial({color:0xcc7744,roughness:.7,metalness:.05}));
+potM.position.set(PLX,DY+.02,PLZ);potM.castShadow=true;scene.add(potM);
+tag(potM,'Desk Plant','Pothos \u2013 never pushes buggy code');
+const soil=new THREE.Mesh(new THREE.CircleGeometry(.037,16),new THREE.MeshStandardMaterial({color:0x3a2515,roughness:.9}));soil.rotation.x=-Math.PI/2;soil.position.set(PLX,DY+.082,PLZ);scene.add(soil);
+const stC=new THREE.CatmullRomCurve3([new THREE.Vector3(PLX,DY+.08,PLZ),new THREE.Vector3(PLX+.005,DY+.1,PLZ),new THREE.Vector3(PLX-.003,DY+.12,PLZ+.003),new THREE.Vector3(PLX+.002,DY+.14,PLZ)]);
+scene.add(new THREE.Mesh(new THREE.TubeGeometry(stC,12,.003,6),new THREE.MeshStandardMaterial({color:0x226622,roughness:.7})));
+const leafM=new THREE.MeshStandardMaterial({color:0x33aa55,roughness:.5,metalness:.05}); // BRIGHT green
+for(let i=0;i<12;i++){const a=(i/12)*Math.PI*2;const r2=.015+Math.random()*.01;
+const lf=new THREE.Mesh(new THREE.SphereGeometry(.02,10,8),leafM);lf.scale.set(1,.4,1.8);
+lf.position.set(PLX+Math.cos(a)*r2,DY+.12+Math.random()*.05,PLZ+Math.sin(a)*r2);lf.rotation.set(Math.random()*.4,a,(Math.random()-.5)*.3);scene.add(lf)}
+
+// ==================== LIGHTING (bright, warm, from everywhere) ====================
+scene.add(new THREE.AmbientLight(0x555550,.8));
+scene.add(new THREE.HemisphereLight(0x887766,0x443322,.4));
+// Main spotlight
+const spot=new THREE.SpotLight(0xffeedd,3,10,Math.PI/3,.4,.7);
+spot.position.set(0,2.9,0);spot.target.position.set(0,.75,DZ);
+spot.castShadow=true;spot.shadow.mapSize.set(2048,2048);spot.shadow.camera.near=.5;spot.shadow.camera.far=6;spot.shadow.bias=-.001;
+scene.add(spot);scene.add(spot.target);
+// Fill lights (multiple, from all directions)
+[[2,2.5,2.5,0xffeedd,.5],[-2,1.8,1.5,0xffddaa,.35],[2.3,1.6,.5,0xffeedd,.8],[-2,2.5,-2,0xddddcc,.25],[0,2,3,0xfff5ee,.3]].forEach(([x,y,z,c,inten])=>{
+    const pl=new THREE.PointLight(c,inten,7);pl.position.set(x,y,z);scene.add(pl);
+});
+// Moonlight
+const moonL=new THREE.PointLight(0x8899cc,.35,5);moonL.position.set(-2.5,2.2,0);scene.add(moonL);
+
+// ==================== DUST PARTICLES ====================
+const PC2=300;const pG=new THREE.BufferGeometry();const pP=new Float32Array(PC2*3);const pV=[];
+for(let i=0;i<PC2;i++){pP[i*3]=(Math.random()-.5)*5.5;pP[i*3+1]=Math.random()*2.8+.1;pP[i*3+2]=(Math.random()-.5)*4.5;pV.push({x:(Math.random()-.5)*.0006,y:(Math.random()-.5)*.0002,z:(Math.random()-.5)*.0006})}
+pG.setAttribute('position',new THREE.BufferAttribute(pP,3));
+const pMat2=new THREE.PointsMaterial({color:0xffffff,size:.005,transparent:true,opacity:.25,sizeAttenuation:true});
+scene.add(new THREE.Points(pG,pMat2));
+
+// ==================== ANIMATION ====================
+function animate(){
+    requestAnimationFrame(animate);
+    const t=clock.getElapsedTime();
+    // Fans
+    fans.forEach((b,i)=>{b.rotation.z+=.07+i*.015});
+    // RGB cycling
+    const h1=(t*.1)%1,h2=(t*.1+.5)%1;
+    const lc=new THREE.Color().setHSL(h1,1,.5);
+    ledMat.color.copy(lc);ledMat.emissive.copy(lc);
+    ledL1.color.setHSL(h1,1,.5);ledL2.color.setHSL(h2,1,.5);
+    kbRGB.color.setHSL((t*.15)%1,1,.5);
+    pcGlow.color.setHSL((t*.08)%1,.8,.5);
+    const mc=new THREE.Color().setHSL((t*.12)%1,1,.5);
+    mouseRGB.material.color.copy(mc);mouseRGB.material.emissive.copy(mc);
+    // Screen glow pulse
+    mGL.intensity=.25+Math.sin(t*1.5)*.05;
+    mGR.intensity=.2+Math.sin(t*1.8)*.04;
+    // Dust
+    const pos=pG.attributes.position.array;
+    for(let i=0;i<PC2;i++){const i3=i*3;pos[i3]+=pV[i].x;pos[i3+1]+=pV[i].y+Math.sin(t+i)*.00002;pos[i3+2]+=pV[i].z;
+    if(pos[i3]>2.9)pos[i3]=-2.9;if(pos[i3]<-2.9)pos[i3]=2.9;if(pos[i3+1]>2.9)pos[i3+1]=.1;if(pos[i3+1]<.1)pos[i3+1]=2.9;if(pos[i3+2]>2.4)pos[i3+2]=-2.4;if(pos[i3+2]<-2.4)pos[i3+2]=2.4}
+    pG.attributes.position.needsUpdate=true;
+    pMat2.opacity=.22+Math.sin(t*.6)*.08;
+    // MacBook lid opening animation
+    if (macLoaded) {
+        const elapsed = t - macLoadTime;
+        if (elapsed > 1.5) {
+            macLidAngle += (macLidTarget - macLidAngle) * 0.025;
+            if (Math.abs(macLidAngle - macLidTarget) < 0.002) macLidAngle = macLidTarget;
+            macLidGroup.rotation.x = macLidAngle;
+            const openPct = 1 - (macLidAngle - macLidTarget) / (Math.PI * 0.5 - macLidTarget);
+            if (openPct > 0.6) {
+                const fade = Math.min(0.96, (openPct - 0.6) / 0.3 * 0.96);
+                macScreenMat.opacity = fade;
+                if (macScreenLight) macScreenLight.intensity = fade * 0.2;
+            }
+        }
+    }
+    // Hover
+    raycaster.setFromCamera(mouse,camera);
+    const hits=raycaster.intersectObjects(interactives);
+    if(hits.length>0){const o=hits[0].object;
+        if(hovered!==o){if(hovered)hovered.material.emissiveIntensity=origEmissive;hovered=o;origEmissive=o.material.emissiveIntensity||0;
+        if(!o.material.emissive||(!o.material.emissive.r&&!o.material.emissive.g&&!o.material.emissive.b))o.material.emissive=new THREE.Color(0x336699);
+        o.material.emissiveIntensity=origEmissive+.2}
+        document.body.style.cursor='pointer';tipN.textContent=o.userData.name;tipD.textContent=o.userData.desc;tip.style.display='block';
+    }else{if(hovered)hovered.material.emissiveIntensity=origEmissive;hovered=null;document.body.style.cursor='default';tip.style.display='none'}
+    controls.update();
+    composer.render();
+}
+animate();
+
+addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);composer.setSize(innerWidth,innerHeight)});
+    </script>
+</body>
+</html>
