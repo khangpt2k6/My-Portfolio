@@ -89,10 +89,10 @@ function EducationTab() {
       >
         <div className="flex items-start gap-3">
           <div
-            className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
+            className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 overflow-hidden"
             style={{ background: "var(--atm-accent-bg)" }}
           >
-            <FaGraduationCap className="w-5 h-5" style={{ color: "var(--atm-text-secondary)" }} />
+            <img src="/University_of_South_Florida_seal.svg" alt="USF" className="w-8 h-8 object-contain" />
           </div>
           <div className="min-w-0">
             <h3

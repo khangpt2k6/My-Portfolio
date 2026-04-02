@@ -9,7 +9,7 @@ const education = {
   degree: "Bachelor of Science in Computer Science",
   location: "Tampa, FL",
   gpa: "4.0/4.0",
-  logo: "/usf-seal.svg",
+  logo: "/University_of_South_Florida_seal.svg",
   awards: [
     "Green and Gold Presidential Scholarship Award ($44,000)",
     "Dean's List (All Semesters)",

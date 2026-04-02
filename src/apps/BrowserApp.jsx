@@ -18,7 +18,7 @@ const favicon = (domain) =>
 const BOOKMARKS = [
   { name: "Google", url: "https://www.google.com/webhp?igu=1", domain: "google.com" },
   { name: "Wikipedia", url: "https://en.m.wikipedia.org/wiki/Main_Page", domain: "wikipedia.org" },
-  { name: "GitHub", url: "https://github.com/khangphan2204", domain: "github.com" },
+  { name: "GitHub", url: "https://github.com/khangpt2k6", domain: "github.com" },
   { name: "MDN Docs", url: "https://developer.mozilla.org/en-US/", domain: "developer.mozilla.org" },
   { name: "YouTube", url: "https://www.youtube.com/embed", domain: "youtube.com" },
   { name: "Reddit", url: "https://old.reddit.com", domain: "reddit.com" },
@@ -26,13 +26,13 @@ const BOOKMARKS = [
 
 const START_PAGE_SHORTCUTS = [
   { name: "Google", url: "https://www.google.com/webhp?igu=1", domain: "google.com", color: "#4285F4" },
-  { name: "GitHub", url: "https://github.com/khangphan2204", domain: "github.com", color: "#24292e" },
+  { name: "GitHub", url: "https://github.com/khangpt2k6", domain: "github.com", color: "#24292e" },
   { name: "Wikipedia", url: "https://en.m.wikipedia.org/wiki/Main_Page", domain: "wikipedia.org", color: "#f5f5f5" },
   { name: "YouTube", url: "https://www.youtube.com/embed", domain: "youtube.com", color: "#FF0000" },
   { name: "MDN", url: "https://developer.mozilla.org/en-US/", domain: "developer.mozilla.org", color: "#1B1B1B" },
   { name: "Reddit", url: "https://old.reddit.com", domain: "reddit.com", color: "#FF4500" },
   { name: "Stack Overflow", url: "https://stackoverflow.com", domain: "stackoverflow.com", color: "#F48024" },
-  { name: "LinkedIn", url: "https://www.linkedin.com", domain: "linkedin.com", color: "#0A66C2" },
+  { name: "LinkedIn", url: "https://www.linkedin.com/in/kvphan27", domain: "linkedin.com", color: "#0A66C2" },
 ];
 
 export default function BrowserApp() {
