@@ -103,7 +103,7 @@ export default function Window({ id, title, children }) {
   const isMax = win?.isMaximized;
 
   const style = isMax
-    ? { top: 26, left: 0, width: "100%", height: "calc(100% - 26px - 56px)", zIndex: win?.zIndex || 0 }
+    ? { top: 0, left: 0, width: "100%", height: "100%", zIndex: 9600 }
     : {
         top: win?.position?.y || 100,
         left: win?.position?.x || 100,
@@ -126,7 +126,7 @@ export default function Window({ id, title, children }) {
           onMouseDown={() => !isFocused && focusApp(id)}
         >
           <div
-            className="w-full h-full flex flex-col rounded-2xl overflow-hidden"
+            className={`w-full h-full flex flex-col overflow-hidden ${isMax ? "" : "rounded-2xl"}`}
             style={{
               background: "var(--lg-window)",
               backdropFilter: "var(--lg-blur)",
