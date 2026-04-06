@@ -24,7 +24,7 @@ function MiniBrowser() {
 
 export default function ModeSwitchButton({ currentMode, onSwitch }) {
   const targetMode = currentMode === "desktop" ? "web" : "desktop";
-  const label = targetMode === "desktop" ? "Desktop OS" : "Web View";
+  const label = targetMode === "desktop" ? "Desktop App" : "Web Browser";
 
   return (
     <motion.button

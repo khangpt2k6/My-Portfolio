@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 
 /* ── Floating particle ── */
 function Particle({ delay, x, y, size }) {
@@ -80,23 +80,8 @@ function BrowserSVG() {
   );
 }
 
-function ModeTag({ children }) {
-  return (
-    <span
-      className="inline-flex items-center rounded-full px-2.5 py-1 text-[10px] tracking-[0.08em] uppercase"
-      style={{
-        background: "rgba(var(--color-primary-rgb), 0.08)",
-        border: "1px solid rgba(var(--color-primary-rgb), 0.18)",
-        color: "rgba(255,255,255,0.78)",
-      }}
-    >
-      {children}
-    </span>
-  );
-}
-
 /* ── Neumorphic Card ── */
-function NeuCard({ icon, title, subtitle, tags, delay, onClick, index }) {
+function NeuCard({ icon, title, delay, onClick, index }) {
   const [pressed, setPressed] = useState(false);
 
   return (
@@ -127,6 +112,18 @@ function NeuCard({ icon, title, subtitle, tags, delay, onClick, index }) {
       onMouseLeave={() => setPressed(false)}
       onClick={onClick}
     >
+      {/* Constant neon sweep */}
+      <motion.div
+        className="absolute -inset-14 pointer-events-none"
+        style={{
+          background:
+            "linear-gradient(115deg, transparent 35%, rgba(var(--color-primary-rgb),0.14) 50%, transparent 65%)",
+          filter: "blur(10px)",
+        }}
+        animate={{ x: ["-30%", "30%", "-30%"] }}
+        transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut", delay: index * 0.2 }}
+      />
+
       {/* Top glow strip on hover */}
       <motion.div
         className="absolute top-0 left-0 right-0 h-[2px] rounded-t-[28px]"
@@ -147,6 +144,12 @@ function NeuCard({ icon, title, subtitle, tags, delay, onClick, index }) {
           whileHover={{ scale: 1.05 }}
           transition={{ type: "spring", stiffness: 400, damping: 20 }}
         >
+          <motion.div
+            className="absolute inset-0 rounded-[20px]"
+            style={{ border: "1px solid rgba(var(--color-primary-rgb), 0.28)" }}
+            animate={{ scale: [1, 1.16, 1], opacity: [0.45, 0.08, 0.45] }}
+            transition={{ duration: 2.6, repeat: Infinity, ease: "easeInOut", delay: index * 0.25 }}
+          />
           <motion.div
             className="text-[var(--color-primary)]"
             animate={{
@@ -180,13 +183,7 @@ function NeuCard({ icon, title, subtitle, tags, delay, onClick, index }) {
             Mode
           </span>
         </div>
-        <p className="text-[13px] text-white/45 leading-relaxed">{subtitle}</p>
-
-        <div className="mt-4 flex flex-wrap gap-1.5">
-          {tags.map((tag) => (
-            <ModeTag key={tag}>{tag}</ModeTag>
-          ))}
-        </div>
+        <p className="text-[12px] text-white/45">Interactive frontend experience</p>
 
         {/* CTA arrow */}
         <motion.div
@@ -218,11 +215,11 @@ function NeuCard({ icon, title, subtitle, tags, delay, onClick, index }) {
 
 /* ── Main ModePicker ── */
 export default function ModePicker({ onSelect }) {
-  const particles = Array.from({ length: 12 }, (_, i) => ({
+  const particles = Array.from({ length: 20 }, (_, i) => ({
     x: 10 + Math.random() * 80,
     y: 10 + Math.random() * 80,
-    size: 3 + Math.random() * 4,
-    delay: Math.random() * 3,
+    size: 2 + Math.random() * 4,
+    delay: Math.random() * 2.5,
   }));
 
   return (
@@ -328,7 +325,7 @@ export default function ModePicker({ onSelect }) {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.45, duration: 0.5 }}
           >
-            Select your mode
+            Pick your interface
           </motion.p>
 
           {/* Neumorphic divider line */}
@@ -350,18 +347,14 @@ export default function ModePicker({ onSelect }) {
         <div className="flex flex-col sm:flex-row gap-6">
           <NeuCard
             icon={<DesktopSVG />}
-            title="Desktop OS"
-            subtitle="Immersive workspace"
-            tags={["Apps", "Dock", "Windows"]}
+            title="Desktop App"
             delay={0.4}
             index={0}
             onClick={() => onSelect("desktop")}
           />
           <NeuCard
             icon={<BrowserSVG />}
-            title="Web Portfolio"
-            subtitle="Fast scroll experience"
-            tags={["Landing", "Projects", "Contact"]}
+            title="Web Browser"
             delay={0.55}
             index={1}
             onClick={() => onSelect("web")}
