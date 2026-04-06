@@ -11,8 +11,6 @@ import {
   AlertCircle,
   Loader2,
   Mail,
-  MailOpen,
-  SendHorizontal,
   Phone,
   Github,
   Linkedin,
@@ -328,6 +326,7 @@ const socials = [
 const Contact = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [subject, setSubject] = useState("");
   const [message, setMessage] = useState("");
   const [status, setStatus] = useState("idle");
   const [visitorLocation, setVisitorLocation] = useState(null);
@@ -389,14 +388,14 @@ const Contact = () => {
           name: name || "Anonymous",
           email: email || "no-reply@portfolio.com",
           message,
-          subject: `Portfolio Message from ${name || "a visitor"}`,
+          subject: subject?.trim() || `Portfolio Message from ${name || "a visitor"}`,
           from_name: "Portfolio Contact Form",
         }),
       });
       const data = await res.json();
       if (data.success) {
         setStatus("success");
-        setTimeout(() => { setStatus("idle"); setName(""); setEmail(""); setMessage(""); }, 3000);
+        setTimeout(() => { setStatus("idle"); setName(""); setEmail(""); setSubject(""); setMessage(""); }, 3000);
       } else {
         setStatus("error");
         setTimeout(() => setStatus("idle"), 3000);
@@ -408,7 +407,7 @@ const Contact = () => {
   };
 
   const inputClass =
-    "w-full px-4 py-3 text-sm rounded-xl bg-[var(--color-bg)] dark:bg-[#0d0d1a] border border-[var(--color-border)] text-[var(--color-text)] placeholder:text-[var(--color-text-muted)]/50 focus:outline-none focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/20 transition-all duration-300";
+    "w-full px-4 py-3 text-sm rounded-lg bg-[var(--color-bg)] border border-[var(--color-border)] text-[var(--color-text)] placeholder:text-[var(--color-text-muted)]/60 focus:outline-none focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/15 transition-all duration-200";
 
   return (
     <section
@@ -418,31 +417,48 @@ const Contact = () => {
     >
 
       <div className="max-w-6xl mx-auto relative z-10">
-        {/* Header */}
-        <div className="text-center mb-6">
+        <div className="mb-8 flex flex-col items-center gap-2">
           <AnimatedHeading>Get In Touch</AnimatedHeading>
+          <p className="text-sm text-[var(--color-text-muted)] text-center max-w-xl">
+            Professional inbox style. Fast response for project, freelance, or collaboration requests.
+          </p>
         </div>
 
-
-
-
-        {/* ── Form + Info Grid ── */}
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-12">
-          {/* Form */}
           <motion.div
             ref={formRef}
             onMouseMove={handleMouseMove}
-            className="lg:col-span-3 glass-card glow-on-hover rounded-2xl p-6 md:p-8 border border-[var(--color-border)]"
+            className="lg:col-span-3 rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface2)]/90 backdrop-blur-sm overflow-hidden shadow-[0_12px_40px_rgba(10,20,40,0.08)]"
             initial={{ opacity: 0, x: -40 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true, margin: "-60px" }}
             transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
           >
+            <div className="px-6 md:px-8 py-4 border-b border-[var(--color-border)] bg-[var(--color-bg)]/50">
+              <div className="flex items-center justify-between gap-3">
+                <div className="flex items-center gap-2.5">
+                  <div
+                    className="w-9 h-9 rounded-lg grid place-items-center"
+                    style={{ background: "rgba(var(--color-primary-rgb),0.14)" }}
+                  >
+                    <Mail size={16} className="text-[var(--color-primary)]" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-[var(--color-text)]">Compose Message</p>
+                    <p className="text-xs text-[var(--color-text-muted)]">Direct inbox delivery</p>
+                  </div>
+                </div>
+                <span className="text-[11px] font-medium px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+                  Online
+                </span>
+              </div>
+            </div>
+
             {status === "success" ? (
               <motion.div
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
-                className="flex flex-col items-center justify-center py-16 gap-3"
+                className="flex flex-col items-center justify-center py-16 px-8 gap-3"
               >
                 <motion.div
                   initial={{ scale: 0 }}
@@ -458,30 +474,30 @@ const Contact = () => {
               <motion.div
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
-                className="flex flex-col items-center justify-center py-16 gap-3"
+                className="flex flex-col items-center justify-center py-16 px-8 gap-3"
               >
                 <AlertCircle className="w-14 h-14 text-red-500" />
                 <p className="text-lg font-bold text-[var(--color-text)]">Failed to Send</p>
                 <p className="text-sm text-[var(--color-text-muted)]">Please try again or email me directly.</p>
               </motion.div>
             ) : (
-              <form onSubmit={handleSend} className="space-y-5">
+              <form onSubmit={handleSend} className="space-y-5 p-6 md:p-8">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-[10px] font-bold uppercase tracking-widest text-[var(--color-text-muted)] mb-2">
-                      Name
+                    <label className="block text-[11px] font-semibold text-[var(--color-text-muted)] mb-2">
+                      Full name
                     </label>
                     <input
                       type="text"
-                      placeholder="Your name"
+                      placeholder="John Doe"
                       value={name}
                       onChange={(e) => setName(e.target.value)}
                       className={inputClass}
                     />
                   </div>
                   <div>
-                    <label className="block text-[10px] font-bold uppercase tracking-widest text-[var(--color-text-muted)] mb-2">
-                      Email
+                    <label className="block text-[11px] font-semibold text-[var(--color-text-muted)] mb-2">
+                      Email address
                     </label>
                     <input
                       type="email"
@@ -494,47 +510,64 @@ const Contact = () => {
                 </div>
 
                 <div>
-                  <label className="block text-[10px] font-bold uppercase tracking-widest text-[var(--color-text-muted)] mb-2">
+                  <label className="block text-[11px] font-semibold text-[var(--color-text-muted)] mb-2">
+                    Subject
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="What should we discuss?"
+                    value={subject}
+                    onChange={(e) => setSubject(e.target.value)}
+                    className={inputClass}
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-semibold text-[var(--color-text-muted)] mb-2">
                     Message
                   </label>
                   <textarea
                     placeholder="Do you have any feedback / questions / ideas? Let me know!"
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
-                    rows={5}
+                    rows={6}
                     className={`${inputClass} resize-none`}
                     required
                   />
                 </div>
 
-                <motion.button
-                  type="submit"
-                  disabled={!message.trim() || status === "sending"}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  className="w-full py-3.5 rounded-xl text-sm font-bold text-white flex items-center justify-center gap-2.5 transition-all duration-300 disabled:opacity-40 disabled:cursor-not-allowed"
-                  style={{
-                    background: "linear-gradient(135deg, rgb(var(--color-primary-rgb)), rgb(var(--color-secondary-rgb)))",
-                    boxShadow: "0 4px 20px rgba(var(--color-primary-rgb), 0.3)",
-                  }}
-                >
-                  {status === "sending" ? (
-                    <>
-                      <Loader2 size={16} className="animate-spin" />
-                      Sending...
-                    </>
-                  ) : (
-                    <>
-                      <Send size={16} />
-                      Send Message
-                    </>
-                  )}
-                </motion.button>
+                <div className="flex flex-wrap items-center justify-between gap-3 pt-1">
+                  <p className="text-xs text-[var(--color-text-muted)]">
+                    Usually replies within 24 hours.
+                  </p>
+                  <motion.button
+                    type="submit"
+                    disabled={!message.trim() || status === "sending"}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="min-w-[150px] px-5 py-3 rounded-lg text-sm font-semibold text-white flex items-center justify-center gap-2 transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed"
+                    style={{
+                      background: "linear-gradient(135deg, rgb(var(--color-primary-rgb)), rgb(var(--color-secondary-rgb)))",
+                      boxShadow: "0 8px 22px rgba(var(--color-primary-rgb), 0.25)",
+                    }}
+                  >
+                    {status === "sending" ? (
+                      <>
+                        <Loader2 size={16} className="animate-spin" />
+                        Sending...
+                      </>
+                    ) : (
+                      <>
+                        <Send size={16} />
+                        Send Message
+                      </>
+                    )}
+                  </motion.button>
+                </div>
               </form>
             )}
           </motion.div>
 
-          {/* Right side: Map + compact info */}
           <motion.div
             className="lg:col-span-2 flex flex-col gap-4"
             initial={{ opacity: 0, x: 40 }}
@@ -542,114 +575,59 @@ const Contact = () => {
             viewport={{ once: true, margin: "-60px" }}
             transition={{ duration: 0.6, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
           >
-            {/* Mapbox map */}
-            <div className="glass-card rounded-xl overflow-hidden flex-1 min-h-[280px]">
-              <LocationMap isDark={isDark} visitorLocation={visitorLocation} />
+            <div className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface2)]/90 backdrop-blur-sm overflow-hidden shadow-[0_12px_36px_rgba(10,20,40,0.08)]">
+              <div className="px-4 py-3 border-b border-[var(--color-border)] flex items-center justify-between">
+                <span className="text-sm font-semibold text-[var(--color-text)]">Location & Availability</span>
+                <span className="text-[11px] text-[var(--color-text-muted)]">US Eastern Time</span>
+              </div>
+              <div className="h-[250px]">
+                <LocationMap isDark={isDark} visitorLocation={visitorLocation} />
+              </div>
             </div>
 
-            {/* Compact email + phone row with animations */}
-            <div className="flex gap-3">
-              {/* Email — morphs: Mail → MailOpen → SendHorizontal → Mail */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-3">
               <a
                 href="mailto:khang18@usf.edu"
-                className="group flex-1 glass-card rounded-xl px-3 py-3 flex items-center gap-2.5 transition-all duration-300 hover:-translate-y-1 overflow-hidden"
+                className="group rounded-xl border border-[var(--color-border)] bg-[var(--color-bg)]/70 px-4 py-3 flex items-center gap-3 transition-all duration-200 hover:border-[var(--color-primary)]/45"
               >
                 <div
-                  className="relative w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
-                  style={{ backgroundColor: "rgba(var(--color-primary-rgb), 0.1)" }}
+                  className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0"
+                  style={{ backgroundColor: "rgba(var(--color-primary-rgb), 0.12)" }}
                 >
-                  {/* Icon cycle: Mail → MailOpen → SendHorizontal */}
-                  <motion.div
-                    className="absolute inset-0 flex items-center justify-center text-[var(--color-primary)]"
-                    animate={{
-                      opacity: [1, 1, 0, 0, 0, 0, 1],
-                      scale: [1, 1, 0.5, 0.5, 0.5, 0.5, 1],
-                      y: [0, 0, 4, 4, 4, 4, 0],
-                    }}
-                    transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", times: [0, 0.15, 0.25, 0.35, 0.65, 0.85, 1] }}
-                  >
-                    <Mail size={14} />
-                  </motion.div>
-                  <motion.div
-                    className="absolute inset-0 flex items-center justify-center text-[var(--color-primary)]"
-                    animate={{
-                      opacity: [0, 0, 1, 1, 0, 0, 0],
-                      scale: [0.5, 0.5, 1, 1, 0.5, 0.5, 0.5],
-                      y: [4, 4, -1, -1, 4, 4, 4],
-                    }}
-                    transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", times: [0, 0.15, 0.25, 0.45, 0.55, 0.85, 1] }}
-                  >
-                    <MailOpen size={14} />
-                  </motion.div>
-                  <motion.div
-                    className="absolute inset-0 flex items-center justify-center text-[var(--color-primary)]"
-                    animate={{
-                      opacity: [0, 0, 0, 0, 1, 1, 0],
-                      x: [0, 0, 0, 0, 0, 0, 16],
-                      scale: [0.5, 0.5, 0.5, 0.5, 1, 1, 0.8],
-                    }}
-                    transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", times: [0, 0.15, 0.35, 0.5, 0.6, 0.75, 0.88] }}
-                  >
-                    <SendHorizontal size={14} />
-                  </motion.div>
+                  <Mail size={15} className="text-[var(--color-primary)]" />
                 </div>
                 <div className="min-w-0">
-                  <p className="text-[8px] font-bold uppercase tracking-widest text-[var(--color-text-muted)]">Email</p>
-                  <p className="text-[11px] font-semibold text-[var(--color-text)] truncate group-hover:text-[var(--color-primary)] transition-colors">
+                  <p className="text-[11px] font-medium text-[var(--color-text-muted)]">Email</p>
+                  <p className="text-sm font-semibold text-[var(--color-text)] truncate group-hover:text-[var(--color-primary)] transition-colors">
                     khang18@usf.edu
                   </p>
                 </div>
               </a>
 
-              {/* Phone — constant ringing animation */}
               <a
                 href="tel:8135704370"
-                className="group flex-1 glass-card rounded-xl px-3 py-3 flex items-center gap-2.5 transition-all duration-300 hover:-translate-y-1"
+                className="group rounded-xl border border-[var(--color-border)] bg-[var(--color-bg)]/70 px-4 py-3 flex items-center gap-3 transition-all duration-200 hover:border-[var(--color-primary)]/45"
               >
                 <div
-                  className="relative w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
-                  style={{ backgroundColor: "rgba(var(--color-primary-rgb), 0.1)" }}
+                  className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0"
+                  style={{ backgroundColor: "rgba(var(--color-primary-rgb), 0.12)" }}
                 >
-                  {/* Ring waves */}
-                  <motion.div
-                    className="absolute inset-0 rounded-lg"
-                    style={{ border: "1.5px solid rgb(var(--color-primary-rgb))" }}
-                    animate={{ scale: [1, 1.6], opacity: [0.4, 0] }}
-                    transition={{ duration: 1.5, repeat: Infinity, ease: "easeOut" }}
-                  />
-                  <motion.div
-                    className="absolute inset-0 rounded-lg"
-                    style={{ border: "1.5px solid rgb(var(--color-primary-rgb))" }}
-                    animate={{ scale: [1, 1.6], opacity: [0.4, 0] }}
-                    transition={{ duration: 1.5, repeat: Infinity, ease: "easeOut", delay: 0.5 }}
-                  />
-                  {/* Phone icon — ringing wobble */}
-                  <motion.div
-                    className="text-[var(--color-primary)]"
-                    animate={{
-                      rotate: [0, -12, 12, -12, 12, -8, 0, 0, 0, 0],
-                    }}
-                    transition={{
-                      duration: 2.5,
-                      repeat: Infinity,
-                      ease: "easeInOut",
-                      times: [0, 0.08, 0.16, 0.24, 0.32, 0.38, 0.44, 0.5, 0.75, 1],
-                    }}
-                  >
-                    <Phone size={14} />
-                  </motion.div>
+                  <Phone size={15} className="text-[var(--color-primary)]" />
                 </div>
                 <div className="min-w-0">
-                  <p className="text-[8px] font-bold uppercase tracking-widest text-[var(--color-text-muted)]">Phone</p>
-                  <p className="text-[11px] font-semibold text-[var(--color-text)] truncate group-hover:text-[var(--color-primary)] transition-colors">
+                  <p className="text-[11px] font-medium text-[var(--color-text-muted)]">Phone</p>
+                  <p className="text-sm font-semibold text-[var(--color-text)] truncate group-hover:text-[var(--color-primary)] transition-colors">
                     813-570-4370
                   </p>
                 </div>
               </a>
             </div>
 
-            {/* Social links */}
-            <div className="flex gap-3">
+            <div className="flex items-center justify-between rounded-xl border border-[var(--color-border)] bg-[var(--color-bg)]/65 px-4 py-3">
+              <div>
+                <p className="text-sm font-semibold text-[var(--color-text)]">Social Profiles</p>
+                <p className="text-xs text-[var(--color-text-muted)]">See recent work and updates</p>
+              </div>
               {socials.map((s) => (
                 <a
                   key={s.label}
@@ -657,9 +635,9 @@ const Contact = () => {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={s.label}
-                  className="group w-10 h-10 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface2)] flex items-center justify-center transition-all duration-300 hover:bg-[var(--color-primary)] hover:border-[var(--color-primary)] hover:-translate-y-1 hover:shadow-lg"
+                  className="group w-10 h-10 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface2)] flex items-center justify-center transition-all duration-200 hover:bg-[var(--color-primary)] hover:border-[var(--color-primary)]"
                 >
-                  <s.icon size={16} className="text-[var(--color-text-muted)] transition-colors duration-300 group-hover:text-white" />
+                  <s.icon size={16} className="text-[var(--color-text-muted)] transition-colors duration-200 group-hover:text-white" />
                 </a>
               ))}
             </div>

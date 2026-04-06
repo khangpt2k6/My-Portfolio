@@ -80,19 +80,37 @@ function BrowserSVG() {
   );
 }
 
+function ModeTag({ children }) {
+  return (
+    <span
+      className="inline-flex items-center rounded-full px-2.5 py-1 text-[10px] tracking-[0.08em] uppercase"
+      style={{
+        background: "rgba(var(--color-primary-rgb), 0.08)",
+        border: "1px solid rgba(var(--color-primary-rgb), 0.18)",
+        color: "rgba(255,255,255,0.78)",
+      }}
+    >
+      {children}
+    </span>
+  );
+}
+
 /* ── Neumorphic Card ── */
-function NeuCard({ icon, title, description, delay, onClick, index }) {
+function NeuCard({ icon, title, subtitle, tags, delay, onClick, index }) {
   const [pressed, setPressed] = useState(false);
 
   return (
     <motion.button
       className="group relative w-[260px] sm:w-[280px] rounded-[28px] text-left cursor-pointer overflow-hidden"
       style={{
-        background: "linear-gradient(145deg, #1e1e30, #16162a)",
+        background: `
+          linear-gradient(155deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 55%, rgba(0,0,0,0.2) 100%),
+          linear-gradient(145deg, #171728, #111120)
+        `,
         boxShadow: pressed
           ? "inset 6px 6px 16px rgba(0,0,0,0.5), inset -4px -4px 12px rgba(255,255,255,0.03)"
-          : "8px 8px 24px rgba(0,0,0,0.6), -6px -6px 20px rgba(255,255,255,0.04), inset 0 1px 0 rgba(255,255,255,0.06)",
-        border: "1px solid rgba(255,255,255,0.06)",
+          : "8px 8px 24px rgba(0,0,0,0.6), -6px -6px 20px rgba(255,255,255,0.02), inset 0 1px 0 rgba(255,255,255,0.06)",
+        border: "1px solid rgba(255,255,255,0.08)",
         padding: 0,
         transition: "box-shadow 0.2s ease",
       }}
@@ -121,9 +139,9 @@ function NeuCard({ icon, title, description, delay, onClick, index }) {
       <div className="p-7">
         {/* Icon container — neumorphic inset */}
         <motion.div
-          className="w-[72px] h-[72px] rounded-[20px] flex items-center justify-center mb-5"
+          className="relative w-[76px] h-[76px] rounded-[20px] flex items-center justify-center mb-5"
           style={{
-            background: "linear-gradient(145deg, #1a1a2c, #141426)",
+            background: "linear-gradient(145deg, rgba(255,255,255,0.03), rgba(0,0,0,0.2))",
             boxShadow: "inset 4px 4px 10px rgba(0,0,0,0.4), inset -3px -3px 8px rgba(255,255,255,0.04)",
           }}
           whileHover={{ scale: 1.05 }}
@@ -142,19 +160,41 @@ function NeuCard({ icon, title, description, delay, onClick, index }) {
           >
             {icon}
           </motion.div>
+
+          <div
+            className="absolute -inset-[1px] rounded-[20px] pointer-events-none"
+            style={{
+              border: "1px solid rgba(var(--color-primary-rgb), 0.22)",
+              boxShadow: "0 0 18px rgba(var(--color-primary-rgb), 0.14)",
+            }}
+          />
         </motion.div>
 
         {/* Text */}
-        <h3 className="text-xl font-bold text-white/90 mb-1.5 tracking-tight">{title}</h3>
-        <p className="text-[13px] text-white/35 leading-relaxed">{description}</p>
+        <div className="mb-2 flex items-center justify-between">
+          <h3 className="text-xl font-bold text-white/90 tracking-tight">{title}</h3>
+          <span
+            className="text-[10px] uppercase tracking-[0.16em]"
+            style={{ color: "rgba(var(--color-secondary-rgb),0.85)" }}
+          >
+            Mode
+          </span>
+        </div>
+        <p className="text-[13px] text-white/45 leading-relaxed">{subtitle}</p>
+
+        <div className="mt-4 flex flex-wrap gap-1.5">
+          {tags.map((tag) => (
+            <ModeTag key={tag}>{tag}</ModeTag>
+          ))}
+        </div>
 
         {/* CTA arrow */}
         <motion.div
-          className="mt-5 flex items-center gap-2 text-[12px] font-medium text-[var(--color-primary)] opacity-50 group-hover:opacity-100"
+          className="mt-5 flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.12em] text-[var(--color-primary)] opacity-70 group-hover:opacity-100"
           initial={false}
           transition={{ duration: 0.2 }}
         >
-          <span>Enter</span>
+          <span>Launch</span>
           <motion.svg
             width="14" height="14" viewBox="0 0 14 14" fill="none"
             animate={{ x: [0, 4, 0] }}
@@ -169,7 +209,7 @@ function NeuCard({ icon, title, description, delay, onClick, index }) {
       <div
         className="absolute inset-0 rounded-[28px] opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
         style={{
-          background: "radial-gradient(circle at 50% 30%, rgba(var(--color-primary-rgb),0.06), transparent 70%)",
+          background: "radial-gradient(circle at 50% 30%, rgba(var(--color-primary-rgb),0.1), transparent 72%)",
         }}
       />
     </motion.button>
@@ -189,7 +229,11 @@ export default function ModePicker({ onSelect }) {
     <motion.div
       className="fixed inset-0 z-[9999] flex items-center justify-center overflow-hidden"
       style={{
-        background: "radial-gradient(ellipse at 50% 30%, #1a1a30 0%, #0c0c1a 60%, #060612 100%)",
+        background: `
+          radial-gradient(ellipse at 22% 20%, rgba(var(--color-secondary-rgb),0.12) 0%, transparent 45%),
+          radial-gradient(ellipse at 80% 78%, rgba(var(--color-primary-rgb),0.16) 0%, transparent 50%),
+          radial-gradient(ellipse at 50% 30%, #131324 0%, #0a0a16 62%, #060610 100%)
+        `,
       }}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
@@ -209,7 +253,7 @@ export default function ModePicker({ onSelect }) {
           height: "50vh",
           left: "10%",
           top: "20%",
-          background: "radial-gradient(ellipse, rgba(var(--color-primary-rgb),0.06) 0%, transparent 70%)",
+          background: "radial-gradient(ellipse, rgba(var(--color-primary-rgb),0.1) 0%, transparent 70%)",
           filter: "blur(80px)",
         }}
         animate={{ scale: [1, 1.15, 1], opacity: [0.5, 0.8, 0.5] }}
@@ -222,7 +266,7 @@ export default function ModePicker({ onSelect }) {
           height: "40vh",
           right: "10%",
           bottom: "15%",
-          background: "radial-gradient(ellipse, rgba(147,51,234,0.05) 0%, transparent 70%)",
+          background: "radial-gradient(ellipse, rgba(var(--color-secondary-rgb),0.1) 0%, transparent 70%)",
           filter: "blur(80px)",
         }}
         animate={{ scale: [1.1, 1, 1.1], opacity: [0.4, 0.7, 0.4] }}
@@ -279,12 +323,12 @@ export default function ModePicker({ onSelect }) {
 
           <motion.p
             className="text-sm mt-2.5 tracking-wide"
-            style={{ color: "rgba(255,255,255,0.3)" }}
+            style={{ color: "rgba(255,255,255,0.42)" }}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.45, duration: 0.5 }}
           >
-            Choose your experience
+            Select your mode
           </motion.p>
 
           {/* Neumorphic divider line */}
@@ -307,7 +351,8 @@ export default function ModePicker({ onSelect }) {
           <NeuCard
             icon={<DesktopSVG />}
             title="Desktop OS"
-            description="Interactive macOS-style desktop with apps, dock, and windows"
+            subtitle="Immersive workspace"
+            tags={["Apps", "Dock", "Windows"]}
             delay={0.4}
             index={0}
             onClick={() => onSelect("desktop")}
@@ -315,23 +360,13 @@ export default function ModePicker({ onSelect }) {
           <NeuCard
             icon={<BrowserSVG />}
             title="Web Portfolio"
-            description="Classic scrollable landing page with smooth animations"
+            subtitle="Fast scroll experience"
+            tags={["Landing", "Projects", "Contact"]}
             delay={0.55}
             index={1}
             onClick={() => onSelect("web")}
           />
         </div>
-
-        {/* Subtle footer hint */}
-        <motion.p
-          className="text-[11px] tracking-wider"
-          style={{ color: "rgba(255,255,255,0.15)" }}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.2, duration: 0.5 }}
-        >
-          You can switch anytime
-        </motion.p>
       </div>
     </motion.div>
   );
