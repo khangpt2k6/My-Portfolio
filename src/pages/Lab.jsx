@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Paintbrush, BarChart3, Grid3X3, GitBranch, FlaskConical, Sparkles } from "lucide-react";
+import { Paintbrush, BarChart3, Grid3X3, GitBranch, FlaskConical } from "lucide-react";
 import Playground from "../components/Playground";
 import { SortingVisualizer, PathfindingVisualizer, TreeVisualizer } from "../components/AlgoVisualizer";
 
@@ -11,32 +11,24 @@ const TABS = [
     label: "Artpad",
     icon: Paintbrush,
     desc: "Draw & create",
-    gradient: "from-pink-500 to-rose-500",
-    accent: "#f43f5e",
   },
   {
     id: "sorting",
     label: "Sorting",
     icon: BarChart3,
     desc: "Algorithm races",
-    gradient: "from-violet-500 to-indigo-500",
-    accent: "#8b5cf6",
   },
   {
     id: "pathfinding",
     label: "Pathfinding",
     icon: Grid3X3,
     desc: "Shortest path",
-    gradient: "from-emerald-500 to-teal-500",
-    accent: "#10b981",
   },
   {
     id: "tree",
     label: "Binary Tree",
     icon: GitBranch,
     desc: "Tree structures",
-    gradient: "from-amber-500 to-orange-500",
-    accent: "#f59e0b",
   },
 ];
 
@@ -58,8 +50,8 @@ function SidebarTab({ tab, isActive, onClick }) {
           layoutId="sidebar-active"
           className="absolute inset-0 rounded-xl"
           style={{
-            background: `linear-gradient(135deg, ${tab.accent}18, ${tab.accent}08)`,
-            border: `1px solid ${tab.accent}40`,
+            background: "var(--color-surface2)",
+            border: "1px solid var(--color-border)",
           }}
           transition={{ type: "spring", stiffness: 400, damping: 30 }}
         />
@@ -68,23 +60,13 @@ function SidebarTab({ tab, isActive, onClick }) {
       {/* Icon */}
       <div
         className={`relative z-10 w-9 h-9 rounded-lg flex items-center justify-center shrink-0 transition-all duration-200 ${
-          isActive ? `bg-gradient-to-br ${tab.gradient} shadow-md` : "bg-[var(--color-surface2)]"
+          isActive ? "bg-[var(--color-bg)] border border-[var(--color-border)]" : "bg-[var(--color-surface2)]"
         }`}
-        style={isActive ? { boxShadow: `0 4px 16px ${tab.accent}30` } : {}}
       >
         <Icon
           size={16}
-          className={isActive ? "text-white" : "text-[var(--color-text-muted)] group-hover:text-[var(--color-text)]"}
+          className="text-[var(--color-text-muted)] group-hover:text-[var(--color-text)]"
         />
-        {isActive && (
-          <motion.div
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-white shadow flex items-center justify-center"
-          >
-            <Sparkles size={6} style={{ color: tab.accent }} />
-          </motion.div>
-        )}
       </div>
 
       {/* Text */}
@@ -111,7 +93,6 @@ function SidebarTab({ tab, isActive, onClick }) {
 // ── Main Lab Page ───────────────────────────────────────────────────────────
 const Lab = () => {
   const [activeTab, setActiveTab] = useState("playground");
-  const activeTabData = TABS.find((t) => t.id === activeTab);
 
   return (
     <section className="relative min-h-screen pt-20 pb-6 px-4 sm:px-6 lg:px-8 max-w-[1440px] mx-auto">
@@ -192,8 +173,9 @@ const Lab = () => {
                   onClick={() => setActiveTab(tab.id)}
                   className="relative flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium whitespace-nowrap transition-all duration-200"
                   style={{
-                    color: isActive ? "#fff" : "var(--color-text-muted)",
-                    backgroundColor: isActive ? tab.accent : "transparent",
+                    color: isActive ? "var(--color-text)" : "var(--color-text-muted)",
+                    backgroundColor: isActive ? "var(--color-bg)" : "transparent",
+                    border: isActive ? "1px solid var(--color-border)" : "1px solid transparent",
                   }}
                 >
                   <Icon size={14} />
@@ -211,13 +193,10 @@ const Lab = () => {
               WebkitBackdropFilter: "blur(20px)",
             }}
           >
-            {/* Accent line */}
-            <div
-              className="h-[2px] w-full shrink-0"
-              style={{
-                background: `linear-gradient(90deg, transparent, ${activeTabData?.accent || "var(--color-primary)"}60, transparent)`,
-              }}
-            />
+            {/* Workflow helper */}
+            <div className="px-4 sm:px-5 py-2 text-[11px] text-[var(--color-text-muted)] border-b border-[var(--color-border)] bg-[var(--color-surface2)]/55">
+              Workflow: choose a module, run a baseline, then change one control at a time to compare behavior.
+            </div>
 
             {/* Scrollable content */}
             <AnimatePresence mode="wait">
@@ -227,7 +206,7 @@ const Lab = () => {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.2 }}
-                className="h-[calc(100%-2px)] overflow-y-auto"
+                className="h-[calc(100%-39px)] overflow-y-auto"
               >
                 {activeTab === "playground" ? (
                   <div className="h-full">

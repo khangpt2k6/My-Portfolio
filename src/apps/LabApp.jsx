@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Paintbrush, BarChart3, Grid3X3, GitBranch } from "lucide-react";
+import { Paintbrush, BarChart3, Grid3X3, GitBranch, FlaskConical } from "lucide-react";
 import Playground from "../components/Playground";
 import {
   SortingVisualizer,
@@ -9,10 +9,30 @@ import {
 } from "../components/AlgoVisualizer";
 
 const TABS = [
-  { id: "playground", label: "Artpad", icon: Paintbrush, accent: "#f43f5e" },
-  { id: "sorting", label: "Sorting", icon: BarChart3, accent: "#8b5cf6" },
-  { id: "pathfinding", label: "Pathfind", icon: Grid3X3, accent: "#10b981" },
-  { id: "tree", label: "Tree", icon: GitBranch, accent: "#f59e0b" },
+  {
+    id: "playground",
+    label: "Artpad",
+    icon: Paintbrush,
+    description: "Sketch UI ideas and concepts",
+  },
+  {
+    id: "sorting",
+    label: "Sorting",
+    icon: BarChart3,
+    description: "Compare sorting behavior",
+  },
+  {
+    id: "pathfinding",
+    label: "Pathfinding",
+    icon: Grid3X3,
+    description: "Explore shortest-path logic",
+  },
+  {
+    id: "tree",
+    label: "Tree",
+    icon: GitBranch,
+    description: "Visualize tree operations",
+  },
 ];
 
 export default function LabApp() {
@@ -21,9 +41,28 @@ export default function LabApp() {
 
   return (
     <div className="h-full flex flex-col" style={{ background: "var(--window-bg)" }}>
-      {/* ── Compact tab bar ── */}
+      {/* ── Header ── */}
       <div
-        className="flex items-center gap-0.5 px-2 py-1.5 border-b"
+        className="px-3 py-2 border-b flex items-center justify-between gap-3"
+        style={{ borderColor: "var(--glass-border)" }}
+      >
+        <div className="flex items-center gap-2">
+          <div className="w-7 h-7 rounded-md bg-[var(--color-surface2)] border border-[var(--glass-border)] flex items-center justify-center">
+            <FlaskConical size={14} className="text-[var(--color-text-muted)]" />
+          </div>
+          <div>
+            <p className="text-[12px] font-semibold text-[var(--color-text)] leading-none">Feature Lab</p>
+            <p className="text-[10px] text-[var(--color-text-muted)] mt-0.5">Structured experimentation workspace</p>
+          </div>
+        </div>
+        <span className="text-[10px] text-[var(--color-text-muted)] hidden sm:block">
+          {tab?.description}
+        </span>
+      </div>
+
+      {/* ── Segmented tabs ── */}
+      <div
+        className="flex items-center gap-1 px-2 py-1.5 border-b overflow-x-auto"
         style={{ borderColor: "var(--glass-border)" }}
       >
         {TABS.map((t) => {
@@ -33,10 +72,11 @@ export default function LabApp() {
             <button
               key={t.id}
               onClick={() => setActive(t.id)}
-              className="relative flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-[11px] font-medium transition-all cursor-pointer"
+              className="relative flex items-center gap-1.5 px-3 py-1.5 rounded-md text-[11px] font-medium transition-all cursor-pointer whitespace-nowrap border"
               style={{
-                color: isActive ? "#fff" : "var(--color-text-muted)",
-                background: isActive ? t.accent : "transparent",
+                color: isActive ? "var(--color-text)" : "var(--color-text-muted)",
+                background: isActive ? "var(--color-surface2)" : "transparent",
+                borderColor: isActive ? "var(--color-border)" : "transparent",
               }}
             >
               <Icon size={12} />
@@ -46,13 +86,10 @@ export default function LabApp() {
         })}
       </div>
 
-      {/* ── Accent line ── */}
-      <div
-        className="h-[2px] w-full"
-        style={{
-          background: `linear-gradient(90deg, transparent, ${tab?.accent || "var(--color-primary)"}60, transparent)`,
-        }}
-      />
+      {/* ── Workflow helper bar ── */}
+      <div className="px-3 py-1.5 text-[10px] text-[var(--color-text-muted)] border-b border-[var(--glass-border)]">
+        Tip: start with preset data, then tweak one parameter at a time for clearer comparisons.
+      </div>
 
       {/* ── Content ── */}
       <div className="flex-1 min-h-0 overflow-hidden">
@@ -71,17 +108,17 @@ export default function LabApp() {
               </div>
             )}
             {active === "sorting" && (
-              <div className="p-3 h-full flex flex-col">
+              <div className="p-3 h-full flex flex-col bg-[var(--color-surface)]/60">
                 <SortingVisualizer />
               </div>
             )}
             {active === "pathfinding" && (
-              <div className="p-3 h-full flex flex-col">
+              <div className="p-3 h-full flex flex-col bg-[var(--color-surface)]/60">
                 <PathfindingVisualizer />
               </div>
             )}
             {active === "tree" && (
-              <div className="p-3 h-full flex flex-col">
+              <div className="p-3 h-full flex flex-col bg-[var(--color-surface)]/60">
                 <TreeVisualizer />
               </div>
             )}
