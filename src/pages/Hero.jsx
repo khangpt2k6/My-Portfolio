@@ -103,7 +103,7 @@ const STAGGER = 0.12;
 
 const NameLine = ({ text, baseDelay = 0 }) => (
   <h1
-    className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-extrabold uppercase leading-[1.1] tracking-[0.04em] flex justify-center overflow-hidden"
+    className="text-5xl sm:text-6xl md:text-7xl lg:text-[6.2rem] xl:text-8xl font-extrabold uppercase leading-[1.04] tracking-[0.04em] flex justify-center overflow-hidden"
     style={{ fontFamily: "var(--font-display)" }}
   >
     {text.split("").map((char, i) => (
@@ -134,6 +134,7 @@ const NameLine = ({ text, baseDelay = 0 }) => (
 /* ── Hero Component ── */
 const Hero = () => {
   const sectionRef = useRef(null);
+  const greetingText = hero.greeting?.trim() || "Hello, I'm";
 
   /* Scroll-based parallax depth */
   const { scrollYProgress } = useScroll({
@@ -147,7 +148,7 @@ const Hero = () => {
   return (
     <section
       ref={sectionRef}
-      className="relative min-h-screen flex flex-col items-center justify-center px-4 overflow-hidden noise-overlay"
+      className="relative min-h-screen pt-20 md:pt-24 flex flex-col items-center justify-center px-4 overflow-hidden noise-overlay"
     >
       {/* ── Background layers ── */}
       <GridBackground />
@@ -198,16 +199,21 @@ const Hero = () => {
           initial={{ opacity: 0, y: 12, filter: "blur(8px)" }}
           animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
           transition={{ duration: 0.7, delay: 0.1 }}
-          className="flex items-center gap-2 mb-8"
+          className="flex items-center gap-3 mb-6 px-4 py-2 rounded-full border"
+          style={{
+            background: "rgba(var(--color-primary-rgb), 0.08)",
+            borderColor: "rgba(var(--color-primary-rgb), 0.28)",
+            boxShadow: "0 8px 22px rgba(var(--color-primary-rgb), 0.12)",
+          }}
         >
-          <div className="h-px w-8 bg-[var(--color-primary)]/50" />
+          <div className="h-px w-8 bg-[var(--color-primary)]/60" />
           <span
-            className="text-xs tracking-[0.35em] uppercase font-semibold text-[var(--color-primary)]"
+            className="text-sm sm:text-base tracking-[0.12em] uppercase font-bold text-[var(--color-primary)]"
             style={{ fontFamily: "var(--font-display)" }}
           >
-            {hero.greeting}
+            {greetingText}
           </span>
-          <div className="h-px w-8 bg-[var(--color-primary)]/50" />
+          <div className="h-px w-8 bg-[var(--color-primary)]/60" />
         </motion.div>
 
         {/* ── Name — both lines reveal simultaneously, letter by letter ── */}
