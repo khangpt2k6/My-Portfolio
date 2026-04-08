@@ -69,7 +69,7 @@ const Skills = () => {
               <button
                 type="button"
                 onClick={() => setViewMode("catalog")}
-                className="relative z-10 px-4 py-2 rounded-full text-xs md:text-sm font-semibold transition-colors"
+                className="relative z-10 w-[110px] md:w-[120px] px-4 py-2 rounded-full text-center text-xs md:text-sm font-semibold transition-colors"
                 style={{
                   color: viewMode === "catalog" ? "var(--color-text)" : "var(--color-text-muted)",
                 }}
@@ -79,7 +79,7 @@ const Skills = () => {
               <button
                 type="button"
                 onClick={() => setViewMode("flow")}
-                className="relative z-10 px-4 py-2 rounded-full text-xs md:text-sm font-semibold transition-colors"
+                className="relative z-10 w-[110px] md:w-[120px] px-4 py-2 rounded-full text-center text-xs md:text-sm font-semibold transition-colors"
                 style={{
                   color: viewMode === "flow" ? "var(--color-text)" : "var(--color-text-muted)",
                 }}
