@@ -39,9 +39,9 @@ const Skills = () => {
             </h2>
           </div>
 
-          <div className="flex flex-col md:items-end gap-2">
+          <div className="flex flex-col items-start md:items-end gap-2">
             <div
-              className="relative inline-flex items-center p-1 rounded-full border"
+              className="relative inline-flex items-center p-1 rounded-full border w-fit self-start md:self-auto"
               style={{
                 background: isDark
                   ? "linear-gradient(145deg, rgba(255,255,255,0.12), rgba(255,255,255,0.04))"

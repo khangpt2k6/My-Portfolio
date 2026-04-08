@@ -237,6 +237,7 @@ const Navbar = () => {
   const handleCursorChange = useCallback((id) => {
     setSelectedCursor(id);
     localStorage.setItem("cursor-style", id);
+    window.dispatchEvent(new CustomEvent("cursor-style-change", { detail: id }));
   }, []);
 
   // ── Close mobile menu on resize ───────────────────────────────────────────

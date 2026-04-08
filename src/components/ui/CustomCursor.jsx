@@ -129,21 +129,26 @@ const CustomCursor = () => {
 
   /* ── Load preference ── */
   useEffect(() => {
-    const saved = localStorage.getItem("cursor-style");
-    if (saved && CURSOR_STYLES.some((s) => s.id === saved)) {
-      setStyle(saved);
-    }
-
-    // Listen for changes from Navbar settings
-    const interval = setInterval(() => {
-      const val = localStorage.getItem("cursor-style");
-      if (val && val !== style && CURSOR_STYLES.some((s) => s.id === val)) {
-        setStyle(val);
+    const apply = (value) => {
+      if (value && CURSOR_STYLES.some((s) => s.id === value)) {
+        setStyle(value);
       }
-    }, 300);
+    };
 
-    return () => clearInterval(interval);
-  }, [style]);
+    apply(localStorage.getItem("cursor-style"));
+
+    const onCustomChange = (e) => apply(e.detail);
+    const onStorage = (e) => {
+      if (e.key === "cursor-style") apply(e.newValue);
+    };
+
+    window.addEventListener("cursor-style-change", onCustomChange);
+    window.addEventListener("storage", onStorage);
+    return () => {
+      window.removeEventListener("cursor-style-change", onCustomChange);
+      window.removeEventListener("storage", onStorage);
+    };
+  }, []);
 
   /* ── Mouse tracking ── */
   useEffect(() => {

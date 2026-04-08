@@ -1,8 +1,9 @@
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   motion,
   useTransform,
   useScroll,
+  useReducedMotion,
 } from "framer-motion";
 import { TypeAnimation } from "react-type-animation";
 import hero from "../data/hero";
@@ -103,7 +104,7 @@ const STAGGER = 0.12;
 
 const NameLine = ({ text, baseDelay = 0, align = "center" }) => (
   <h1
-    className={`text-5xl sm:text-6xl md:text-7xl lg:text-[6.2rem] xl:text-8xl font-extrabold uppercase leading-[1.04] tracking-[0.04em] flex overflow-hidden ${
+    className={`text-5xl sm:text-6xl md:text-7xl lg:text-7xl xl:text-[5.4rem] 2xl:text-8xl font-extrabold uppercase leading-[1.04] tracking-[0.03em] flex overflow-hidden ${
       align === "left" ? "justify-start" : "justify-center"
     }`}
     style={{ fontFamily: "var(--font-display)" }}
@@ -137,8 +138,18 @@ const NameLine = ({ text, baseDelay = 0, align = "center" }) => (
 const Hero = () => {
   const sectionRef = useRef(null);
   const greetingText = hero.greeting?.trim() || "Hello, I'm";
+  const prefersReducedMotion = useReducedMotion();
+  const [isSmallScreen, setIsSmallScreen] = useState(false);
   const jumpTo = (id) =>
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+
+  useEffect(() => {
+    const media = window.matchMedia("(max-width: 1023px)");
+    const sync = () => setIsSmallScreen(media.matches);
+    sync();
+    media.addEventListener("change", sync);
+    return () => media.removeEventListener("change", sync);
+  }, []);
 
   /* Scroll-based parallax depth */
   const { scrollYProgress } = useScroll({
@@ -156,54 +167,57 @@ const Hero = () => {
     >
       {/* ── Background layers ── */}
       <GridBackground />
-      <FloatingParticles />
+      {!isSmallScreen && !prefersReducedMotion && <FloatingParticles />}
 
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <FloatingOrb
-          size="350px"
-          color="rgba(var(--color-primary-rgb), 0.10)"
-          left="5%"
-          top="15%"
-          delay={0}
-          duration={26}
-        />
-        <FloatingOrb
-          size="280px"
-          color="rgba(var(--color-secondary-rgb), 0.08)"
-          left="65%"
-          top="55%"
-          delay={3}
-          duration={21}
-        />
-        <FloatingOrb
-          size="220px"
-          color="rgba(147, 51, 234, 0.06)"
-          left="78%"
-          top="8%"
-          delay={5}
-          duration={19}
-        />
-        <FloatingOrb
-          size="260px"
-          color="rgba(236, 72, 153, 0.05)"
-          left="25%"
-          top="68%"
-          delay={7}
-          duration={23}
-        />
-      </div>
+      {!isSmallScreen && !prefersReducedMotion && (
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <FloatingOrb
+            size="350px"
+            color="rgba(var(--color-primary-rgb), 0.10)"
+            left="5%"
+            top="15%"
+            delay={0}
+            duration={26}
+          />
+          <FloatingOrb
+            size="280px"
+            color="rgba(var(--color-secondary-rgb), 0.08)"
+            left="65%"
+            top="55%"
+            delay={3}
+            duration={21}
+          />
+          <FloatingOrb
+            size="220px"
+            color="rgba(147, 51, 234, 0.06)"
+            left="78%"
+            top="8%"
+            delay={5}
+            duration={19}
+          />
+          <FloatingOrb
+            size="260px"
+            color="rgba(236, 72, 153, 0.05)"
+            left="25%"
+            top="68%"
+            delay={7}
+            duration={23}
+          />
+        </div>
+      )}
 
       {/* ── Main Content ── */}
       <motion.div
         className="relative z-10 w-full max-w-6xl mx-auto"
         style={{ y: nameY, scale: nameScale, opacity: nameOpacity }}
       >
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-8 items-center text-center lg:text-left">
+        <div className="grid grid-cols-1 xl:grid-cols-[1.08fr_0.92fr] gap-10 xl:gap-8 items-center text-center xl:text-left">
           {/* Left column: intro first */}
           <motion.div
             initial={{ opacity: 0, y: 14, filter: "blur(6px)" }}
             animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
             transition={{ duration: 0.65, delay: 0.1 }}
+            className="min-w-0"
           >
             <div className="h-8 mb-2">
               <TypeAnimation
@@ -218,8 +232,8 @@ const Hero = () => {
             </div>
 
             <div className="mb-5">
-              <NameLine text={hero.firstName} baseDelay={0.55} align="left" />
-              <NameLine text={hero.lastName} baseDelay={0.55} align="left" />
+              <NameLine text={hero.firstName} baseDelay={0.55} align={isSmallScreen ? "center" : "left"} />
+              <NameLine text={hero.lastName} baseDelay={0.55} align={isSmallScreen ? "center" : "left"} />
             </div>
 
             <motion.div
@@ -247,11 +261,17 @@ const Hero = () => {
               <button
                 type="button"
                 onClick={() => jumpTo("projects")}
-                className="px-4 py-2 rounded-full text-sm font-semibold text-white transition-all duration-300 hover:scale-[1.03]"
+                className="px-4 py-2 rounded-full text-sm font-semibold text-[var(--color-text)] transition-all duration-300 hover:scale-[1.03] border"
                 style={{
-                  background:
-                    "linear-gradient(135deg, rgb(var(--color-primary-rgb)), rgb(var(--color-secondary-rgb)))",
-                  boxShadow: "0 8px 24px rgba(var(--color-primary-rgb), 0.26)",
+                  background: isSmallScreen
+                    ? "linear-gradient(145deg, rgba(255,255,255,0.95), rgba(255,255,255,0.68))"
+                    : "linear-gradient(145deg, rgba(255,255,255,0.18), rgba(255,255,255,0.05))",
+                  borderColor: isSmallScreen ? "rgba(15,23,42,0.12)" : "rgba(255,255,255,0.22)",
+                  backdropFilter: "blur(14px) saturate(150%)",
+                  WebkitBackdropFilter: "blur(14px) saturate(150%)",
+                  boxShadow: isSmallScreen
+                    ? "0 10px 24px rgba(15,23,42,0.16)"
+                    : "inset 0 1px 0 rgba(255,255,255,0.22), 0 10px 28px rgba(0,0,0,0.34)",
                 }}
               >
                 Explore Projects
@@ -259,7 +279,15 @@ const Hero = () => {
               <button
                 type="button"
                 onClick={() => jumpTo("about")}
-                className="px-4 py-2 rounded-full text-sm font-semibold border border-[var(--color-border)] text-[var(--color-text)] bg-[var(--color-surface2)]/70 hover:bg-[var(--color-surface2)] transition-colors"
+                className="px-4 py-2 rounded-full text-sm font-semibold text-[var(--color-text)] transition-colors border"
+                style={{
+                  background: isSmallScreen
+                    ? "linear-gradient(145deg, rgba(255,255,255,0.92), rgba(255,255,255,0.62))"
+                    : "linear-gradient(145deg, rgba(255,255,255,0.14), rgba(255,255,255,0.04))",
+                  borderColor: isSmallScreen ? "rgba(15,23,42,0.12)" : "rgba(255,255,255,0.2)",
+                  backdropFilter: "blur(14px) saturate(150%)",
+                  WebkitBackdropFilter: "blur(14px) saturate(150%)",
+                }}
               >
                 Start With About
               </button>
@@ -271,8 +299,18 @@ const Hero = () => {
             initial={{ opacity: 0, x: 24, filter: "blur(8px)" }}
             animate={{ opacity: 1, x: 0, filter: "blur(0px)" }}
             transition={{ duration: 0.65, delay: 0.3 }}
-            className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)]/60 backdrop-blur-xl p-5 md:p-6 text-left"
+            className="hidden xl:block relative overflow-hidden rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)]/60 backdrop-blur-xl p-5 md:p-6 text-left"
           >
+            <motion.div
+              className="pointer-events-none absolute -inset-10"
+              style={{
+                background:
+                  "linear-gradient(115deg, transparent 35%, rgba(var(--color-primary-rgb),0.14) 50%, transparent 65%)",
+                filter: "blur(16px)",
+              }}
+              animate={{ x: ["-35%", "35%", "-35%"] }}
+              transition={{ duration: 6.5, repeat: Infinity, ease: "easeInOut" }}
+            />
             <p className="text-xs uppercase tracking-[0.14em] text-[var(--color-text-muted)] mb-4">
               Recommended Flow
             </p>
@@ -282,7 +320,7 @@ const Hero = () => {
                 { id: "projects", label: "Projects", detail: "Real products and case studies" },
                 { id: "contact", label: "Contact", detail: "Start a conversation quickly" },
               ].map((item, idx) => (
-                <button
+                <motion.button
                   key={item.id}
                   type="button"
                   onClick={() => jumpTo(item.id)}
@@ -292,7 +330,7 @@ const Hero = () => {
                     {idx + 1}. {item.label}
                   </p>
                   <p className="text-xs text-[var(--color-text-muted)] mt-0.5">{item.detail}</p>
-                </button>
+                </motion.button>
               ))}
             </div>
           </motion.div>

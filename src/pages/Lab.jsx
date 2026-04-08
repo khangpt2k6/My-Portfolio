@@ -97,7 +97,7 @@ const Lab = () => {
   return (
     <section className="relative min-h-screen pt-20 pb-6 px-4 sm:px-6 lg:px-8 max-w-[1440px] mx-auto">
       {/* ── Two-column layout ── */}
-      <div className="relative z-10 flex gap-5 h-[calc(100vh-6rem)]">
+      <div className="relative z-10 flex gap-5 lg:h-[calc(100dvh-6rem)]">
 
         {/* ═══ LEFT SIDEBAR ═══ */}
         <motion.aside
@@ -160,7 +160,7 @@ const Lab = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-          className="flex-1 min-w-0 flex flex-col"
+          className="flex-1 min-w-0 flex flex-col min-h-[65dvh] lg:min-h-0"
         >
           {/* Mobile tab bar (visible < lg) */}
           <div className="flex lg:hidden items-center gap-1 p-1 mb-4 rounded-xl bg-[var(--color-surface2)] border border-[var(--color-border)] overflow-x-auto">
