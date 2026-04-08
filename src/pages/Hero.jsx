@@ -101,9 +101,11 @@ const GridBackground = () => (
 /* ── Name line — per-char sequential reveal ── */
 const STAGGER = 0.12;
 
-const NameLine = ({ text, baseDelay = 0 }) => (
+const NameLine = ({ text, baseDelay = 0, align = "center" }) => (
   <h1
-    className="text-5xl sm:text-6xl md:text-7xl lg:text-[6.2rem] xl:text-8xl font-extrabold uppercase leading-[1.04] tracking-[0.04em] flex justify-center overflow-hidden"
+    className={`text-5xl sm:text-6xl md:text-7xl lg:text-[6.2rem] xl:text-8xl font-extrabold uppercase leading-[1.04] tracking-[0.04em] flex overflow-hidden ${
+      align === "left" ? "justify-start" : "justify-center"
+    }`}
     style={{ fontFamily: "var(--font-display)" }}
   >
     {text.split("").map((char, i) => (
@@ -135,6 +137,8 @@ const NameLine = ({ text, baseDelay = 0 }) => (
 const Hero = () => {
   const sectionRef = useRef(null);
   const greetingText = hero.greeting?.trim() || "Hello, I'm";
+  const jumpTo = (id) =>
+    document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
 
   /* Scroll-based parallax depth */
   const { scrollYProgress } = useScroll({
@@ -191,99 +195,115 @@ const Hero = () => {
 
       {/* ── Main Content ── */}
       <motion.div
-        className="relative z-10 flex flex-col items-center text-center w-full max-w-5xl mx-auto"
+        className="relative z-10 w-full max-w-6xl mx-auto"
         style={{ y: nameY, scale: nameScale, opacity: nameOpacity }}
       >
-        {/* Greeting badge */}
-        <motion.div
-          initial={{ opacity: 0, y: 12, filter: "blur(8px)" }}
-          animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-          transition={{ duration: 0.7, delay: 0.1 }}
-          className="flex items-center gap-3 mb-6 px-4 py-2 rounded-full border"
-          style={{
-            background: "rgba(var(--color-primary-rgb), 0.08)",
-            borderColor: "rgba(var(--color-primary-rgb), 0.28)",
-            boxShadow: "0 8px 22px rgba(var(--color-primary-rgb), 0.12)",
-          }}
-        >
-          <div className="h-px w-8 bg-[var(--color-primary)]/60" />
-          <span
-            className="text-sm sm:text-base tracking-[0.12em] uppercase font-bold text-[var(--color-primary)]"
-            style={{ fontFamily: "var(--font-display)" }}
-          >
-            {greetingText}
-          </span>
-          <div className="h-px w-8 bg-[var(--color-primary)]/60" />
-        </motion.div>
-
-        {/* ── Name — both lines reveal simultaneously, letter by letter ── */}
-        <div className="mb-6">
-          <NameLine text={hero.firstName} baseDelay={0.3} />
-          <NameLine text={hero.lastName} baseDelay={0.3} />
-        </div>
-
-        {/* ── Animated underline glow ── */}
-        <motion.div
-          className="relative w-24 h-[2px] mb-7 origin-center"
-          initial={{ scaleX: 0 }}
-          animate={{ scaleX: 1 }}
-          transition={{
-            delay: 1.2,
-            duration: 0.8,
-            ease: [0.22, 1, 0.36, 1],
-          }}
-        >
-          <div
-            className="absolute inset-0 rounded-full"
-            style={{
-              background:
-                "linear-gradient(90deg, transparent, var(--color-primary), var(--color-secondary), transparent)",
-            }}
-          />
-          {/* Glow underneath */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-8 items-center text-center lg:text-left">
+          {/* Left column: intro first */}
           <motion.div
-            className="absolute -inset-1 rounded-full"
-            style={{
-              background:
-                "linear-gradient(90deg, transparent, rgba(var(--color-primary-rgb),0.5), transparent)",
-              filter: "blur(6px)",
-            }}
-            animate={{ opacity: [0.4, 0.8, 0.4] }}
-            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-          />
-        </motion.div>
+            initial={{ opacity: 0, y: 14, filter: "blur(6px)" }}
+            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+            transition={{ duration: 0.65, delay: 0.1 }}
+          >
+            <div className="h-8 mb-2">
+              <TypeAnimation
+                sequence={[greetingText, 1200]}
+                wrapper="span"
+                speed={42}
+                cursor
+                repeat={0}
+                className="text-base sm:text-lg text-[var(--color-primary)] font-semibold tracking-[0.08em] uppercase"
+                style={{ fontFamily: "var(--font-display)" }}
+              />
+            </div>
 
-        {/* ── Typing Effect ── */}
-        <motion.div
-          initial={{ opacity: 0, y: 15 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 1.3 }}
-          className="h-10 flex items-center justify-center mb-6"
-        >
-          <span className="text-[var(--color-text-muted)] opacity-40 mr-3">
-            —
-          </span>
-          <TypeAnimation
-            sequence={buildSequence(hero.titles)}
-            wrapper="span"
-            speed={45}
-            repeat={Infinity}
-            className="text-lg md:text-xl text-[var(--color-text-muted)] font-medium"
-            style={{ fontFamily: "var(--font-display)" }}
-          />
-          <span className="text-[var(--color-text-muted)] opacity-40 ml-3">
-            —
-          </span>
-        </motion.div>
+            <div className="mb-5">
+              <NameLine text={hero.firstName} baseDelay={0.55} align="left" />
+              <NameLine text={hero.lastName} baseDelay={0.55} align="left" />
+            </div>
 
+            <motion.div
+              initial={{ opacity: 0, y: 14 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.55, delay: 1.05 }}
+              className="h-10 flex items-center justify-center lg:justify-start mb-6"
+            >
+              <TypeAnimation
+                sequence={buildSequence(hero.titles)}
+                wrapper="span"
+                speed={45}
+                repeat={Infinity}
+                className="text-lg md:text-xl text-[var(--color-text-muted)] font-medium"
+                style={{ fontFamily: "var(--font-display)" }}
+              />
+            </motion.div>
 
+            <motion.div
+              initial={{ opacity: 0, y: 14 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 1.2 }}
+              className="flex flex-wrap items-center justify-center lg:justify-start gap-3"
+            >
+              <button
+                type="button"
+                onClick={() => jumpTo("projects")}
+                className="px-4 py-2 rounded-full text-sm font-semibold text-white transition-all duration-300 hover:scale-[1.03]"
+                style={{
+                  background:
+                    "linear-gradient(135deg, rgb(var(--color-primary-rgb)), rgb(var(--color-secondary-rgb)))",
+                  boxShadow: "0 8px 24px rgba(var(--color-primary-rgb), 0.26)",
+                }}
+              >
+                Explore Projects
+              </button>
+              <button
+                type="button"
+                onClick={() => jumpTo("about")}
+                className="px-4 py-2 rounded-full text-sm font-semibold border border-[var(--color-border)] text-[var(--color-text)] bg-[var(--color-surface2)]/70 hover:bg-[var(--color-surface2)] transition-colors"
+              >
+                Start With About
+              </button>
+            </motion.div>
+          </motion.div>
+
+          {/* Right column: guided user flow */}
+          <motion.div
+            initial={{ opacity: 0, x: 24, filter: "blur(8px)" }}
+            animate={{ opacity: 1, x: 0, filter: "blur(0px)" }}
+            transition={{ duration: 0.65, delay: 0.3 }}
+            className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)]/60 backdrop-blur-xl p-5 md:p-6 text-left"
+          >
+            <p className="text-xs uppercase tracking-[0.14em] text-[var(--color-text-muted)] mb-4">
+              Recommended Flow
+            </p>
+            <div className="space-y-2.5">
+              {[
+                { id: "about", label: "About", detail: "Who I am and what I build" },
+                { id: "projects", label: "Projects", detail: "Real products and case studies" },
+                { id: "contact", label: "Contact", detail: "Start a conversation quickly" },
+              ].map((item, idx) => (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => jumpTo(item.id)}
+                  className="w-full text-left rounded-xl border border-[var(--color-border)] bg-[var(--color-bg)]/70 px-3.5 py-3 hover:border-[var(--color-primary)]/35 transition-colors"
+                >
+                  <p className="text-sm font-semibold text-[var(--color-text)]">
+                    {idx + 1}. {item.label}
+                  </p>
+                  <p className="text-xs text-[var(--color-text-muted)] mt-0.5">{item.detail}</p>
+                </button>
+              ))}
+            </div>
+          </motion.div>
+        </div>
 
         {/* ── Tech marquee (Stripe-style) ── */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8, delay: 1.8 }}
-          className="w-full max-w-3xl mt-10 mb-4 relative overflow-hidden"
+          className="w-full max-w-5xl mt-12 mb-4 relative overflow-hidden mx-auto"
         >
           {/* Fade edges */}
           <div className="pointer-events-none absolute inset-y-0 left-0 w-24 z-10 bg-gradient-to-r from-[var(--color-bg)] dark:from-[#0a0515] to-transparent" />
