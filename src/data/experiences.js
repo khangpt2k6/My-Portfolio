@@ -32,7 +32,7 @@ const experiences = {
       title: "Software Engineer Intern",
       company: "Prox Shopping",
       location: "Santa Monica, CA",
-      period: "Nov 2025 – Feb 2026",
+      period: "Nov 2025 – Mar 2026",
       year: "2026",
       image: "/prox-shopping.jpg",
       icon: "Code",
